@@ -207,4 +207,4 @@ todo-list-fullstack/
 ## 👤 Autor
 
 **Jose Lucas**
-Desenvolvedor Full-Stack com foco em Back-end 
+Desenvolvedor Full-Stack 
