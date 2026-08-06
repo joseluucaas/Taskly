@@ -165,7 +165,7 @@ npx prisma migrate dev
 npm run dev
 ```
 
-O servidor sobe por padrão em `http://localhost:3333`.
+O servidor sobe por padrão em `http://localhost:3000`.
 
 ---
 
