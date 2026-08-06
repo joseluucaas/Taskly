@@ -1,10 +1,7 @@
-import { createServer } from "node:http";
+import app from './app.js';
 
-const server = createServer((_req, res) => {
-    res.writeHead(200, { "Content-Type": "text/plain" });
-    res.end("Server is running on port 3000");
-});
+const PORT = process.env.PORT || 3000;  
 
-server.listen(3000, () => {
-    console.log("Server is running on port 3000");
-})
+app.listen(PORT, () => {
+    console.log(`Servidor executando na porta ${PORT}`);
+} );
