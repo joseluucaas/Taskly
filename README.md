@@ -197,7 +197,7 @@ todo-list-fullstack/
 - [x] Configuração do Prisma + PostgreSQL via Docker
 - [x] Modelagem do schema (`User`, `Task`)
 - [x] Servidor Express básico com rota de health check
-- [ ] Autenticação (cadastro, login, JWT, bcrypt)
+- [x] Autenticação (cadastro, login, JWT, bcrypt)
 - [ ] CRUD de tarefas
 - [ ] Testes automatizados
 - [ ] Front-end (React + Tailwind)
