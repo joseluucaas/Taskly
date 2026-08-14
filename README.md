@@ -85,7 +85,7 @@ erDiagram
     USER ||--o{ TASK : possui
     USER {
         string id PK
-        string nome
+        string name
         string email UK
         string passwordHash
         datetime createdAt
@@ -93,7 +93,7 @@ erDiagram
     }
     TASK {
         string id PK
-        string titulo
+        string title
         string description
         boolean completed
         datetime dueDate
