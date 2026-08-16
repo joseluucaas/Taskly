@@ -16,6 +16,7 @@ Aplicação de gerenciamento de tarefas com autenticação de usuários, constru
 - [API e Endpoints](#-api-e-endpoints)
 - [Estrutura de pastas](#-estrutura-de-pastas)
 - [Roadmap](#-roadmap)
+- [Convenções e Padrões](#-convenções-e-padrões)
 - [Autor](#-autor)
 
 ---
@@ -217,6 +218,23 @@ todo-list-fullstack/
 - [ ] **Deploy**
   - [ ] Back-end
   - [ ] Front-end
+
+---
+
+## 📐 Convenções e padrões
+
+### Commits
+
+Este projeto segue a convenção [Conventional Commits](https://www.conventionalcommits.org/pt-br/v1.0.0/), facilitando a leitura do histórico e a identificação do tipo de cada mudança:
+
+| Prefixo | Uso |
+|---------|-----|
+| `feat:` | Nova funcionalidade |
+| `fix:` | Correção de bug |
+| `refactor:` | Reorganização de código sem mudar comportamento |
+| `docs:` | Mudanças na documentação |
+| `chore:` | Configuração, tarefas de manutenção |
+| `test:` | Adição ou ajuste de testes |
 
 ---
 
