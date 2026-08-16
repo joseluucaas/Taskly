@@ -13,6 +13,7 @@ Aplicação de gerenciamento de tarefas com autenticação de usuários, constru
 - [Arquitetura](#-arquitetura)
 - [Modelagem do banco de dados](#-modelagem-do-banco-de-dados)
 - [Como rodar o projeto localmente](#-como-rodar-o-projeto-localmente)
+- [API e Endpoints](#-api-e-endpoints)
 - [Estrutura de pastas](#-estrutura-de-pastas)
 - [Roadmap](#-roadmap)
 - [Autor](#-autor)
@@ -138,6 +139,28 @@ npm run dev
 ```
 
 O servidor sobe por padrão em `http://localhost:3000`.
+
+---
+
+## 🔌 API e Endpoints
+
+Todos os endpoints protegidos exigem o header `Authorization: Bearer <token>`.
+
+### Autenticação
+
+| Método | Endpoint | Descrição | Corpo da requisição | Resposta |
+|--------|----------|-----------|----------------------|----------|
+| POST | `/auth/register` | Cadastra um novo usuário | `{ "name", "email", "password" }` | `{ "id", "name", "email", "createdAt" }` |
+| POST | `/auth/login` | Autentica e retorna um token JWT | `{ "email", "password" }` | `{ "token" }` |
+
+### Tarefas *(em desenvolvimento)*
+
+| Método | Endpoint | Descrição | Corpo da requisição | Resposta |
+|--------|----------|-----------|----------------------|----------|
+| POST | `/tasks` | Cria uma nova tarefa | `{ "title", "description?", "dueDate?" }` | Tarefa criada |
+| GET | `/tasks` | Lista as tarefas do usuário logado | — | Array de tarefas |
+| PUT | `/tasks/:id` | Atualiza uma tarefa | Campos a atualizar | Tarefa atualizada |
+| DELETE | `/tasks/:id` | Remove uma tarefa | — | Status 204 |
 
 ---
 
