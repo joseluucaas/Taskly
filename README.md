@@ -14,6 +14,7 @@ Aplicação de gerenciamento de tarefas com autenticação de usuários, constru
 - [Modelagem do banco de dados](#-modelagem-do-banco-de-dados)
 - [Como rodar o projeto localmente](#-como-rodar-o-projeto-localmente)
 - [API e Endpoints](#-api-e-endpoints)
+- [Segurança](#-segurança)
 - [Estrutura de pastas](#-estrutura-de-pastas)
 - [Roadmap](#-roadmap)
 - [Convenções e Padrões](#-convenções-e-padrões)
@@ -162,6 +163,19 @@ Todos os endpoints protegidos exigem o header `Authorization: Bearer <token>`.
 | GET | `/tasks` | Lista as tarefas do usuário logado | — | Array de tarefas |
 | PUT | `/tasks/:id` | Atualiza uma tarefa | Campos a atualizar | Tarefa atualizada |
 | DELETE | `/tasks/:id` | Remove uma tarefa | — | Status 204 |
+
+---
+
+## 🔒 Segurança
+
+- **Hash de senhas com bcrypt** (salt rounds: 10) — a senha em texto puro nunca é armazenada
+- **Mensagens de erro genéricas no login** — a API responde a mesma mensagem tanto para email inexistente quanto para senha incorreta, evitando enumeração de usuários
+- **Restrição de unicidade de email** a nível de banco de dados (`@unique` no schema)
+- **Tokens JWT assinados** com segredo forte, armazenado em variável de ambiente (nunca no código-fonte)
+- **Variáveis sensíveis fora do controle de versão** (`.env` no `.gitignore`, apenas `.env.example` é versionado)
+- `helmet` configurado para headers de segurança HTTP *(planejado)*
+- Middleware de autenticação para proteger rotas privadas *(em desenvolvimento)*
+- Rate limiting no endpoint de login, prevenindo força bruta *(planejado)*
 
 ---
 
