@@ -12,7 +12,6 @@ Aplicação de gerenciamento de tarefas com autenticação de usuários, constru
 - [Stack utilizada](#-stack-utilizada)
 - [Arquitetura](#-arquitetura)
 - [Modelagem do banco de dados](#-modelagem-do-banco-de-dados)
-- [Fluxo de autenticação](#-fluxo-de-autenticação)
 - [Como rodar o projeto localmente](#-como-rodar-o-projeto-localmente)
 - [Estrutura de pastas](#-estrutura-de-pastas)
 - [Roadmap](#-roadmap)
@@ -104,33 +103,6 @@ erDiagram
 ```
 
 Um `User` pode ter várias `Task`s (relação um-para-muitos). Cada tarefa pertence a exatamente um usuário, garantido pela chave estrangeira `userId`.
-
----
-
-## 🔐 Fluxo de autenticação
-
-```mermaid
-sequenceDiagram
-    participant U as Usuário
-    participant F as Front-end (React)
-    participant B as Back-end (Express)
-    participant D as Banco (PostgreSQL)
-
-    U->>F: Preenche email e senha
-    F->>B: POST /auth/login
-    B->>D: Busca usuário pelo email
-    D-->>B: Retorna usuário (com passwordHash)
-    B->>B: Compara senha com bcrypt.compare()
-    alt Senha correta
-        B->>B: Gera token JWT
-        B-->>F: 200 OK + token
-        F->>F: Armazena o token
-        F-->>U: Redireciona para o dashboard
-    else Senha incorreta
-        B-->>F: 401 Unauthorized
-        F-->>U: Exibe mensagem de erro
-    end
-```
 
 ---
 
