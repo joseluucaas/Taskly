@@ -193,15 +193,35 @@ todo-list-fullstack/
 
 ## 🗺 Roadmap
 
-- [x] Configuração do ambiente (TypeScript, ESLint, Prettier)
-- [x] Configuração do Prisma + PostgreSQL via Docker
-- [x] Modelagem do schema (`User`, `Task`)
-- [x] Servidor Express básico com rota de health check
-- [x] Autenticação (cadastro, login, JWT, bcrypt)
-- [ ] CRUD de tarefas
-- [ ] Testes automatizados
-- [ ] Front-end (React + Tailwind)
-- [ ] Deploy
+- [x] **Configuração do ambiente**
+  - [x] TypeScript com ESM (`nodenext`)
+  - [x] ESLint + Prettier
+- [x] **Banco de dados**
+  - [x] Prisma + PostgreSQL via Docker
+  - [x] Modelagem do schema (`User`, `Task`)
+  - [x] Migrations aplicadas
+- [x] **Servidor**
+  - [x] Express configurado
+  - [x] Rota de health check
+- [x] **Autenticação**
+  - [x] Cadastro de usuário (hash de senha com bcrypt)
+  - [x] Login com geração de token JWT
+  - [ ] Middleware de proteção de rotas
+- [ ] **CRUD de tarefas**
+  - [ ] Criar tarefa
+  - [ ] Listar tarefas do usuário
+  - [ ] Atualizar tarefa
+  - [ ] Excluir tarefa
+- [ ] **Testes automatizados**
+  - [ ] Testes de autenticação
+  - [ ] Testes de CRUD de tarefas
+- [ ] **Front-end**
+  - [ ] Setup React + Tailwind
+  - [ ] Telas de login/cadastro
+  - [ ] Dashboard de tarefas
+- [ ] **Deploy**
+  - [ ] Back-end
+  - [ ] Front-end
 
 ---
 
