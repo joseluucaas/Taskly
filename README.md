@@ -216,7 +216,7 @@ todo-list-fullstack/
 - [x] **Autenticação**
   - [x] Cadastro de usuário (hash de senha com bcrypt)
   - [x] Login com geração de token JWT
-  - [ ] Middleware de proteção de rotas
+  - [x] Middleware de proteção de rotas
 - [ ] **CRUD de tarefas**
   - [ ] Criar tarefa
   - [ ] Listar tarefas do usuário
