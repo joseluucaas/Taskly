@@ -174,7 +174,7 @@ Todos os endpoints protegidos exigem o header `Authorization: Bearer <token>`.
 - **Tokens JWT assinados** com segredo forte, armazenado em variável de ambiente (nunca no código-fonte)
 - **Variáveis sensíveis fora do controle de versão** (`.env` no `.gitignore`, apenas `.env.example` é versionado)
 - `helmet` configurado para headers de segurança HTTP *(planejado)*
-- Middleware de autenticação para proteger rotas privadas *(em desenvolvimento)*
+- Middleware de autenticação para proteger rotas privadas
 - Rate limiting no endpoint de login, prevenindo força bruta *(planejado)*
 
 ---
