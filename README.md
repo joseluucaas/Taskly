@@ -1,5 +1,16 @@
 # 📝 Todo List Full-Stack
 
+![Status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow)
+![Node.js](https://img.shields.io/badge/Node.js-333333?logo=node.js&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
+![Express](https://img.shields.io/badge/Express_5-000000?logo=express&logoColor=white)
+![Prisma](https://img.shields.io/badge/Prisma-2D3748?logo=prisma&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)
+![JWT](https://img.shields.io/badge/JWT-black?logo=JSON%20web%20tokens)
+![Jest](https://img.shields.io/badge/Jest-C21325?logo=jest&logoColor=white)
+![License](https://img.shields.io/badge/license-MIT-informational)
+
 Aplicação de gerenciamento de tarefas com autenticação de usuários, construída como projeto de estudo aprofundado em back-end, com foco em **Clean Code**, **SOLID** e **Programação Orientada a Objetos**.
 
 > 🚧 Projeto em desenvolvimento ativo. Este README é atualizado conforme novas partes são construídas.
