@@ -9,6 +9,9 @@
 ![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)
 ![JWT](https://img.shields.io/badge/JWT-black?logo=JSON%20web%20tokens)
 ![Jest](https://img.shields.io/badge/Jest-C21325?logo=jest&logoColor=white)
+<!-- Descomente as duas linhas abaixo quando o front-end estiver em construção -->
+<!-- ![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB) -->
+<!-- ![Tailwind](https://img.shields.io/badge/TailwindCSS-38B2AC?logo=tailwind-css&logoColor=white) -->
 ![License](https://img.shields.io/badge/license-MIT-informational)
 
 Aplicação de gerenciamento de tarefas com autenticação de usuários, construída como projeto de estudo aprofundado em back-end, com foco em **Clean Code**, **SOLID** e **Programação Orientada a Objetos**.
@@ -37,7 +40,7 @@ Aplicação de gerenciamento de tarefas com autenticação de usuários, constru
 
 Uma lista de tarefas (to-do list) onde cada usuário se cadastra, faz login, e gerencia suas próprias tarefas — com título, descrição, prazo e status de conclusão.
 
-O objetivo principal deste projeto **não é só a funcionalidade em si**, mas o processo de construí-la seguindo boas práticas de arquitetura de back-end: separação de responsabilidades (controllers, services, repositories), tipagem forte com TypeScript, autenticação segura com hash de senha e JWT, e modelagem de dados relacional.
+O objetivo principal deste projeto **não é só a funcionalidade em si**, mas o processo de construí-la seguindo boas práticas de arquitetura de back-end: separação de responsabilidades (routes → controllers → services → repository), tipagem forte com TypeScript, autenticação segura com hash de senha e JWT, e modelagem de dados relacional.
 
 ---
 
@@ -53,6 +56,7 @@ O objetivo principal deste projeto **não é só a funcionalidade em si**, mas o
 - [bcrypt](https://www.npmjs.com/package/bcrypt) — hash de senhas
 - [jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken) — autenticação via JWT
 - [Zod](https://zod.dev/) — validação de dados de entrada
+- [Winston](https://github.com/winstonjs/winston) — logs estruturados
 - [Jest](https://jestjs.io/) + [Supertest](https://www.npmjs.com/package/supertest) — testes automatizados
 
 **Front-end** *(em construção)*
@@ -116,7 +120,7 @@ erDiagram
     }
 ```
 
-Um `User` pode ter várias `Task`s (relação um-para-muitos). Cada tarefa pertence a exatamente um usuário, garantido pela chave estrangeira `userId`.
+Um `User` pode ter várias `Task`s (relação um-para-muitos). Cada tarefa pertence a exatamente um usuário, garantido pela chave estrangeira `userId`. Todas as consultas de tarefas são filtradas por `userId` na camada de serviço, garantindo que um usuário nunca acesse ou modifique tarefas de outro.
 
 ---
 
@@ -166,14 +170,17 @@ Todos os endpoints protegidos exigem o header `Authorization: Bearer <token>`.
 | POST | `/auth/register` | Cadastra um novo usuário | `{ "name", "email", "password" }` | `{ "id", "name", "email", "createdAt" }` |
 | POST | `/auth/login` | Autentica e retorna um token JWT | `{ "email", "password" }` | `{ "token" }` |
 
-### Tarefas *(em desenvolvimento)*
+### Tarefas 🔒
+
+> Todas as rotas abaixo exigem autenticação e operam apenas sobre as tarefas do usuário logado.
 
 | Método | Endpoint | Descrição | Corpo da requisição | Resposta |
 |--------|----------|-----------|----------------------|----------|
-| POST | `/tasks` | Cria uma nova tarefa | `{ "title", "description?", "dueDate?" }` | Tarefa criada |
-| GET | `/tasks` | Lista as tarefas do usuário logado | — | Array de tarefas |
-| PUT | `/tasks/:id` | Atualiza uma tarefa | Campos a atualizar | Tarefa atualizada |
-| DELETE | `/tasks/:id` | Remove uma tarefa | — | Status 204 |
+| POST | `/tasks` | Cria uma nova tarefa | `{ "title", "description?", "dueDate?" }` | Tarefa criada (`201`) |
+| GET | `/tasks` | Lista as tarefas do usuário logado | — | Array de tarefas (`200`) |
+| GET | `/tasks/:id` | Busca uma tarefa específica | — | Tarefa (`200`) ou `404` |
+| PUT | `/tasks/:id` | Atualiza uma tarefa | Campos a atualizar | Tarefa atualizada (`200`) ou `404` |
+| DELETE | `/tasks/:id` | Remove uma tarefa | — | `204 No Content` ou `404` |
 
 ---
 
@@ -183,9 +190,10 @@ Todos os endpoints protegidos exigem o header `Authorization: Bearer <token>`.
 - **Mensagens de erro genéricas no login** — a API responde a mesma mensagem tanto para email inexistente quanto para senha incorreta, evitando enumeração de usuários
 - **Restrição de unicidade de email** a nível de banco de dados (`@unique` no schema)
 - **Tokens JWT assinados** com segredo forte, armazenado em variável de ambiente (nunca no código-fonte)
+- **Autorização por recurso (IDOR-safe)** — toda operação sobre uma tarefa (buscar, atualizar, deletar) valida que ela pertence ao usuário autenticado antes de executar, prevenindo acesso indevido a dados de terceiros
 - **Variáveis sensíveis fora do controle de versão** (`.env` no `.gitignore`, apenas `.env.example` é versionado)
+- Middleware de autenticação (`authMiddleware`) protegendo todas as rotas privadas
 - `helmet` configurado para headers de segurança HTTP *(planejado)*
-- Middleware de autenticação para proteger rotas privadas
 - Rate limiting no endpoint de login, prevenindo força bruta *(planejado)*
 
 ---
@@ -199,9 +207,15 @@ todo-list-fullstack/
 │   │   ├── schema.prisma       # modelagem do banco (User, Task)
 │   │   └── migrations/         # histórico de mudanças no banco
 │   ├── src/
-│   │   ├── app.ts              # configuração do Express
-│   │   ├── server.ts           # inicialização do servidor
-│   │   └── generated/          # Prisma Client (gerado automaticamente)
+│   │   ├── config/              # configuração do Prisma Client (singleton)
+│   │   ├── controllers/         # AuthController, TaskController
+│   │   ├── services/            # AuthService, TaskService (regras de negócio)
+│   │   ├── routes/              # auth.routes.ts, task.routes.ts
+│   │   ├── middlewares/         # authMiddleware (proteção JWT)
+│   │   ├── types/                # augmentation de tipos do Express (req.userId)
+│   │   ├── generated/            # Prisma Client (gerado automaticamente)
+│   │   ├── app.ts                # configuração do Express
+│   │   └── server.ts             # inicialização do servidor
 │   ├── prisma.config.ts
 │   ├── tsconfig.json
 │   └── package.json
@@ -228,11 +242,15 @@ todo-list-fullstack/
   - [x] Cadastro de usuário (hash de senha com bcrypt)
   - [x] Login com geração de token JWT
   - [x] Middleware de proteção de rotas
-- [ ] **CRUD de tarefas**
-  - [ ] Criar tarefa
-  - [ ] Listar tarefas do usuário
-  - [ ] Atualizar tarefa
-  - [ ] Excluir tarefa
+- [x] **CRUD de tarefas**
+  - [x] Criar tarefa
+  - [x] Listar tarefas do usuário
+  - [x] Buscar tarefa por ID
+  - [x] Atualizar tarefa
+  - [x] Excluir tarefa
+- [ ] **Tratamento de erros e validação**
+  - [ ] Error handler centralizado (middleware do Express)
+  - [ ] Validação de entrada com Zod em todas as rotas
 - [ ] **Testes automatizados**
   - [ ] Testes de autenticação
   - [ ] Testes de CRUD de tarefas
@@ -247,6 +265,10 @@ todo-list-fullstack/
 ---
 
 ## 📐 Convenções e padrões
+
+### Arquitetura em camadas
+
+O projeto segue estritamente `routes → middlewares → controllers → services → repository (Prisma)`, sem misturar responsabilidades entre camadas (ver [Arquitetura](#-arquitetura)).
 
 ### Commits
 
@@ -266,4 +288,4 @@ Este projeto segue a convenção [Conventional Commits](https://www.conventional
 ## 👤 Autor
 
 **Jose Lucas**
-Desenvolvedor Full-Stack 
+Desenvolvedor Full-Stack
