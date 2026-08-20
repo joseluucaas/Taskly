@@ -251,9 +251,9 @@ todo-list-fullstack/
 - [X] **Tratamento de erros e validação**
   - [X] Error handler centralizado (middleware do Express)
   - [X] Validação de entrada com Zod em todas as rotas
-- [ ] **Testes automatizados**
-  - [ ] Testes de autenticação
-  - [ ] Testes de CRUD de tarefas
+- [X] **Testes automatizados**
+  - [X] Testes de autenticação
+  - [X] Testes de CRUD de tarefas
 - [ ] **Front-end**
   - [ ] Setup React + Tailwind
   - [ ] Telas de login/cadastro
