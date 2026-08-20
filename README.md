@@ -1,4 +1,4 @@
-# 📝 Todo List Full-Stack
+# 📝 Taskly Full-Stack
 
 ![Status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow)
 ![Node.js](https://img.shields.io/badge/Node.js-339933?logo=node.js&logoColor=white)
@@ -13,7 +13,7 @@
 <!-- ![Tailwind](https://img.shields.io/badge/TailwindCSS-38B2AC?logo=tailwind-css&logoColor=white) -->
 ![License](https://img.shields.io/badge/license-MIT-informational)
 
-Aplicação de gerenciamento de tarefas com autenticação de usuários, construída como projeto de estudo aprofundado em back-end, com foco em **Clean Code**, **SOLID** e **Programação Orientada a Objetos**.
+Taskly e uma aplicação de gerenciamento de tarefas com autenticação de usuários, construída como projeto de estudo aprofundado em back-end, com foco em **Clean Code**, **SOLID** e **Programação Orientada a Objetos**.
 
 > 🚧 Projeto em desenvolvimento ativo. Este README é atualizado conforme novas partes são construídas.
 
@@ -37,7 +37,7 @@ Aplicação de gerenciamento de tarefas com autenticação de usuários, constru
 
 ## 📖 Sobre o projeto
 
-Uma lista de tarefas (to-do list) onde cada usuário se cadastra, faz login e gerencia suas próprias tarefas com título, descrição, prazo e status de conclusão.
+Uma lista de tarefas (Taskly) onde cada usuário se cadastra, faz login e gerencia suas próprias tarefas com título, descrição, prazo e status de conclusão.
 
 O objetivo principal deste projeto **não é só a funcionalidade em si**, mas o processo de construí-la seguindo boas práticas de arquitetura de back-end, separação de responsabilidades (routes → controllers → services → repository), tipagem forte com TypeScript, autenticação segura com hash de senha e JWT, e modelagem de dados relacional.
 
@@ -200,7 +200,7 @@ Todos os endpoints protegidos exigem o header `Authorization: Bearer <token>`.
 ## 📂 Estrutura de pastas
 
 ```
-todo-list-fullstack/
+Taskly-fullstack/
 ├── Backend/
 │   ├── prisma/
 │   │   ├── schema.prisma       # modelagem do banco (User, Task)
