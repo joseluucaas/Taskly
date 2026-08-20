@@ -9,8 +9,7 @@
 ![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)
 ![JWT](https://img.shields.io/badge/JWT-black?logo=JSON%20web%20tokens)
 ![Jest](https://img.shields.io/badge/Jest-C21325?logo=jest&logoColor=white)
-<!-- Descomente as duas linhas abaixo quando o front-end estiver em construção -->
-<!-- ![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB) -->
+![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)
 <!-- ![Tailwind](https://img.shields.io/badge/TailwindCSS-38B2AC?logo=tailwind-css&logoColor=white) -->
 ![License](https://img.shields.io/badge/license-MIT-informational)
 
@@ -40,7 +39,7 @@ Aplicação de gerenciamento de tarefas com autenticação de usuários, constru
 
 Uma lista de tarefas (to-do list) onde cada usuário se cadastra, faz login e gerencia suas próprias tarefas com título, descrição, prazo e status de conclusão.
 
-O objetivo principal deste projeto **não é só a funcionalidade em si**, mas o processo de construí-la seguindo boas práticas de arquitetura de back-end: separação de responsabilidades (routes → controllers → services → repository), tipagem forte com TypeScript, autenticação segura com hash de senha e JWT, e modelagem de dados relacional.
+O objetivo principal deste projeto **não é só a funcionalidade em si**, mas o processo de construí-la seguindo boas práticas de arquitetura de back-end, separação de responsabilidades (routes → controllers → services → repository), tipagem forte com TypeScript, autenticação segura com hash de senha e JWT, e modelagem de dados relacional.
 
 ---
 
@@ -59,7 +58,7 @@ O objetivo principal deste projeto **não é só a funcionalidade em si**, mas o
 - [Winston](https://github.com/winstonjs/winston) — logs estruturados
 - [Jest](https://jestjs.io/) + [Supertest](https://www.npmjs.com/package/supertest) — testes automatizados
 
-**Front-end** *(em construção)*
+**Front-end** 
 - [React](https://react.dev/)
 - [Tailwind CSS](https://tailwindcss.com/)
 
@@ -91,7 +90,7 @@ flowchart TB
     Repository --> DB
 ```
 
-**Por que essa separação importa:** cada camada só conhece a camada logo abaixo dela. O `Controller` não sabe como o banco funciona; o `Service` não sabe se a requisição veio de uma rota HTTP ou de um teste automatizado. Isso torna o código mais fácil de testar e de modificar sem quebrar outras partes.
+**Por que essa separação importa?** cada camada só conhece a camada logo abaixo dela. O `Controller` não sabe como o banco funciona, o `Service` não sabe se a requisição veio de uma rota HTTP ou de um teste automatizado, isso torna o código mais fácil de testar e de modificar sem quebrar outras partes.
 
 ---
 
@@ -120,7 +119,7 @@ erDiagram
     }
 ```
 
-Um `User` pode ter várias `Task`s (relação um-para-muitos). Cada tarefa pertence a exatamente um usuário, garantido pela chave estrangeira `userId`. Todas as consultas de tarefas são filtradas por `userId` na camada de serviço, garantindo que um usuário nunca acesse ou modifique tarefas de outro.
+Um `User` pode ter várias `Task`s (relação um-para-muitos) cada tarefa pertence a exatamente um usuário, garantido pela chave estrangeira `userId`, todas as consultas de tarefas são filtradas por `userId` na camada de serviço, garantindo que um usuário nunca acesse ou modifique tarefas de outro.
 
 ---
 
@@ -186,7 +185,7 @@ Todos os endpoints protegidos exigem o header `Authorization: Bearer <token>`.
 
 ## 🔒 Segurança
 
-- **Hash de senhas com bcrypt** (salt rounds: 10) a senha em texto puro nunca é armazenada
+- **Hash de senhas com bcrypt** (salt rounds : 10) a senha em texto puro nunca é armazenada
 - **Mensagens de erro genéricas no login** a API responde a mesma mensagem tanto para email inexistente quanto para senha incorreta, evitando enumeração de usuários
 - **Restrição de unicidade de email** a nível de banco de dados (`@unique` no schema)
 - **Tokens JWT assinados** com segredo forte, armazenado em variável de ambiente (nunca no código-fonte)
@@ -272,7 +271,7 @@ O projeto segue estritamente `routes → middlewares → controllers → service
 
 ### Commits
 
-Este projeto segue a convenção [Conventional Commits](https://www.conventionalcommits.org/pt-br/v1.0.0/), facilitando a leitura do histórico e a identificação do tipo de cada mudança:
+Este projeto segue a convenção [Conventional Commits](https://www.conventionalcommits.org/pt-br/v1.0.0/), facilitando a leitura do histórico e a identificação do tipo de cada mudança.
 
 | Prefixo | Uso |
 |---------|-----|
