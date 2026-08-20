@@ -55,6 +55,7 @@ O objetivo principal deste projeto **não é só a funcionalidade em si**, mas o
 - [bcrypt](https://www.npmjs.com/package/bcrypt) — hash de senhas
 - [jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken) — autenticação via JWT
 - [Zod](https://zod.dev/) — validação de dados de entrada
+- [Swagger / OpenAPI](https://swagger.io/) — especificação e interface interativa (Swagger UI) para documentar e testar a API
 - [Winston](https://github.com/winstonjs/winston) — logs estruturados
 - [Jest](https://jestjs.io/) + [Supertest](https://www.npmjs.com/package/supertest) — testes automatizados
 
@@ -180,6 +181,58 @@ Todos os endpoints protegidos exigem o header `Authorization: Bearer <token>`.
 | GET | `/tasks/:id` | Busca uma tarefa específica | — | Tarefa (`200`) ou `404` |
 | PUT | `/tasks/:id` | Atualiza uma tarefa | Campos a atualizar | Tarefa atualizada (`200`) ou `404` |
 | DELETE | `/tasks/:id` | Remove uma tarefa | — | `204 No Content` ou `404` |
+
+### Documentação (Swagger / OpenAPI)
+
+A API pode expor documentação OpenAPI (Swagger) e uma interface interativa (Swagger UI) para explorar e testar os endpoints. URLs locais comuns:
+
+- Swagger UI: http://localhost:3000/api-docs
+- OpenAPI JSON: http://localhost:3000/openapi.json
+
+Observação: este repositório já inclui suporte a Swagger em `Backend/src/config/swagger.ts` e a UI é exposta localmente em `/docs` (atalho) e `/api-docs` — por padrão a documentação fica ativada apenas em ambiente de desenvolvimento. O spec também está disponível em `/openapi.json`. Abaixo há um resumo de como a integração foi feita e como ajustá-la, caso necessário.
+
+1) Instalar dependências:
+
+```bash
+npm install swagger-ui-express swagger-jsdoc
+```
+
+2) Exemplo mínimo de configuração (criar `backend/src/swagger.ts`):
+
+```ts
+import swaggerJsdoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
+import express from 'express';
+
+const options = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Taskly API',
+      version: '1.0.0',
+      description: 'Documentação da API Taskly (OpenAPI)',
+    },
+  },
+  apis: ['./src/routes/*.ts', './src/controllers/*.ts'], // ajustar conforme o projeto
+};
+
+const specs = swaggerJsdoc(options);
+
+export function setupSwagger(app: express.Express) {
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+  app.get('/openapi.json', (req, res) => res.json(specs));
+}
+```
+
+3) Importar e inicializar em `backend/src/server.ts` ou `backend/src/app.ts` (após `app` configurado):
+
+```ts
+import { setupSwagger } from './swagger';
+
+setupSwagger(app);
+```
+
+Reinicie o servidor e acesse `http://localhost:3000/api-docs` para visualizar e testar os endpoints via Swagger UI. (Ajuste a porta/rota conforme sua configuração.)
 
 ---
 
