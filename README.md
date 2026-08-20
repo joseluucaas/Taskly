@@ -248,9 +248,9 @@ todo-list-fullstack/
   - [x] Buscar tarefa por ID
   - [x] Atualizar tarefa
   - [x] Excluir tarefa
-- [ ] **Tratamento de erros e validação**
-  - [ ] Error handler centralizado (middleware do Express)
-  - [ ] Validação de entrada com Zod em todas as rotas
+- [X] **Tratamento de erros e validação**
+  - [X] Error handler centralizado (middleware do Express)
+  - [X] Validação de entrada com Zod em todas as rotas
 - [ ] **Testes automatizados**
   - [ ] Testes de autenticação
   - [ ] Testes de CRUD de tarefas
