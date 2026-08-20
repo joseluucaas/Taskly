@@ -3,7 +3,7 @@
 ![Status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow)
 ![Node.js](https://img.shields.io/badge/Node.js-339933?logo=node.js&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
-![Express](https://img.shields.io/badge/Express_5-000000?logo=express&logoColor=white)
+![Express](https://img.shields.io/badge/Express-000000?logo=express&logoColor=white)
 ![Prisma](https://img.shields.io/badge/Prisma-2D3748?logo=prisma&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)
@@ -47,9 +47,9 @@ O objetivo principal deste projeto **não é só a funcionalidade em si**, mas o
 
 **Back-end**
 - [Node.js](https://nodejs.org/) — ambiente de execução
-- [Express 5](https://expressjs.com/) — framework do servidor HTTP
+- [Express](https://expressjs.com/) — framework do servidor HTTP
 - [TypeScript](https://www.typescriptlang.org/) (ESM/`nodenext`) — tipagem estática
-- [Prisma 6](https://www.prisma.io/) — ORM (mapeamento objeto-relacional)
+- [Prisma](https://www.prisma.io/) — ORM (mapeamento objeto-relacional)
 - [PostgreSQL](https://www.postgresql.org/) — banco de dados relacional
 - [Docker](https://www.docker.com/) — containerização do banco em ambiente local
 - [bcrypt](https://www.npmjs.com/package/bcrypt) — hash de senhas
