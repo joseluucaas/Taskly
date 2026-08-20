@@ -134,13 +134,13 @@ Um `User` pode ter várias `Task`s (relação um-para-muitos) cada tarefa perten
 ```bash
 # 1. Clone o repositório
 git clone https://github.com/joseluucaas/taskly.git
-cd todo-list-fullstack
+cd taskly
 
 # 2. Suba o banco de dados PostgreSQL
 docker compose up -d
 
 # 3. Configure as variáveis de ambiente do back-end
-cd Backend
+cd backend
 cp .env.example .env
 # edite o .env com suas credenciais, se necessário
 
