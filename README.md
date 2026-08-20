@@ -186,55 +186,22 @@ Todos os endpoints protegidos exigem o header `Authorization: Bearer <token>`.
 
 ### Documentação (Swagger / OpenAPI)
 
-A API pode expor documentação OpenAPI (Swagger) e uma interface interativa (Swagger UI) para explorar e testar os endpoints. URLs locais comuns:
+A API possui documentação interativa utilizando Swagger/OpenAPI, permitindo visualizar, testar e explorar os endpoints diretamente pelo navegador.
+
+A documentação está disponível em:
 
 - Swagger UI: http://localhost:3000/api-docs
 - OpenAPI JSON: http://localhost:3000/openapi.json
 
-Observação: este repositório já inclui suporte a Swagger em `Backend/src/config/swagger.ts` e a UI é exposta localmente em `/docs` (atalho) e `/api-docs` — por padrão a documentação fica ativada apenas em ambiente de desenvolvimento. O spec também está disponível em `/openapi.json`. Abaixo há um resumo de como a integração foi feita e como ajustá-la, caso necessário.
+Recursos documentados:
 
-1) Instalar dependências:
+- Endpoints de autenticação (`/auth`);
+- Rotas de tarefas (`/tasks`);
+- Autenticação via JWT Bearer Token;
+- Estrutura de requisições e respostas;
+- Códigos HTTP retornados pela API.
 
-```bash
-npm install swagger-ui-express swagger-jsdoc
-```
-
-2) Exemplo mínimo de configuração (criar `backend/src/swagger.ts`):
-
-```ts
-import swaggerJsdoc from 'swagger-jsdoc';
-import swaggerUi from 'swagger-ui-express';
-import express from 'express';
-
-const options = {
-  definition: {
-    openapi: '3.0.0',
-    info: {
-      title: 'Taskly API',
-      version: '1.0.0',
-      description: 'Documentação da API Taskly (OpenAPI)',
-    },
-  },
-  apis: ['./src/routes/*.ts', './src/controllers/*.ts'], // ajustar conforme o projeto
-};
-
-const specs = swaggerJsdoc(options);
-
-export function setupSwagger(app: express.Express) {
-  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
-  app.get('/openapi.json', (req, res) => res.json(specs));
-}
-```
-
-3) Importar e inicializar em `backend/src/server.ts` ou `backend/src/app.ts` (após `app` configurado):
-
-```ts
-import { setupSwagger } from './swagger';
-
-setupSwagger(app);
-```
-
-Reinicie o servidor e acesse `http://localhost:3000/api-docs` para visualizar e testar os endpoints via Swagger UI. (Ajuste a porta/rota conforme sua configuração.)
+A integração foi realizada utilizando `swagger-jsdoc` e `swagger-ui-express`.
 
 ---
 
@@ -307,7 +274,11 @@ Taskly/
   - [X] Validação de entrada com Zod em todas as rotas
 - [X] **Testes automatizados**
   - [X] Testes de autenticação
-  - [X] Testes de CRUD de tarefas
+  - [X] Testes de CRUD de tarefas 
+- [X] **Documentação da API**
+  - [X] Swagger/OpenAPI configurado
+  - [X] Documentação dos endpoints de autenticação e tarefas
+  - [X] Testes das rotas através do Swagger UI
 - [ ] **Front-end**
   - [ ] Setup React + Tailwind
   - [ ] Telas de login/cadastro
