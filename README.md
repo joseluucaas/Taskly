@@ -1,7 +1,7 @@
 # 📝 Todo List Full-Stack
 
 ![Status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow)
-![Node.js](https://img.shields.io/badge/Node.js-333333?logo=node.js&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-339933?logo=node.js&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
 ![Express](https://img.shields.io/badge/Express_5-000000?logo=express&logoColor=white)
 ![Prisma](https://img.shields.io/badge/Prisma-2D3748?logo=prisma&logoColor=white)
