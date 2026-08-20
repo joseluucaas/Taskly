@@ -182,6 +182,8 @@ Todos os endpoints protegidos exigem o header `Authorization: Bearer <token>`.
 | PUT | `/tasks/:id` | Atualiza uma tarefa | Campos a atualizar | Tarefa atualizada (`200`) ou `404` |
 | DELETE | `/tasks/:id` | Remove uma tarefa | — | `204 No Content` ou `404` |
 
+---
+
 ### Documentação (Swagger / OpenAPI)
 
 A API pode expor documentação OpenAPI (Swagger) e uma interface interativa (Swagger UI) para explorar e testar os endpoints. URLs locais comuns:
