@@ -1,0 +1,28 @@
+# Dependências
+node_modules/
+
+# Build e artefatos gerados
+/dist/
+/build/
+/coverage/
+/.next/
+/.nuxt/
+/.cache/
+
+# Arquivos de ambiente
+.env
+.env.*
+
+# Gerados do Prisma
+/generated/
+/prisma/migrations/
+
+# Logs e cache
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Sistema
+.DS_Store
+Thumbs.db

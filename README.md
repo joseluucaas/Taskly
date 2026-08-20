@@ -38,7 +38,7 @@ Aplicação de gerenciamento de tarefas com autenticação de usuários, constru
 
 ## 📖 Sobre o projeto
 
-Uma lista de tarefas (to-do list) onde cada usuário se cadastra, faz login, e gerencia suas próprias tarefas — com título, descrição, prazo e status de conclusão.
+Uma lista de tarefas (to-do list) onde cada usuário se cadastra, faz login e gerencia suas próprias tarefas com título, descrição, prazo e status de conclusão.
 
 O objetivo principal deste projeto **não é só a funcionalidade em si**, mas o processo de construí-la seguindo boas práticas de arquitetura de back-end: separação de responsabilidades (routes → controllers → services → repository), tipagem forte com TypeScript, autenticação segura com hash de senha e JWT, e modelagem de dados relacional.
 
@@ -186,11 +186,11 @@ Todos os endpoints protegidos exigem o header `Authorization: Bearer <token>`.
 
 ## 🔒 Segurança
 
-- **Hash de senhas com bcrypt** (salt rounds: 10) — a senha em texto puro nunca é armazenada
-- **Mensagens de erro genéricas no login** — a API responde a mesma mensagem tanto para email inexistente quanto para senha incorreta, evitando enumeração de usuários
+- **Hash de senhas com bcrypt** (salt rounds: 10) a senha em texto puro nunca é armazenada
+- **Mensagens de erro genéricas no login** a API responde a mesma mensagem tanto para email inexistente quanto para senha incorreta, evitando enumeração de usuários
 - **Restrição de unicidade de email** a nível de banco de dados (`@unique` no schema)
 - **Tokens JWT assinados** com segredo forte, armazenado em variável de ambiente (nunca no código-fonte)
-- **Autorização por recurso (IDOR-safe)** — toda operação sobre uma tarefa (buscar, atualizar, deletar) valida que ela pertence ao usuário autenticado antes de executar, prevenindo acesso indevido a dados de terceiros
+- **Autorização por recurso (IDOR-safe)** toda operação sobre uma tarefa (buscar, atualizar, deletar) valida que ela pertence ao usuário autenticado antes de executar, prevenindo acesso indevido a dados de terceiros
 - **Variáveis sensíveis fora do controle de versão** (`.env` no `.gitignore`, apenas `.env.example` é versionado)
 - Middleware de autenticação (`authMiddleware`) protegendo todas as rotas privadas
 - `helmet` configurado para headers de segurança HTTP *(planejado)*
