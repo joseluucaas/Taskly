@@ -271,7 +271,7 @@ O projeto segue estritamente `routes → middlewares → controllers → service
 
 ### Commits
 
-Este projeto segue a convenção [Conventional Commits](https://www.conventionalcommits.org/pt-br/v1.0.0/), facilitando a leitura do histórico e a identificação do tipo de cada mudança.
+Este projeto segue a convenção [Conventional Commits](https://www.conventionalcommits.org/pt-br/v1.0.0/) facilitando a leitura do histórico e a identificação do tipo de cada mudança.
 
 | Prefixo | Uso |
 |---------|-----|
