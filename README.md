@@ -1,4 +1,4 @@
-# 📝 Taskly Full-Stack
+# 📝 Taskly
 
 ![Status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow)
 ![Node.js](https://img.shields.io/badge/Node.js-339933?logo=node.js&logoColor=white)
@@ -133,7 +133,7 @@ Um `User` pode ter várias `Task`s (relação um-para-muitos) cada tarefa perten
 
 ```bash
 # 1. Clone o repositório
-git clone https://github.com/joseluucaas/todo-list-fullstack.git
+git clone https://github.com/joseluucaas/taskly.git
 cd todo-list-fullstack
 
 # 2. Suba o banco de dados PostgreSQL
@@ -200,7 +200,7 @@ Todos os endpoints protegidos exigem o header `Authorization: Bearer <token>`.
 ## 📂 Estrutura de pastas
 
 ```
-Taskly-fullstack/
+Taskly/
 ├── Backend/
 │   ├── prisma/
 │   │   ├── schema.prisma       # modelagem do banco (User, Task)
