@@ -55,7 +55,7 @@ O objetivo principal deste projeto **não é só a funcionalidade em si**, mas o
 - [bcrypt](https://www.npmjs.com/package/bcrypt) — hash de senhas
 - [jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken) — autenticação via JWT
 - [Zod](https://zod.dev/) — validação de dados de entrada
-- [Swagger / OpenAPI](https://swagger.io/) — especificação e interface interativa (Swagger UI) para documentar e testar a API
+- [Swagger / OpenAPI](https://swagger.io/) — interface interativa para documentar e testar a API
 - [Winston](https://github.com/winstonjs/winston) — logs estruturados
 - [Jest](https://jestjs.io/) + [Supertest](https://www.npmjs.com/package/supertest) — testes automatizados
 
