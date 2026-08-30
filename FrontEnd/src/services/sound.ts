@@ -42,9 +42,7 @@ export function playSound(type: SoundType) {
   }
 
   const isLoginSound = type === "login";
-  const notes = isLoginSound
-    ? [392, 493.88, 587.33, 783.99]
-    : [523.25, 659.25];
+  const notes = isLoginSound ? [392, 493.88, 587.33, 783.99] : [523.25, 659.25];
   const noteInterval = isLoginSound ? 0.16 : 0.09;
   const duration = isLoginSound ? 0.62 : 0.18;
   const volume = isLoginSound ? 0.035 : 0.09;
@@ -65,5 +63,4 @@ export function playSound(type: SoundType) {
     oscillator.start(start);
     oscillator.stop(start + duration + 0.01);
   });
-
 }

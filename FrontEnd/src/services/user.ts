@@ -25,11 +25,17 @@ export async function updateProfile(data: Pick<User, "name" | "email">) {
 }
 
 export async function updatePreferences(data: Preferences) {
-  const response = await api.patch<ApiResponse<Preferences>>("/users/me/preferences", data);
+  const response = await api.patch<ApiResponse<Preferences>>(
+    "/users/me/preferences",
+    data,
+  );
   return response.data.data;
 }
 
-export async function changePassword(currentPassword: string, newPassword: string) {
+export async function changePassword(
+  currentPassword: string,
+  newPassword: string,
+) {
   await api.patch("/users/me/password", { currentPassword, newPassword });
 }
 

@@ -4,12 +4,17 @@ import type { Category, Tag } from "./task";
 type OrganizationItem = Category | Tag;
 type ItemInput = { name: string; color?: string };
 
-async function list<T extends OrganizationItem>(resource: "categories" | "tags") {
+async function list<T extends OrganizationItem>(
+  resource: "categories" | "tags",
+) {
   const response = await api.get<ApiResponse<T[]>>(`/${resource}`);
   return response.data.data;
 }
 
-async function create<T extends OrganizationItem>(resource: "categories" | "tags", data: ItemInput) {
+async function create<T extends OrganizationItem>(
+  resource: "categories" | "tags",
+  data: ItemInput,
+) {
   const response = await api.post<ApiResponse<T>>(`/${resource}`, data);
   return response.data.data;
 }
@@ -30,7 +35,8 @@ async function update<T extends OrganizationItem>(
 export const categories = {
   list: () => list<Category>("categories"),
   create: (data: ItemInput) => create<Category>("categories", data),
-  update: (id: string, data: ItemInput) => update<Category>("categories", id, data),
+  update: (id: string, data: ItemInput) =>
+    update<Category>("categories", id, data),
   remove: (id: string) => remove("categories", id),
 };
 

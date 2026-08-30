@@ -20,7 +20,9 @@ export type TaskInput = {
   tagIds?: string[];
 };
 
-export async function listTasks(params?: Record<string, string | number | boolean>) {
+export async function listTasks(
+  params?: Record<string, string | number | boolean>,
+) {
   const response = await api.get<ApiResponse<Task[]>>("/tasks", { params });
   return response.data;
 }
@@ -30,7 +32,10 @@ export async function createTask(data: TaskInput) {
   return response.data.data;
 }
 
-export async function updateTask(id: string, data: Partial<TaskInput> & { completed?: boolean }) {
+export async function updateTask(
+  id: string,
+  data: Partial<TaskInput> & { completed?: boolean },
+) {
   const response = await api.put<ApiResponse<Task>>(`/tasks/${id}`, data);
   return response.data.data;
 }

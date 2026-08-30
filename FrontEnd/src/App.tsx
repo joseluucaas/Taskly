@@ -3,64 +3,2136 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { AnimatePresence, motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Bell, Check, Circle, Eye, EyeOff, LayoutDashboard, ListTodo, LogOut, Menu, Moon, Pencil, Plus, Search, Settings, Sun, Tag, Trash2 } from "lucide-react";
-import { getStoredSession, login, logout, register, saveSession, type LoginResult } from "./services/auth";
-import { createComment, deleteComment, listComments, updateComment, type Comment } from "./services/comment";
-import { listNotifications, markNotificationAsRead, deleteNotification, type Notification } from "./services/notification";
+import {
+  Bell,
+  Check,
+  Circle,
+  Eye,
+  EyeOff,
+  LayoutDashboard,
+  ListTodo,
+  LogOut,
+  Menu,
+  Moon,
+  Pencil,
+  Plus,
+  Search,
+  Settings,
+  Sun,
+  Tag,
+  Trash2,
+} from "lucide-react";
+import {
+  getStoredSession,
+  login,
+  logout,
+  register,
+  saveSession,
+  type LoginResult,
+} from "./services/auth";
+import {
+  createComment,
+  deleteComment,
+  listComments,
+  updateComment,
+  type Comment,
+} from "./services/comment";
+import {
+  listNotifications,
+  markNotificationAsRead,
+  deleteNotification,
+  type Notification,
+} from "./services/notification";
 import { categories, tags } from "./services/organization";
-import { createTask, deleteTask, listTasks, updateTask, type Category, type Tag as TaskTag, type Task, type TaskInput } from "./services/task";
+import {
+  createTask,
+  deleteTask,
+  listTasks,
+  updateTask,
+  type Category,
+  type Tag as TaskTag,
+  type Task,
+  type TaskInput,
+} from "./services/task";
 import api, { type ApiResponse } from "./services/api";
 import { playSound, prepareSound, setSoundEnabled } from "./services/sound";
-import { changePassword, getProfile, logoutAllSessions, updatePreferences, updateProfile as saveUserProfile, type Preferences, type Profile } from "./services/user";
+import {
+  changePassword,
+  getProfile,
+  logoutAllSessions,
+  updatePreferences,
+  updateProfile as saveUserProfile,
+  type Preferences,
+  type Profile,
+} from "./services/user";
+import { ConfirmDialog } from "./components/ui/ConfirmDialog";
+import { Dialog } from "./components/ui/Dialog";
 import "./App.css";
 
 type Language = "pt" | "en";
 type Theme = "light" | "dark";
-type DashboardData = { summary: { total: number; completed: number; pending: number; overdue: number; dueToday: number } };
+type DashboardData = {
+  summary: {
+    total: number;
+    completed: number;
+    pending: number;
+    overdue: number;
+    dueToday: number;
+  };
+};
 type FormValues = { name?: string; email: string; password: string };
 const copy = {
-  pt: { today:"Hoje",tasks:"Tarefas",categories:"Categorias",settings:"Configurações",subtitle:"Veja o que importa para o seu dia.",newTask:"Nova tarefa",search:"Buscar tarefas...",overview:"Visão geral",total:"Total",pending:"Pendentes",completed:"Concluídas",todayTasks:"Para hoje",progress:"Progresso",done:"concluídas",upcoming:"Próximas tarefas",viewAll:"Ver todas",showLess:"Mostrar menos",notifications:"Notificações",noNotifications:"Você está em dia.",login:"Entrar",createAccount:"Criar conta",email:"E-mail",password:"Senha",name:"Nome",authTitle:"Organize o que importa.",authText:"Entre na sua conta para continuar no Taskly.",noAccount:"Ainda não tem uma conta?",hasAccount:"Já tem uma conta?",welcome:"Bem-vindo,\u00a0\u2009",loading:"Carregando seu espaço...",logout:"Sair",logoutQuestion:"Você tem certeza que deseja sair da conta?",cancel:"Cancelar",confirmLogout:"Sim, sair",invalidCredentials:"E-mail ou senha inválidos.",emailInUse:"Já existe uma conta com este e-mail.",authenticationUnavailable:"Não foi possível concluir sua solicitação agora. Tente novamente em alguns instantes.",empty:"Nenhuma tarefa encontrada." },
-  en: { today:"Today",tasks:"Tasks",categories:"Categories",settings:"Settings",subtitle:"See what matters for your day.",newTask:"New task",search:"Search tasks...",overview:"Overview",total:"Total",pending:"Pending",completed:"Completed",todayTasks:"Due today",progress:"Progress",done:"completed",upcoming:"Upcoming tasks",viewAll:"View all",showLess:"Show less",notifications:"Notifications",noNotifications:"You are all caught up.",login:"Sign in",createAccount:"Create account",email:"Email",password:"Password",name:"Name",authTitle:"Organize what matters.",authText:"Sign in to continue to Taskly.",noAccount:"Do not have an account yet?",hasAccount:"Already have an account?",welcome:"Welcome, ",loading:"Loading your space...",logout:"Log out",logoutQuestion:"Are you sure you want to log out?",cancel:"Cancel",confirmLogout:"Yes, log out",invalidCredentials:"Invalid email or password.",emailInUse:"An account with this email already exists.",authenticationUnavailable:"We could not complete your request right now. Please try again shortly.",empty:"No tasks found." },
+  pt: {
+    today: "Hoje",
+    tasks: "Tarefas",
+    categories: "Categorias",
+    settings: "Configurações",
+    subtitle: "Veja o que importa para o seu dia.",
+    newTask: "Nova tarefa",
+    search: "Buscar tarefas...",
+    overview: "Visão geral",
+    total: "Total",
+    pending: "Pendentes",
+    completed: "Concluídas",
+    todayTasks: "Para hoje",
+    progress: "Progresso",
+    done: "concluídas",
+    upcoming: "Próximas tarefas",
+    viewAll: "Ver todas",
+    showLess: "Mostrar menos",
+    notifications: "Notificações",
+    noNotifications: "Você está em dia.",
+    login: "Entrar",
+    createAccount: "Criar conta",
+    email: "E-mail",
+    password: "Senha",
+    name: "Nome",
+    authTitle: "Organize o que importa.",
+    authText: "Entre na sua conta para continuar no Taskly.",
+    noAccount: "Ainda não tem uma conta?",
+    hasAccount: "Já tem uma conta?",
+    welcome: "Bem-vindo,\u00a0\u2009",
+    loading: "Carregando seu espaço...",
+    logout: "Sair",
+    logoutQuestion: "Você tem certeza que deseja sair da conta?",
+    cancel: "Cancelar",
+    confirmLogout: "Sim, sair",
+    invalidCredentials: "E-mail ou senha inválidos.",
+    emailInUse: "Já existe uma conta com este e-mail.",
+    authenticationUnavailable:
+      "Não foi possível concluir sua solicitação agora. Tente novamente em alguns instantes.",
+    empty: "Nenhuma tarefa encontrada.",
+  },
+  en: {
+    today: "Today",
+    tasks: "Tasks",
+    categories: "Categories",
+    settings: "Settings",
+    subtitle: "See what matters for your day.",
+    newTask: "New task",
+    search: "Search tasks...",
+    overview: "Overview",
+    total: "Total",
+    pending: "Pending",
+    completed: "Completed",
+    todayTasks: "Due today",
+    progress: "Progress",
+    done: "completed",
+    upcoming: "Upcoming tasks",
+    viewAll: "View all",
+    showLess: "Show less",
+    notifications: "Notifications",
+    noNotifications: "You are all caught up.",
+    login: "Sign in",
+    createAccount: "Create account",
+    email: "Email",
+    password: "Password",
+    name: "Name",
+    authTitle: "Organize what matters.",
+    authText: "Sign in to continue to Taskly.",
+    noAccount: "Do not have an account yet?",
+    hasAccount: "Already have an account?",
+    welcome: "Welcome, ",
+    loading: "Loading your space...",
+    logout: "Log out",
+    logoutQuestion: "Are you sure you want to log out?",
+    cancel: "Cancel",
+    confirmLogout: "Yes, log out",
+    invalidCredentials: "Invalid email or password.",
+    emailInUse: "An account with this email already exists.",
+    authenticationUnavailable:
+      "We could not complete your request right now. Please try again shortly.",
+    empty: "No tasks found.",
+  },
 } as const;
-const formSchema = z.object({ name:z.string().min(2,"Informe ao menos 2 caracteres.").optional(), email:z.string().email("Informe um e-mail válido."), password:z.string().min(6,"A senha deve ter pelo menos 6 caracteres.") });
-const formatDueDate = (date:string|null, language:Language) => date ? new Intl.DateTimeFormat(language === "pt" ? "pt-BR" : "en-US", { day:"2-digit",month:"short" }).format(new Date(date)) : language === "pt" ? "Sem prazo" : "No due date";
+const formSchema = z.object({
+  name: z.string().min(2, "Informe ao menos 2 caracteres.").optional(),
+  email: z.string().email("Informe um e-mail válido."),
+  password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres."),
+});
+const formatDueDate = (date: string | null, language: Language) =>
+  date
+    ? new Intl.DateTimeFormat(language === "pt" ? "pt-BR" : "en-US", {
+        day: "2-digit",
+        month: "short",
+      }).format(new Date(date))
+    : language === "pt"
+      ? "Sem prazo"
+      : "No due date";
 
 function App() {
-  const [language,setLanguage]=useState<Language>(()=>localStorage.getItem("taskly_language")==="en"?"en":"pt");
-  const [theme,setTheme]=useState<Theme>(()=>(localStorage.getItem("taskly_theme") as Theme)|| (window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"));
-  const [session,setSession]=useState<LoginResult|null>(getStoredSession); const [showWelcome,setShowWelcome]=useState(false);
-  useEffect(()=>{document.documentElement.dataset.theme=theme;localStorage.setItem("taskly_theme",theme)},[theme]);
-  const changeLanguage=(value:Language)=>{setLanguage(value);localStorage.setItem("taskly_language",value)};
-  useEffect(()=>{if(!session)return;void getProfile().then(profile=>{const storedTheme=profile.preferences.theme;setTheme(storedTheme==="system"?(window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"):storedTheme);setSoundEnabled(profile.preferences.soundEnabled);changeLanguage(profile.preferences.language)}).catch(()=>undefined)},[session?.user.id]);
-  const authenticated=(next:LoginResult)=>{playSound("login");saveSession(next);setSession(next);setShowWelcome(true)};
-  return <AnimatePresence mode="wait">{showWelcome&&session?<WelcomeScreen key="welcome" name={session.user.name} language={language} onComplete={()=>setShowWelcome(false)}/>:session?<Dashboard key="dashboard" session={session} language={language} theme={theme} onTheme={()=>setTheme(theme==="dark"?"light":"dark")} onThemeChange={setTheme} onLanguage={changeLanguage} onSessionChanged={user=>setSession(current=>{if(!current)return current;const next={...current,user};saveSession(next);return next})} onLogout={()=>{void logout();setSession(null)}}/>:<AuthScreen key="auth" language={language} onLanguage={changeLanguage} onAuthenticated={authenticated}/>}</AnimatePresence>;
+  const [language, setLanguage] = useState<Language>(() =>
+    localStorage.getItem("taskly_language") === "en" ? "en" : "pt",
+  );
+  const [theme, setTheme] = useState<Theme>(
+    () =>
+      (localStorage.getItem("taskly_theme") as Theme) ||
+      (window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light"),
+  );
+  const [session, setSession] = useState<LoginResult | null>(getStoredSession);
+  const [showWelcome, setShowWelcome] = useState(false);
+  const userId = session?.user.id;
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    localStorage.setItem("taskly_theme", theme);
+  }, [theme]);
+  const changeLanguage = (value: Language) => {
+    setLanguage(value);
+    localStorage.setItem("taskly_language", value);
+  };
+  useEffect(() => {
+    if (!userId) return;
+    void getProfile()
+      .then((profile) => {
+        const storedTheme = profile.preferences.theme;
+        setTheme(
+          storedTheme === "system"
+            ? window.matchMedia("(prefers-color-scheme: dark)").matches
+              ? "dark"
+              : "light"
+            : storedTheme,
+        );
+        setSoundEnabled(profile.preferences.soundEnabled);
+        setLanguage(profile.preferences.language);
+        localStorage.setItem("taskly_language", profile.preferences.language);
+      })
+      .catch(() => undefined);
+  }, [userId]);
+  const authenticated = (next: LoginResult) => {
+    playSound("login");
+    saveSession(next);
+    setSession(next);
+    setShowWelcome(true);
+  };
+  return (
+    <AnimatePresence mode="wait">
+      {showWelcome && session ? (
+        <WelcomeScreen
+          key="welcome"
+          name={session.user.name}
+          language={language}
+          onComplete={() => setShowWelcome(false)}
+        />
+      ) : session ? (
+        <Dashboard
+          key="dashboard"
+          session={session}
+          language={language}
+          theme={theme}
+          onTheme={() => setTheme(theme === "dark" ? "light" : "dark")}
+          onThemeChange={setTheme}
+          onLanguage={changeLanguage}
+          onSessionChanged={(user) =>
+            setSession((current) => {
+              if (!current) return current;
+              const next = { ...current, user };
+              saveSession(next);
+              return next;
+            })
+          }
+          onLogout={() => {
+            void logout();
+            setSession(null);
+          }}
+        />
+      ) : (
+        <AuthScreen
+          key="auth"
+          language={language}
+          onLanguage={changeLanguage}
+          onAuthenticated={authenticated}
+        />
+      )}
+    </AnimatePresence>
+  );
 }
 
-function AuthScreen({language,onLanguage,onAuthenticated}:{language:Language;onLanguage:(value:Language)=>void;onAuthenticated:(session:LoginResult)=>void}) {
-  const [isRegister,setIsRegister]=useState(false),[error,setError]=useState(""),[isSubmitting,setIsSubmitting]=useState(false),[isPasswordVisible,setIsPasswordVisible]=useState(false); const t=copy[language];
-  const {register:registerField,handleSubmit,formState:{errors}}=useForm<FormValues>({resolver:zodResolver(formSchema)});
-  async function submit(values:FormValues){try{prepareSound();setError("");setIsSubmitting(true);onAuthenticated(isRegister?await register(values.name||"",values.email,values.password):await login(values.email,values.password))}catch(requestError:unknown){const response=requestError as {response?:{data?:{error?:{code?:string;message?:string}}}};const apiError=response.response?.data?.error;setError(apiError?.code==="INVALID_CREDENTIALS"?"E-mail ou senha inválidos. Crie uma conta caso ainda não tenha se cadastrado neste banco local.":apiError?.message||"Não foi possível autenticar. Verifique se o backend está em execução.")}finally{setIsSubmitting(false)}}
-  return <motion.main className="auth-page" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}><div className="auth-language"><button className={language==="pt"?"selected":""} onClick={()=>onLanguage("pt")}>PT</button><button className={language==="en"?"selected":""} onClick={()=>onLanguage("en")}>EN</button></div><section className="auth-card"><div className="auth-brand"><span>T</span></div><p className="auth-kicker">TASKLY</p><h1>{t.authTitle}</h1><p className="auth-description">{t.authText}</p><form onSubmit={handleSubmit(submit)} noValidate>{isRegister&&<label>{t.name}<input {...registerField("name")} autoComplete="name" placeholder="Digite seu nome"/>{errors.name&&<small>{errors.name.message}</small>}</label>}<label>{t.email}<input {...registerField("email")} type="email" autoComplete="email" placeholder="Digite seu e-mail"/>{errors.email&&<small>{errors.email.message}</small>}</label><label>{t.password}<span className="password-field"><input {...registerField("password")} type={isPasswordVisible?"text":"password"} autoComplete={isRegister?"new-password":"current-password"} placeholder="••••••••"/><button type="button" className="password-visibility-button" onClick={()=>setIsPasswordVisible(!isPasswordVisible)} aria-label={isPasswordVisible?"Ocultar senha":"Mostrar senha"}>{isPasswordVisible?<EyeOff size={17}/>:<Eye size={17}/>}</button></span>{errors.password&&<small>{errors.password.message}</small>}</label>{error&&<p className="form-error" role="alert">{error}</p>}<button className="auth-submit" disabled={isSubmitting}>{isSubmitting?"...":isRegister?t.createAccount:t.login}</button></form><p className="auth-switch">{isRegister?t.hasAccount:t.noAccount} <button onClick={()=>{setError("");setIsRegister(!isRegister)}}>{isRegister?t.login:t.createAccount}</button></p></section></motion.main>;
+function AuthScreen({
+  language,
+  onLanguage,
+  onAuthenticated,
+}: {
+  language: Language;
+  onLanguage: (value: Language) => void;
+  onAuthenticated: (session: LoginResult) => void;
+}) {
+  const [isRegister, setIsRegister] = useState(false),
+    [error, setError] = useState(""),
+    [isSubmitting, setIsSubmitting] = useState(false),
+    [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const t = copy[language];
+  const {
+    register: registerField,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormValues>({ resolver: zodResolver(formSchema) });
+  async function submit(values: FormValues) {
+    try {
+      prepareSound();
+      setError("");
+      setIsSubmitting(true);
+      onAuthenticated(
+        isRegister
+          ? await register(values.name || "", values.email, values.password)
+          : await login(values.email, values.password),
+      );
+    } catch (requestError: unknown) {
+      const response = requestError as {
+        response?: { data?: { error?: { code?: string; message?: string } } };
+      };
+      const apiError = response.response?.data?.error;
+      setError(
+        apiError?.code === "INVALID_CREDENTIALS"
+          ? "E-mail ou senha inválidos. Crie uma conta caso ainda não tenha se cadastrado neste banco local."
+          : apiError?.message ||
+              "Não foi possível autenticar. Verifique se o backend está em execução.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+  return (
+    <motion.main
+      className="auth-page"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
+      <div className="auth-language">
+        <button
+          className={language === "pt" ? "selected" : ""}
+          onClick={() => onLanguage("pt")}
+        >
+          PT
+        </button>
+        <button
+          className={language === "en" ? "selected" : ""}
+          onClick={() => onLanguage("en")}
+        >
+          EN
+        </button>
+      </div>
+      <section className="auth-card">
+        <div className="auth-brand">
+          <span>T</span>
+        </div>
+        <p className="auth-kicker">TASKLY</p>
+        <h1>{t.authTitle}</h1>
+        <p className="auth-description">{t.authText}</p>
+        <form onSubmit={handleSubmit(submit)} noValidate>
+          {isRegister && (
+            <label>
+              {t.name}
+              <input
+                {...registerField("name")}
+                autoComplete="name"
+                placeholder="Digite seu nome"
+              />
+              {errors.name && <small>{errors.name.message}</small>}
+            </label>
+          )}
+          <label>
+            {t.email}
+            <input
+              {...registerField("email")}
+              type="email"
+              autoComplete="email"
+              placeholder="Digite seu e-mail"
+            />
+            {errors.email && <small>{errors.email.message}</small>}
+          </label>
+          <label>
+            {t.password}
+            <span className="password-field">
+              <input
+                {...registerField("password")}
+                type={isPasswordVisible ? "text" : "password"}
+                autoComplete={isRegister ? "new-password" : "current-password"}
+                placeholder="••••••••"
+              />
+              <button
+                type="button"
+                className="password-visibility-button"
+                onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+                aria-label={
+                  isPasswordVisible ? "Ocultar senha" : "Mostrar senha"
+                }
+              >
+                {isPasswordVisible ? <EyeOff size={17} /> : <Eye size={17} />}
+              </button>
+            </span>
+            {errors.password && <small>{errors.password.message}</small>}
+          </label>
+          {error && (
+            <p className="form-error" role="alert">
+              {error}
+            </p>
+          )}
+          <button className="auth-submit" disabled={isSubmitting}>
+            {isSubmitting ? "..." : isRegister ? t.createAccount : t.login}
+          </button>
+        </form>
+        <p className="auth-switch">
+          {isRegister ? t.hasAccount : t.noAccount}{" "}
+          <button
+            onClick={() => {
+              setError("");
+              setIsRegister(!isRegister);
+            }}
+          >
+            {isRegister ? t.login : t.createAccount}
+          </button>
+        </p>
+      </section>
+    </motion.main>
+  );
 }
 
-function WelcomeScreen({name,language,onComplete}:{name:string;language:Language;onComplete:()=>void}){const [text,setText]=useState("");const completeText=`${copy[language].welcome}${name}.`;useEffect(()=>{let position=0;const timer=window.setInterval(()=>{position+=1;setText(completeText.slice(0,position));if(position===completeText.length)window.setTimeout(onComplete,850)},52);return()=>window.clearInterval(timer)},[completeText,onComplete]);return <motion.main className="welcome-page" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}><span className="brand-mark"><span>T</span></span><h1>{text}<i/></h1><p>{copy[language].loading}</p></motion.main>}
-
-function Dashboard({session,language,theme,onTheme,onThemeChange,onLanguage,onSessionChanged,onLogout}:{session:LoginResult;language:Language;theme:Theme;onTheme:()=>void;onThemeChange:(value:Theme)=>void;onLanguage:(value:Language)=>void;onSessionChanged:(user:LoginResult["user"])=>void;onLogout:()=>void}) {
-  const [tasks,setTasks]=useState<Task[]>([]),[categoryList,setCategoryList]=useState<Category[]>([]),[tagList,setTagList]=useState<TaskTag[]>([]),[notifications,setNotifications]=useState<Notification[]>([]),[summary,setSummary]=useState<DashboardData["summary"]>({total:0,completed:0,pending:0,overdue:0,dueToday:0}),[search,setSearch]=useState(""),[showAllTasks,setShowAllTasks]=useState(false),[error,setError]=useState(""),[isLogoutDialogOpen,setIsLogoutDialogOpen]=useState(false),[isNotificationOpen,setIsNotificationOpen]=useState(false),[taskEditor,setTaskEditor]=useState<Task|null|undefined>(undefined),[organizationKind,setOrganizationKind]=useState<"categories"|"tags"|null>(null),[selectedTask,setSelectedTask]=useState<Task|null>(null),[isProfileOpen,setIsProfileOpen]=useState(false),[isSettingsOpen,setIsSettingsOpen]=useState(false),[taskPreviewCount,setTaskPreviewCount]=useState(()=>Number(localStorage.getItem("taskly_task_preview_count"))||5),[confirmBeforeDelete,setConfirmBeforeDelete]=useState(()=>localStorage.getItem("taskly_confirm_before_delete")!=="false"),[reduceMotion,setReduceMotion]=useState(()=>localStorage.getItem("taskly_reduce_motion")==="true"),[highContrast,setHighContrast]=useState(()=>localStorage.getItem("taskly_high_contrast")==="true"); const t=copy[language];
-  async function loadData(searchTerm=search){try{setError("");const taskParams={limit:100,sort:"createdAt",order:"desc",...(searchTerm.trim()?{search:searchTerm.trim()}: {})};const [taskData,dashboardResponse,loadedCategories,loadedTags,loadedNotifications]=await Promise.all([listTasks(taskParams),api.get<ApiResponse<DashboardData>>("/dashboard"),categories.list(),tags.list(),listNotifications()]);setTasks(taskData.data);setSummary(dashboardResponse.data.data.summary);setCategoryList(loadedCategories);setTagList(loadedTags);setNotifications(loadedNotifications)}catch{setError("Não foi possível carregar seus dados. Confirme se o backend local está ativo.")}}
-  useEffect(()=>{const timer=window.setTimeout(()=>void loadData(search),280);return()=>window.clearTimeout(timer)},[search]);useEffect(()=>{document.documentElement.dataset.reducedMotion=String(reduceMotion);localStorage.setItem("taskly_reduce_motion",String(reduceMotion))},[reduceMotion]);useEffect(()=>{document.documentElement.dataset.highContrast=String(highContrast);localStorage.setItem("taskly_high_contrast",String(highContrast))},[highContrast]);const visibleTasks=tasks;const displayedTasks=showAllTasks?visibleTasks:visibleTasks.slice(0,taskPreviewCount);const progress=summary.total?Math.round(summary.completed/summary.total*100):0;const unreadNotifications=notifications.filter(notification=>!notification.readAt).length;
-  async function toggleTask(task:Task){try{prepareSound();await updateTask(task.id,{completed:!task.completed});if(!task.completed)playSound("taskCompleted");await loadData(search)}catch{setError("Não foi possível atualizar a tarefa.")}}
-  async function saveTask(data:TaskInput,id?:string){try{if(id)await updateTask(id,data);else await createTask(data);setTaskEditor(undefined);await loadData(search)}catch{setError("Não foi possível salvar a tarefa. Revise os campos e tente novamente.")}}
-  async function removeTask(task:Task){if(confirmBeforeDelete&&!window.confirm(`Excluir a tarefa “${task.title}”?`))return;try{await deleteTask(task.id);setSelectedTask(null);setTaskEditor(undefined);await loadData(search)}catch{setError("Não foi possível excluir a tarefa.")}}
-  return <main className="app-shell"><aside className="sidebar"><a className="brand" href="#top"><span className="brand-mark"><span>T</span></span><span>taskly</span></a><nav className="sidebar-nav"><a className="nav-link active" href="#top"><LayoutDashboard size={18}/>{t.today}</a><a className="nav-link" href="#tasks"><ListTodo size={18}/>{t.tasks}<span>{summary.total}</span></a><button className="nav-link" onClick={()=>setOrganizationKind("categories")}><Tag size={18}/>{t.categories}</button><button className="nav-link" onClick={()=>setOrganizationKind("tags")}><Tag size={18}/>Etiquetas</button></nav><div className="sidebar-bottom"><button className="nav-link settings-link" onClick={()=>setIsSettingsOpen(true)}><Settings size={18}/>{t.settings}</button><button className="nav-link logout" onClick={()=>setIsLogoutDialogOpen(true)}><LogOut size={18}/>{t.logout}</button><div className="profile-card"><span className="avatar">{session.user.name.charAt(0).toUpperCase()}</span><span><strong>{session.user.name}</strong><small>{session.user.email}</small></span><button className="profile-menu-trigger" onClick={()=>setIsProfileOpen(true)} aria-label="Abrir menu do perfil"><Menu size={18}/></button></div></div></aside><section className="content" id="top"><header className="topbar"><label className="search-box"><Search size={18}/><input value={search} onChange={event=>setSearch(event.target.value)} placeholder={t.search}/></label><div className="topbar-actions"><div className="language-switch"><button className={language==="pt"?"selected":""} onClick={()=>onLanguage("pt")}>PT</button><button className={language==="en"?"selected":""} onClick={()=>onLanguage("en")}>EN</button></div><button className="icon-button" onClick={onTheme} aria-label="Alternar tema">{theme==="light"?<Moon size={19}/>:<Sun size={19}/>}</button><div className="notification-wrapper"><button className="icon-button notification-button" onClick={()=>setIsNotificationOpen(!isNotificationOpen)} aria-label={t.notifications}><Bell size={19}/>{unreadNotifications>0&&<i/>}</button>{isNotificationOpen&&<NotificationPanel notifications={notifications} language={language} onRead={async notification=>{try{if(!notification.readAt)await markNotificationAsRead(notification.id);await loadData()}catch{setError("Não foi possível atualizar a notificação.")}}} onDelete={async id=>{try{await deleteNotification(id);await loadData()}catch{setError("Não foi possível excluir a notificação.")}}}/>}</div></div></header><div className="page-header"><div><p className="eyebrow">{new Intl.DateTimeFormat(language==="pt"?"pt-BR":"en-US",{weekday:"long",day:"numeric",month:"long"}).format(new Date())}</p><h1>{t.today}</h1><p>{t.subtitle}</p></div><button className="primary-button" onClick={()=>setTaskEditor(null)}><Plus size={19}/>{t.newTask}</button></div><section className="overview"><h2>{t.overview}</h2><div className="stat-grid"><Stat icon={<ListTodo size={19}/>} label={t.total} value={summary.total}/><Stat icon={<Circle size={19}/>} label={t.pending} value={summary.pending} muted/><Stat icon={<Check size={19}/>} label={t.completed} value={summary.completed} success/><Stat icon={<Bell size={19}/>} label={t.todayTasks} value={summary.dueToday} accent/></div></section><div className="dashboard-grid"><section className="panel task-panel" id="tasks"><div className="panel-heading"><div><h2>{t.upcoming}</h2><p>{visibleTasks.length} {t.tasks.toLowerCase()}</p></div><button className="text-button" onClick={()=>setShowAllTasks(!showAllTasks)}>{showAllTasks?t.showLess:t.viewAll}</button></div>{error&&<p className="dashboard-error">{error}</p>}<div className="task-list">{visibleTasks.length?displayedTasks.map(task=><motion.article className={`task-row ${task.completed?"is-complete":""}`} key={task.id} layout onClick={()=>setSelectedTask(task)}><button className="check-button" onClick={event=>{event.stopPropagation();void toggleTask(task)}} aria-label="Alterar status">{task.completed&&<Check size={14}/>}</button><div><strong>{task.title}</strong>{search&&task.description&&<small className="task-description-preview">{task.description}</small>}<p><span className="category-dot" style={{background:task.category?.color||undefined}}/>{task.category?.name||"Sem categoria"}</p></div><time>{formatDueDate(task.dueDate,language)}</time></motion.article>):<p className="empty-state">{t.empty}</p>}</div></section><section className="panel progress-panel"><div className="panel-heading"><div><h2>{t.progress}</h2><p>{summary.completed} de {summary.total} {t.done}</p></div><strong className="progress-value">{progress}%</strong></div><div className="progress-track"><motion.span initial={{width:0}} animate={{width:`${progress}%`}} transition={{duration:.7}}/></div><div className="progress-note"><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span><span>Dom</span></div><div className="tip"><span>✦</span><p>Pequenos avanços todos os dias criam grandes resultados.</p></div></section></div></section><AnimatePresence>{isLogoutDialogOpen&&<Dialog onClose={()=>setIsLogoutDialogOpen(false)}><section className="logout-dialog"><h2>{t.logoutQuestion}</h2><div className="logout-dialog-actions"><button className="dialog-cancel" onClick={()=>setIsLogoutDialogOpen(false)}>{t.cancel}</button><button className="dialog-confirm" onClick={onLogout}>{t.confirmLogout}</button></div></section></Dialog>}{isProfileOpen&&<ProfilePanel session={session} language={language} theme={theme} onClose={()=>setIsProfileOpen(false)} onLanguageChange={onLanguage} onThemeChange={onThemeChange} onProfileUpdated={onSessionChanged} onRequestLogout={()=>{setIsProfileOpen(false);setIsLogoutDialogOpen(true)}} onLogout={onLogout}/>} {isSettingsOpen&&<SettingsPanel language={language} theme={theme} onClose={()=>setIsSettingsOpen(false)} onLanguageChange={onLanguage} onThemeChange={onThemeChange} taskPreviewCount={taskPreviewCount} onTaskPreviewCount={setTaskPreviewCount} confirmBeforeDelete={confirmBeforeDelete} onConfirmBeforeDelete={setConfirmBeforeDelete} reduceMotion={reduceMotion} onReduceMotion={setReduceMotion} highContrast={highContrast} onHighContrast={setHighContrast}/>} {taskEditor!==undefined&&<TaskEditor task={taskEditor} categories={categoryList} tags={tagList} onClose={()=>setTaskEditor(undefined)} onSave={saveTask} onDelete={removeTask}/>} {organizationKind&&<OrganizationEditor kind={organizationKind} categories={categoryList} tags={tagList} onClose={()=>setOrganizationKind(null)} onChanged={loadData}/>} {selectedTask&&<TaskDetails task={selectedTask} onClose={()=>setSelectedTask(null)} onEdit={()=>{setSelectedTask(null);setTaskEditor(selectedTask)}} onDelete={()=>void removeTask(selectedTask)}/>}</AnimatePresence></main>;
+function WelcomeScreen({
+  name,
+  language,
+  onComplete,
+}: {
+  name: string;
+  language: Language;
+  onComplete: () => void;
+}) {
+  const [text, setText] = useState("");
+  const completeText = `${copy[language].welcome}${name}.`;
+  useEffect(() => {
+    let position = 0;
+    const timer = window.setInterval(() => {
+      position += 1;
+      setText(completeText.slice(0, position));
+      if (position === completeText.length) window.setTimeout(onComplete, 850);
+    }, 52);
+    return () => window.clearInterval(timer);
+  }, [completeText, onComplete]);
+  return (
+    <motion.main
+      className="welcome-page"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
+      <span className="brand-mark">
+        <span>T</span>
+      </span>
+      <h1>
+        {text}
+        <i />
+      </h1>
+      <p>{copy[language].loading}</p>
+    </motion.main>
+  );
 }
 
-function Stat({icon,label,value,muted,success,accent}:{icon:React.ReactNode;label:string;value:number;muted?:boolean;success?:boolean;accent?:boolean}){return <article className="stat-card"><span className={`stat-icon${muted?" muted":""}${success?" success":""}${accent?" accent":""}`}>{icon}</span><span>{label}</span><strong>{value}</strong></article>}
-function Dialog({children,onClose}:{children:React.ReactNode;onClose:()=>void}){return <motion.div className="dialog-backdrop" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} onClick={onClose}><motion.div initial={{opacity:0,scale:.96,y:8}} animate={{opacity:1,scale:1,y:0}} exit={{opacity:0,scale:.96,y:8}} onClick={event=>event.stopPropagation()} role="dialog" aria-modal="true">{children}</motion.div></motion.div>}
-function NotificationPanel({notifications,language,onRead,onDelete}:{notifications:Notification[];language:Language;onRead:(notification:Notification)=>void;onDelete:(id:string)=>void}){return <section className="notifications"><strong>{copy[language].notifications}</strong>{notifications.length?notifications.map(notification=><article className={`notification-item ${notification.readAt?"":"unread"}`} key={notification.id} onClick={()=>onRead(notification)}><div><b>{notification.title}</b><p>{notification.message}</p></div><button onClick={event=>{event.stopPropagation();onDelete(notification.id)}} aria-label="Excluir notificação"><Trash2 size={14}/></button></article>):<p>{copy[language].noNotifications}</p>}</section>}
-function SettingsPanel({language,theme,onClose,onLanguageChange,onThemeChange,taskPreviewCount,onTaskPreviewCount,confirmBeforeDelete,onConfirmBeforeDelete,reduceMotion,onReduceMotion,highContrast,onHighContrast}:{language:Language;theme:Theme;onClose:()=>void;onLanguageChange:(value:Language)=>void;onThemeChange:(value:Theme)=>void;taskPreviewCount:number;onTaskPreviewCount:(value:number)=>void;confirmBeforeDelete:boolean;onConfirmBeforeDelete:(value:boolean)=>void;reduceMotion:boolean;onReduceMotion:(value:boolean)=>void;highContrast:boolean;onHighContrast:(value:boolean)=>void}){const [profile,setProfile]=useState<Profile|null>(null),[message,setMessage]=useState(""),[error,setError]=useState("");useEffect(()=>{void getProfile().then(setProfile).catch(()=>setError("Não foi possível carregar as configurações."))},[]);const preferences:Preferences=profile?.preferences||{language,theme,soundEnabled:localStorage.getItem("taskly_sound_enabled")!=="false",notificationsEnabled:true,dueDateReminders:true};async function savePreferences(data:Preferences){try{setError("");const saved=await updatePreferences(data);setProfile(current=>current?{...current,preferences:saved}:current);setSoundEnabled(saved.soundEnabled);onLanguageChange(saved.language);onThemeChange(saved.theme==="system"?(window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"):saved.theme);setMessage("Configurações salvas.")}catch{setError("Não foi possível salvar as configurações.")}}function changePreview(value:number){onTaskPreviewCount(value);localStorage.setItem("taskly_task_preview_count",String(value));setMessage("Configurações salvas.")}return <Dialog onClose={onClose}><section className="settings-dialog"><div className="editor-heading"><div><p className="eyebrow">Aplicativo</p><h2>Configurações</h2></div><button className="icon-button" onClick={onClose}>×</button></div><div className="settings-groups"><section><h3>Aparência e idioma</h3><div className="settings-list"><div><span><strong>Tema</strong><small>Claro, escuro ou conforme o sistema.</small></span><select value={preferences.theme} onChange={event=>void savePreferences({...preferences,theme:event.target.value as Preferences["theme"]})}><option value="light">Claro</option><option value="dark">Escuro</option><option value="system">Sistema</option></select></div><div><span><strong>Idioma</strong><small>Idioma usado na interface.</small></span><select value={preferences.language} onChange={event=>void savePreferences({...preferences,language:event.target.value as Language})}><option value="pt">Português</option><option value="en">English</option></select></div></div></section><section><h3>Sons e notificações</h3><div className="settings-list"><label className="setting-switch"><span><strong>Sons</strong><small>Ao entrar e concluir tarefas.</small></span><input type="checkbox" checked={preferences.soundEnabled} onChange={event=>void savePreferences({...preferences,soundEnabled:event.target.checked})}/></label><label className="setting-switch"><span><strong>Notificações</strong><small>Exibir novidades no centro de notificações.</small></span><input type="checkbox" checked={preferences.notificationsEnabled} onChange={event=>void savePreferences({...preferences,notificationsEnabled:event.target.checked})}/></label><label className="setting-switch"><span><strong>Avisos de prazo</strong><small>Manter lembretes para tarefas próximas do prazo.</small></span><input type="checkbox" checked={preferences.dueDateReminders} onChange={event=>void savePreferences({...preferences,dueDateReminders:event.target.checked})}/></label></div></section><section><h3>Exibição</h3><div className="settings-list"><div><span><strong>Tarefas visíveis</strong><small>Quantidade inicial em Próximas tarefas.</small></span><select value={taskPreviewCount} onChange={event=>changePreview(Number(event.target.value))}><option value="3">3 tarefas</option><option value="5">5 tarefas</option><option value="10">10 tarefas</option></select></div><label className="setting-switch"><span><strong>Confirmar exclusões</strong><small>Pedir confirmação antes de apagar uma tarefa.</small></span><input type="checkbox" checked={confirmBeforeDelete} onChange={event=>{onConfirmBeforeDelete(event.target.checked);localStorage.setItem("taskly_confirm_before_delete",String(event.target.checked));setMessage("Configurações salvas.")}}/></label></div></section><section><h3>Acessibilidade</h3><div className="settings-list"><label className="setting-switch"><span><strong>Reduzir animações</strong><small>Minimiza movimentos na interface.</small></span><input type="checkbox" checked={reduceMotion} onChange={event=>onReduceMotion(event.target.checked)}/></label><label className="setting-switch"><span><strong>Alto contraste</strong><small>Aumenta a diferença entre textos e superfícies.</small></span><input type="checkbox" checked={highContrast} onChange={event=>onHighContrast(event.target.checked)}/></label></div></section><section className="about-section"><h3>Sobre o Taskly</h3><p>Versão local do Taskly para organização de tarefas.</p><a href="https://github.com/joseluucaas/taskly" target="_blank" rel="noreferrer">Ver repositório no GitHub ↗</a></section></div>{message&&<p className="profile-success">{message}</p>}{error&&<p className="dashboard-error">{error}</p>}</section></Dialog>}
-function TaskEditor({task,categories:categoryList,tags:tagList,onClose,onSave,onDelete}:{task:Task|null;categories:Category[];tags:TaskTag[];onClose:()=>void;onSave:(data:TaskInput,id?:string)=>Promise<void>;onDelete:(task:Task)=>Promise<void>}){const [title,setTitle]=useState(task?.title||"");const [description,setDescription]=useState(task?.description||"");const [dueDate,setDueDate]=useState(task?.dueDate?task.dueDate.slice(0,10):"");const [categoryId,setCategoryId]=useState(task?.category?.id||"");const [tagIds,setTagIds]=useState<string[]>(task?.tags.map(tag=>tag.id)||[]);const [saving,setSaving]=useState(false);async function submit(event:React.FormEvent){event.preventDefault();if(!title.trim())return;setSaving(true);await onSave({title:title.trim(),description:description.trim(),dueDate:dueDate||undefined,categoryId:categoryId||null,tagIds},task?.id);setSaving(false)}return <Dialog onClose={onClose}><section className="editor-dialog"><div className="editor-heading"><div><p className="eyebrow">{task?"Editar tarefa":"Nova tarefa"}</p><h2>{task?task.title:"O que você quer fazer?"}</h2></div><button className="icon-button" onClick={onClose}>×</button></div><form className="editor-form" onSubmit={submit}><label>Título<input value={title} onChange={event=>setTitle(event.target.value)} maxLength={100} autoFocus/></label><label>Descrição<textarea value={description} onChange={event=>setDescription(event.target.value)} maxLength={2000}/></label><div className="editor-columns"><label>Prazo<input value={dueDate} onChange={event=>setDueDate(event.target.value)} type="date"/></label><label>Categoria<select value={categoryId} onChange={event=>setCategoryId(event.target.value)}><option value="">Sem categoria</option>{categoryList.map(category=><option value={category.id} key={category.id}>{category.name}</option>)}</select></label></div><fieldset><legend>Etiquetas</legend><div className="tag-options">{tagList.map(tag=><label key={tag.id}><input type="checkbox" checked={tagIds.includes(tag.id)} onChange={()=>setTagIds(ids=>ids.includes(tag.id)?ids.filter(id=>id!==tag.id):[...ids,tag.id])}/><span style={{background:tag.color||undefined}}/>{tag.name}</label>)}</div></fieldset><div className="editor-actions">{task&&<button type="button" className="delete-button" onClick={()=>void onDelete(task)}><Trash2 size={15}/>Excluir</button>}<span/><button type="button" className="dialog-cancel" onClick={onClose}>Cancelar</button><button className="dialog-confirm" disabled={saving}>{saving?"Salvando...":"Salvar tarefa"}</button></div></form></section></Dialog>}
-function OrganizationEditor({kind,categories:categoryList,tags:tagList,onClose,onChanged}:{kind:"categories"|"tags";categories:Category[];tags:TaskTag[];onClose:()=>void;onChanged:()=>Promise<void>}){const items=kind==="categories"?categoryList:tagList;const service=kind==="categories"?categories:tags;const [name,setName]=useState(""),[color,setColor]=useState("#777777"),[editingId,setEditingId]=useState<string|null>(null),[error,setError]=useState("");async function submit(event:React.FormEvent){event.preventDefault();if(!name.trim())return;try{setError("");if(editingId)await service.update(editingId,{name:name.trim(),color});else await service.create({name:name.trim(),color});setName("");setColor("#777777");setEditingId(null);await onChanged()}catch{setError("Não foi possível salvar este item.")}}async function remove(id:string){if(!window.confirm("Excluir este item?"))return;try{await service.remove(id);await onChanged()}catch{setError("Não foi possível excluir este item.")}}return <Dialog onClose={onClose}><section className="editor-dialog"><div className="editor-heading"><div><p className="eyebrow">Organização</p><h2>{kind==="categories"?"Categorias":"Etiquetas"}</h2></div><button className="icon-button" onClick={onClose}>×</button></div><form className="resource-form" onSubmit={submit}><input value={name} onChange={event=>setName(event.target.value)} placeholder={kind==="categories"?"Nome da categoria":"Nome da etiqueta"} maxLength={50}/><input type="color" value={color} onChange={event=>setColor(event.target.value)} aria-label="Cor"/><button className="dialog-confirm">{editingId?"Salvar":"Adicionar"}</button></form>{error&&<p className="dashboard-error">{error}</p>}<div className="resource-list">{items.length?items.map(item=><article key={item.id}><span className="color-dot" style={{background:item.color||"#777"}}/><strong>{item.name}</strong><button onClick={()=>{setEditingId(item.id);setName(item.name);setColor(item.color||"#777777")}} aria-label="Editar"><Pencil size={15}/></button><button onClick={()=>void remove(item.id)} aria-label="Excluir"><Trash2 size={15}/></button></article>):<p className="empty-state">Nenhum item criado ainda.</p>}</div><div className="editor-actions"><span/><button className="dialog-cancel" onClick={onClose}>Fechar</button></div></section></Dialog>}
-function TaskDetails({task,onClose,onEdit,onDelete}:{task:Task;onClose:()=>void;onEdit:()=>void;onDelete:()=>void}){const [comments,setComments]=useState<Comment[]>([]),[content,setContent]=useState(""),[editing,setEditing]=useState<string|null>(null),[error,setError]=useState("");async function load(){try{setComments(await listComments(task.id))}catch{setError("Não foi possível carregar os comentários.")}}useEffect(()=>{void load()},[task.id]);async function submit(event:React.FormEvent){event.preventDefault();if(!content.trim())return;try{if(editing)await updateComment(task.id,editing,content.trim());else await createComment(task.id,content.trim());setContent("");setEditing(null);await load()}catch{setError("Não foi possível salvar o comentário.")}}return <Dialog onClose={onClose}><section className="editor-dialog details-dialog"><div className="editor-heading"><div><p className="eyebrow">Tarefa</p><h2>{task.title}</h2></div><button className="icon-button" onClick={onClose}>×</button></div>{task.description&&<p className="task-description">{task.description}</p>}<div className="task-tags">{task.tags.map(tag=><span key={tag.id} style={{borderColor:tag.color||undefined}}>{tag.name}</span>)}</div><div className="comments"><h3>Comentários</h3>{comments.map(comment=><article key={comment.id}><p>{comment.content}</p><small>{new Intl.DateTimeFormat("pt-BR",{dateStyle:"short",timeStyle:"short"}).format(new Date(comment.createdAt))}</small><button onClick={()=>{setEditing(comment.id);setContent(comment.content)}} aria-label="Editar comentário"><Pencil size={14}/></button><button onClick={async()=>{try{await deleteComment(task.id,comment.id);await load()}catch{setError("Não foi possível excluir o comentário.")}}} aria-label="Excluir comentário"><Trash2 size={14}/></button></article>)}{!comments.length&&<p className="empty-state">Nenhum comentário ainda.</p>}<form className="comment-form" onSubmit={submit}><textarea value={content} onChange={event=>setContent(event.target.value)} placeholder="Escreva um comentário" maxLength={1000}/><button className="dialog-confirm">{editing?"Salvar":"Comentar"}</button></form>{error&&<p className="dashboard-error">{error}</p>}</div><div className="editor-actions"><button className="delete-button" onClick={onDelete}><Trash2 size={15}/>Excluir tarefa</button><span/><button className="dialog-cancel" onClick={onEdit}>Editar tarefa</button><button className="dialog-cancel" onClick={onClose}>Fechar</button></div></section></Dialog>}
-function ProfilePanel({session,language,theme,onClose,onLanguageChange,onThemeChange,onProfileUpdated,onRequestLogout,onLogout}:{session:LoginResult;language:Language;theme:Theme;onClose:()=>void;onLanguageChange:(value:Language)=>void;onThemeChange:(value:Theme)=>void;onProfileUpdated:(user:LoginResult["user"])=>void;onRequestLogout:()=>void;onLogout:()=>void}){const [section,setSection]=useState<"profile"|"preferences"|"notifications"|"security"|"help">("profile"),[profile,setProfile]=useState<Profile|null>(null),[name,setName]=useState(session.user.name),[email,setEmail]=useState(session.user.email),[currentPassword,setCurrentPassword]=useState(""),[newPassword,setNewPassword]=useState(""),[message,setMessage]=useState(""),[error,setError]=useState("");useEffect(()=>{void getProfile().then(data=>{setProfile(data);setName(data.name);setEmail(data.email)}).catch(()=>setError("Não foi possível carregar seu perfil."))},[]);useEffect(()=>{setError("");setMessage("")},[section]);const preferences:Preferences=profile?.preferences||{language,theme,soundEnabled:localStorage.getItem("taskly_sound_enabled")!=="false",notificationsEnabled:true,dueDateReminders:true};async function savePreferences(data:Preferences){try{setError("");const saved=await updatePreferences(data);setProfile(current=>current?{...current,preferences:saved}:current);setSoundEnabled(saved.soundEnabled);onLanguageChange(saved.language);onThemeChange(saved.theme==="system"?(window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"):saved.theme);setMessage("Preferências salvas.")}catch{setError("Não foi possível salvar as preferências.")}}async function saveProfile(event:React.FormEvent){event.preventDefault();try{setError("");const saved=await saveUserProfile({name,email});setProfile(saved);onProfileUpdated({id:saved.id,name:saved.name,email:saved.email});setMessage("Perfil atualizado com sucesso.")}catch{setError("Não foi possível atualizar o perfil.")}}async function savePassword(event:React.FormEvent){event.preventDefault();try{setError("");await changePassword(currentPassword,newPassword);onLogout()}catch{setError("Não foi possível alterar a senha. Verifique a senha atual.")}}async function endSessions(){try{await logoutAllSessions();onLogout()}catch{setError("Não foi possível encerrar as sessões.")}}return <Dialog onClose={onClose}><section className="profile-dialog"><div className="editor-heading"><div><p className="eyebrow">Conta</p><h2>Minha conta</h2></div><button className="icon-button" onClick={onClose}>×</button></div><div className="profile-layout"><nav className="profile-nav"><button className={section==="profile"?"selected":""} onClick={()=>setSection("profile")}>Meu perfil</button><button className={section==="preferences"?"selected":""} onClick={()=>setSection("preferences")}>Preferências</button><button className={section==="notifications"?"selected":""} onClick={()=>setSection("notifications")}>Notificações</button><button className={section==="security"?"selected":""} onClick={()=>setSection("security")}>Segurança</button><button className={section==="help"?"selected":""} onClick={()=>setSection("help")}>Ajuda e atalhos</button><button className="profile-logout" onClick={onRequestLogout}>Sair da conta</button></nav><div className="profile-content">{section==="profile"&&<form className="editor-form" onSubmit={saveProfile}><p>Atualize os dados visíveis da sua conta.</p><label>Nome<input value={name} onChange={event=>setName(event.target.value)} minLength={2}/></label><label>E-mail<input value={email} onChange={event=>setEmail(event.target.value)} type="email"/></label><button className="dialog-confirm">Salvar alterações</button></form>}{section==="preferences"&&<div className="settings-list"><p>Escolha como o Taskly deve se comportar neste dispositivo.</p><div><span><strong>Tema</strong><small>Defina a aparência da interface.</small></span><select value={preferences.theme} onChange={event=>void savePreferences({...preferences,theme:event.target.value as Preferences["theme"]})}><option value="light">Claro</option><option value="dark">Escuro</option><option value="system">Sistema</option></select></div><div><span><strong>Idioma</strong><small>Português ou inglês.</small></span><select value={preferences.language} onChange={event=>void savePreferences({...preferences,language:event.target.value as Language})}><option value="pt">Português</option><option value="en">English</option></select></div><label className="setting-switch"><span><strong>Sons</strong><small>Reproduzir sons ao entrar e concluir tarefas.</small></span><input type="checkbox" checked={preferences.soundEnabled} onChange={event=>void savePreferences({...preferences,soundEnabled:event.target.checked})}/></label></div>}{section==="notifications"&&<div className="settings-list"><p>Controle os avisos exibidos pelo Taskly.</p><label className="setting-switch"><span><strong>Notificações</strong><small>Receber novidades no centro de notificações.</small></span><input type="checkbox" checked={preferences.notificationsEnabled} onChange={event=>void savePreferences({...preferences,notificationsEnabled:event.target.checked})}/></label><label className="setting-switch"><span><strong>Avisos de prazo</strong><small>Manter ativados os lembretes para tarefas próximas do prazo.</small></span><input type="checkbox" checked={preferences.dueDateReminders} onChange={event=>void savePreferences({...preferences,dueDateReminders:event.target.checked})}/></label></div>}{section==="security"&&<div className="security-section"><form className="editor-form" onSubmit={savePassword}><p>Ao trocar a senha, a conta será desconectada em todos os dispositivos.</p><label>Senha atual<input value={currentPassword} onChange={event=>setCurrentPassword(event.target.value)} type="password" autoComplete="current-password"/></label><label>Nova senha<input value={newPassword} onChange={event=>setNewPassword(event.target.value)} type="password" minLength={6} autoComplete="new-password"/></label><button className="dialog-confirm">Alterar senha</button></form><button className="dialog-cancel" onClick={()=>void endSessions()}>Encerrar todas as sessões</button></div>}{section==="help"&&<div className="help-section"><p><strong>Atalhos rápidos</strong></p><p><kbd>/</kbd> Foca na busca de tarefas.</p><p><kbd>Esc</kbd> Fecha janelas abertas.</p><p>Use o botão “Nova tarefa” para registrar uma atividade e clique nela para editar, comentar ou excluir.</p><p>Precisa sair? Use “Sair da conta” neste menu.</p></div>}{message&&<p className="profile-success">{message}</p>}{error&&<p className="dashboard-error">{error}</p>}</div></div></section></Dialog>}
+function Dashboard({
+  session,
+  language,
+  theme,
+  onTheme,
+  onThemeChange,
+  onLanguage,
+  onSessionChanged,
+  onLogout,
+}: {
+  session: LoginResult;
+  language: Language;
+  theme: Theme;
+  onTheme: () => void;
+  onThemeChange: (value: Theme) => void;
+  onLanguage: (value: Language) => void;
+  onSessionChanged: (user: LoginResult["user"]) => void;
+  onLogout: () => void;
+}) {
+  const [tasks, setTasks] = useState<Task[]>([]),
+    [categoryList, setCategoryList] = useState<Category[]>([]),
+    [tagList, setTagList] = useState<TaskTag[]>([]),
+    [notifications, setNotifications] = useState<Notification[]>([]),
+    [summary, setSummary] = useState<DashboardData["summary"]>({
+      total: 0,
+      completed: 0,
+      pending: 0,
+      overdue: 0,
+      dueToday: 0,
+    }),
+    [search, setSearch] = useState(""),
+    [showAllTasks, setShowAllTasks] = useState(false),
+    [error, setError] = useState(""),
+    [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false),
+    [isNotificationOpen, setIsNotificationOpen] = useState(false),
+    [taskEditor, setTaskEditor] = useState<Task | null | undefined>(undefined),
+    [organizationKind, setOrganizationKind] = useState<
+      "categories" | "tags" | null
+    >(null),
+    [selectedTask, setSelectedTask] = useState<Task | null>(null),
+    [taskPendingDeletion, setTaskPendingDeletion] = useState<Task | null>(null),
+    [isProfileOpen, setIsProfileOpen] = useState(false),
+    [isSettingsOpen, setIsSettingsOpen] = useState(false),
+    [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false),
+    [taskPreviewCount, setTaskPreviewCount] = useState(
+      () => Number(localStorage.getItem("taskly_task_preview_count")) || 5,
+    ),
+    [confirmBeforeDelete, setConfirmBeforeDelete] = useState(
+      () => localStorage.getItem("taskly_confirm_before_delete") !== "false",
+    ),
+    [reduceMotion, setReduceMotion] = useState(
+      () => localStorage.getItem("taskly_reduce_motion") === "true",
+    ),
+    [highContrast, setHighContrast] = useState(
+      () => localStorage.getItem("taskly_high_contrast") === "true",
+    );
+  const t = copy[language];
+  async function loadData(searchTerm = search) {
+    try {
+      setError("");
+      const taskParams = {
+        limit: 100,
+        sort: "createdAt",
+        order: "desc",
+        ...(searchTerm.trim() ? { search: searchTerm.trim() } : {}),
+      };
+      const [
+        taskData,
+        dashboardResponse,
+        loadedCategories,
+        loadedTags,
+        loadedNotifications,
+      ] = await Promise.all([
+        listTasks(taskParams),
+        api.get<ApiResponse<DashboardData>>("/dashboard"),
+        categories.list(),
+        tags.list(),
+        listNotifications(),
+      ]);
+      setTasks(taskData.data);
+      setSummary(dashboardResponse.data.data.summary);
+      setCategoryList(loadedCategories);
+      setTagList(loadedTags);
+      setNotifications(loadedNotifications);
+    } catch {
+      setError(
+        "Não foi possível carregar seus dados. Confirme se o backend local está ativo.",
+      );
+    }
+  }
+  useEffect(() => {
+    const timer = window.setTimeout(() => void loadData(search), 280);
+    return () => window.clearTimeout(timer);
+  }, [search]);
+  useEffect(() => {
+    document.documentElement.dataset.reducedMotion = String(reduceMotion);
+    localStorage.setItem("taskly_reduce_motion", String(reduceMotion));
+  }, [reduceMotion]);
+  useEffect(() => {
+    document.documentElement.dataset.highContrast = String(highContrast);
+    localStorage.setItem("taskly_high_contrast", String(highContrast));
+  }, [highContrast]);
+  const visibleTasks = tasks;
+  const displayedTasks = showAllTasks
+    ? visibleTasks
+    : visibleTasks.slice(0, taskPreviewCount);
+  const progress = summary.total
+    ? Math.round((summary.completed / summary.total) * 100)
+    : 0;
+  const unreadNotifications = notifications.filter(
+    (notification) => !notification.readAt,
+  ).length;
+  async function toggleTask(task: Task) {
+    try {
+      prepareSound();
+      await updateTask(task.id, { completed: !task.completed });
+      if (!task.completed) playSound("taskCompleted");
+      await loadData(search);
+    } catch {
+      setError("Não foi possível atualizar a tarefa.");
+    }
+  }
+  async function saveTask(data: TaskInput, id?: string) {
+    try {
+      if (id) await updateTask(id, data);
+      else await createTask(data);
+      setTaskEditor(undefined);
+      await loadData(search);
+    } catch {
+      setError(
+        "Não foi possível salvar a tarefa. Revise os campos e tente novamente.",
+      );
+    }
+  }
+  async function removeTask(task: Task) {
+    try {
+      await deleteTask(task.id);
+      setSelectedTask(null);
+      setTaskEditor(undefined);
+      await loadData(search);
+    } catch {
+      setError("Não foi possível excluir a tarefa.");
+    }
+  }
+  async function requestTaskDeletion(task: Task) {
+    if (confirmBeforeDelete) {
+      setTaskPendingDeletion(task);
+      return;
+    }
+    await removeTask(task);
+  }
+  return (
+    <main className="app-shell">
+      <aside className="sidebar">
+        <a className="brand" href="#top">
+          <span className="brand-mark">
+            <span>T</span>
+          </span>
+          <span>taskly</span>
+        </a>
+        <nav className="sidebar-nav">
+          <a className="nav-link active" href="#top">
+            <LayoutDashboard size={18} />
+            {t.today}
+          </a>
+          <a className="nav-link" href="#tasks">
+            <ListTodo size={18} />
+            {t.tasks}
+            <span>{summary.total}</span>
+          </a>
+          <button
+            className="nav-link"
+            onClick={() => setOrganizationKind("categories")}
+          >
+            <Tag size={18} />
+            {t.categories}
+          </button>
+          <button
+            className="nav-link"
+            onClick={() => setOrganizationKind("tags")}
+          >
+            <Tag size={18} />
+            Etiquetas
+          </button>
+        </nav>
+        <div className="sidebar-bottom">
+          <button
+            className="nav-link settings-link"
+            onClick={() => setIsSettingsOpen(true)}
+          >
+            <Settings size={18} />
+            {t.settings}
+          </button>
+          <button
+            className="nav-link logout"
+            onClick={() => setIsLogoutDialogOpen(true)}
+          >
+            <LogOut size={18} />
+            {t.logout}
+          </button>
+          <div className="profile-card">
+            <span className="avatar">
+              {session.user.name.charAt(0).toUpperCase()}
+            </span>
+            <span>
+              <strong>{session.user.name}</strong>
+              <small>{session.user.email}</small>
+            </span>
+            <button
+              className="profile-menu-trigger"
+              onClick={() => setIsProfileOpen(true)}
+              aria-label="Abrir menu do perfil"
+            >
+              <Menu size={18} />
+            </button>
+          </div>
+        </div>
+      </aside>
+      <section className="content" id="top">
+        <header className="topbar">
+          <button
+            className="mobile-menu-trigger"
+            onClick={() => setIsMobileMenuOpen(true)}
+            aria-label="Abrir menu"
+          >
+            <Menu size={21} />
+          </button>
+          <label className="search-box">
+            <Search size={18} />
+            <input
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder={t.search}
+            />
+          </label>
+          <div className="topbar-actions">
+            <div className="language-switch">
+              <button
+                className={language === "pt" ? "selected" : ""}
+                onClick={() => onLanguage("pt")}
+              >
+                PT
+              </button>
+              <button
+                className={language === "en" ? "selected" : ""}
+                onClick={() => onLanguage("en")}
+              >
+                EN
+              </button>
+            </div>
+            <button
+              className="icon-button"
+              onClick={onTheme}
+              aria-label="Alternar tema"
+            >
+              {theme === "light" ? <Moon size={19} /> : <Sun size={19} />}
+            </button>
+            <div className="notification-wrapper">
+              <button
+                className="icon-button notification-button"
+                onClick={() => setIsNotificationOpen(!isNotificationOpen)}
+                aria-label={t.notifications}
+              >
+                <Bell size={19} />
+                {unreadNotifications > 0 && <i />}
+              </button>
+              {isNotificationOpen && (
+                <NotificationPanel
+                  notifications={notifications}
+                  language={language}
+                  onRead={async (notification) => {
+                    try {
+                      if (!notification.readAt)
+                        await markNotificationAsRead(notification.id);
+                      await loadData();
+                    } catch {
+                      setError("Não foi possível atualizar a notificação.");
+                    }
+                  }}
+                  onDelete={async (id) => {
+                    try {
+                      await deleteNotification(id);
+                      await loadData();
+                    } catch {
+                      setError("Não foi possível excluir a notificação.");
+                    }
+                  }}
+                />
+              )}
+            </div>
+          </div>
+        </header>
+        {isMobileMenuOpen && (
+          <>
+            <button
+              className="mobile-menu-backdrop"
+              aria-label="Fechar menu"
+              onClick={() => setIsMobileMenuOpen(false)}
+            />
+            <aside className="mobile-menu">
+              <div className="mobile-menu-heading">
+                <a
+                  className="mobile-brand"
+                  href="#top"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <span className="brand-mark">
+                    <span>T</span>
+                  </span>
+                  <span>taskly</span>
+                </a>
+                <button
+                  className="icon-button"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  aria-label="Fechar menu"
+                >
+                  ×
+                </button>
+              </div>
+              <div className="mobile-profile">
+                <span className="avatar">
+                  {session.user.name.charAt(0).toUpperCase()}
+                </span>
+                <span>
+                  <strong>{session.user.name}</strong>
+                  <small>{session.user.email}</small>
+                </span>
+              </div>
+              <nav>
+                <button
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    setIsProfileOpen(true);
+                  }}
+                >
+                  Meu perfil
+                </button>
+                <button
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    setIsSettingsOpen(true);
+                  }}
+                >
+                  {t.settings}
+                </button>
+                <button
+                  className="mobile-logout"
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    setIsLogoutDialogOpen(true);
+                  }}
+                >
+                  <LogOut size={18} />
+                  {t.logout}
+                </button>
+              </nav>
+            </aside>
+          </>
+        )}
+        <div className="page-header">
+          <div>
+            <p className="eyebrow">
+              {new Intl.DateTimeFormat(language === "pt" ? "pt-BR" : "en-US", {
+                weekday: "long",
+                day: "numeric",
+                month: "long",
+              }).format(new Date())}
+            </p>
+            <h1>{t.today}</h1>
+            <p>{t.subtitle}</p>
+          </div>
+          <button
+            className="primary-button"
+            onClick={() => setTaskEditor(null)}
+          >
+            <Plus size={19} />
+            {t.newTask}
+          </button>
+        </div>
+        <section className="overview">
+          <h2>{t.overview}</h2>
+          <div className="stat-grid">
+            <Stat
+              icon={<ListTodo size={19} />}
+              label={t.total}
+              value={summary.total}
+            />
+            <Stat
+              icon={<Circle size={19} />}
+              label={t.pending}
+              value={summary.pending}
+              muted
+            />
+            <Stat
+              icon={<Check size={19} />}
+              label={t.completed}
+              value={summary.completed}
+              success
+            />
+            <Stat
+              icon={<Bell size={19} />}
+              label={t.todayTasks}
+              value={summary.dueToday}
+              accent
+            />
+          </div>
+        </section>
+        <div className="dashboard-grid">
+          <section className="panel task-panel" id="tasks">
+            <div className="panel-heading">
+              <div>
+                <h2>{t.upcoming}</h2>
+                <p>
+                  {visibleTasks.length} {t.tasks.toLowerCase()}
+                </p>
+              </div>
+              <button
+                className="text-button"
+                onClick={() => setShowAllTasks(!showAllTasks)}
+              >
+                {showAllTasks ? t.showLess : t.viewAll}
+              </button>
+            </div>
+            {error && <p className="dashboard-error">{error}</p>}
+            <div className="task-list">
+              {visibleTasks.length ? (
+                displayedTasks.map((task) => (
+                  <motion.article
+                    className={`task-row ${task.completed ? "is-complete" : ""}`}
+                    key={task.id}
+                    layout
+                    onClick={() => setSelectedTask(task)}
+                  >
+                    <button
+                      className="check-button"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        void toggleTask(task);
+                      }}
+                      aria-label="Alterar status"
+                    >
+                      {task.completed && <Check size={14} />}
+                    </button>
+                    <div>
+                      <strong>{task.title}</strong>
+                      {search && task.description && (
+                        <small className="task-description-preview">
+                          {task.description}
+                        </small>
+                      )}
+                      <p>
+                        <span
+                          className="category-dot"
+                          style={{
+                            background: task.category?.color || undefined,
+                          }}
+                        />
+                        {task.category?.name || "Sem categoria"}
+                      </p>
+                    </div>
+                    <time>{formatDueDate(task.dueDate, language)}</time>
+                  </motion.article>
+                ))
+              ) : (
+                <p className="empty-state">{t.empty}</p>
+              )}
+            </div>
+          </section>
+          <section className="panel progress-panel">
+            <div className="panel-heading">
+              <div>
+                <h2>{t.progress}</h2>
+                <p>
+                  {summary.completed} de {summary.total} {t.done}
+                </p>
+              </div>
+              <strong className="progress-value">{progress}%</strong>
+            </div>
+            <div className="progress-track">
+              <motion.span
+                initial={{ width: 0 }}
+                animate={{ width: `${progress}%` }}
+                transition={{ duration: 0.7 }}
+              />
+            </div>
+            <div className="progress-note">
+              <span>Seg</span>
+              <span>Ter</span>
+              <span>Qua</span>
+              <span>Qui</span>
+              <span>Sex</span>
+              <span>Sáb</span>
+              <span>Dom</span>
+            </div>
+            <div className="tip">
+              <span>✦</span>
+              <p>Pequenos avanços todos os dias criam grandes resultados.</p>
+            </div>
+          </section>
+        </div>
+      </section>
+      <AnimatePresence>
+        {isLogoutDialogOpen && (
+          <ConfirmDialog
+            title={t.logoutQuestion}
+            cancelLabel={t.cancel}
+            confirmLabel={t.confirmLogout}
+            onCancel={() => setIsLogoutDialogOpen(false)}
+            onConfirm={onLogout}
+          />
+        )}
+        {isProfileOpen && (
+          <ProfilePanel
+            session={session}
+            language={language}
+            theme={theme}
+            onClose={() => setIsProfileOpen(false)}
+            onLanguageChange={onLanguage}
+            onThemeChange={onThemeChange}
+            onProfileUpdated={onSessionChanged}
+            onRequestLogout={() => {
+              setIsProfileOpen(false);
+              setIsLogoutDialogOpen(true);
+            }}
+            onLogout={onLogout}
+          />
+        )}{" "}
+        {isSettingsOpen && (
+          <SettingsPanel
+            language={language}
+            theme={theme}
+            onClose={() => setIsSettingsOpen(false)}
+            onLanguageChange={onLanguage}
+            onThemeChange={onThemeChange}
+            taskPreviewCount={taskPreviewCount}
+            onTaskPreviewCount={setTaskPreviewCount}
+            confirmBeforeDelete={confirmBeforeDelete}
+            onConfirmBeforeDelete={setConfirmBeforeDelete}
+            reduceMotion={reduceMotion}
+            onReduceMotion={setReduceMotion}
+            highContrast={highContrast}
+            onHighContrast={setHighContrast}
+          />
+        )}{" "}
+        {taskEditor !== undefined && (
+          <TaskEditor
+            task={taskEditor}
+            categories={categoryList}
+            tags={tagList}
+            onClose={() => setTaskEditor(undefined)}
+            onSave={saveTask}
+            onDelete={requestTaskDeletion}
+          />
+        )}{" "}
+        {organizationKind && (
+          <OrganizationEditor
+            kind={organizationKind}
+            categories={categoryList}
+            tags={tagList}
+            onClose={() => setOrganizationKind(null)}
+            onChanged={loadData}
+          />
+        )}{" "}
+        {selectedTask && (
+          <TaskDetails
+            task={selectedTask}
+            onClose={() => setSelectedTask(null)}
+            onEdit={() => {
+              setSelectedTask(null);
+              setTaskEditor(selectedTask);
+            }}
+            onDelete={() => requestTaskDeletion(selectedTask)}
+          />
+        )}
+        {taskPendingDeletion && (
+          <ConfirmDialog
+            title={`Você tem certeza que deseja excluir a tarefa “${taskPendingDeletion.title}”?`}
+            cancelLabel="Não"
+            confirmLabel="Sim, excluir"
+            onCancel={() => setTaskPendingDeletion(null)}
+            onConfirm={() => {
+              void removeTask(taskPendingDeletion);
+              setTaskPendingDeletion(null);
+            }}
+          />
+        )}
+      </AnimatePresence>
+    </main>
+  );
+}
+
+function Stat({
+  icon,
+  label,
+  value,
+  muted,
+  success,
+  accent,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: number;
+  muted?: boolean;
+  success?: boolean;
+  accent?: boolean;
+}) {
+  return (
+    <article className="stat-card">
+      <span
+        className={`stat-icon${muted ? " muted" : ""}${success ? " success" : ""}${accent ? " accent" : ""}`}
+      >
+        {icon}
+      </span>
+      <span>{label}</span>
+      <strong>{value}</strong>
+    </article>
+  );
+}
+function NotificationPanel({
+  notifications,
+  language,
+  onRead,
+  onDelete,
+}: {
+  notifications: Notification[];
+  language: Language;
+  onRead: (notification: Notification) => void;
+  onDelete: (id: string) => void;
+}) {
+  return (
+    <section className="notifications">
+      <strong>{copy[language].notifications}</strong>
+      {notifications.length ? (
+        notifications.map((notification) => (
+          <article
+            className={`notification-item ${notification.readAt ? "" : "unread"}`}
+            key={notification.id}
+            onClick={() => onRead(notification)}
+          >
+            <div>
+              <b>{notification.title}</b>
+              <p>{notification.message}</p>
+            </div>
+            <button
+              onClick={(event) => {
+                event.stopPropagation();
+                onDelete(notification.id);
+              }}
+              aria-label="Excluir notificação"
+            >
+              <Trash2 size={14} />
+            </button>
+          </article>
+        ))
+      ) : (
+        <p>{copy[language].noNotifications}</p>
+      )}
+    </section>
+  );
+}
+function SettingsPanel({
+  language,
+  theme,
+  onClose,
+  onLanguageChange,
+  onThemeChange,
+  taskPreviewCount,
+  onTaskPreviewCount,
+  confirmBeforeDelete,
+  onConfirmBeforeDelete,
+  reduceMotion,
+  onReduceMotion,
+  highContrast,
+  onHighContrast,
+}: {
+  language: Language;
+  theme: Theme;
+  onClose: () => void;
+  onLanguageChange: (value: Language) => void;
+  onThemeChange: (value: Theme) => void;
+  taskPreviewCount: number;
+  onTaskPreviewCount: (value: number) => void;
+  confirmBeforeDelete: boolean;
+  onConfirmBeforeDelete: (value: boolean) => void;
+  reduceMotion: boolean;
+  onReduceMotion: (value: boolean) => void;
+  highContrast: boolean;
+  onHighContrast: (value: boolean) => void;
+}) {
+  const [profile, setProfile] = useState<Profile | null>(null),
+    [message, setMessage] = useState(""),
+    [error, setError] = useState("");
+  useEffect(() => {
+    void getProfile()
+      .then(setProfile)
+      .catch(() => setError("Não foi possível carregar as configurações."));
+  }, []);
+  const preferences: Preferences = profile?.preferences || {
+    language,
+    theme,
+    soundEnabled: localStorage.getItem("taskly_sound_enabled") !== "false",
+    notificationsEnabled: true,
+    dueDateReminders: true,
+  };
+  async function savePreferences(data: Preferences) {
+    try {
+      setError("");
+      const saved = await updatePreferences(data);
+      setProfile((current) =>
+        current ? { ...current, preferences: saved } : current,
+      );
+      setSoundEnabled(saved.soundEnabled);
+      onLanguageChange(saved.language);
+      onThemeChange(
+        saved.theme === "system"
+          ? window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light"
+          : saved.theme,
+      );
+      setMessage("Configurações salvas.");
+    } catch {
+      setError("Não foi possível salvar as configurações.");
+    }
+  }
+  function changePreview(value: number) {
+    onTaskPreviewCount(value);
+    localStorage.setItem("taskly_task_preview_count", String(value));
+    setMessage("Configurações salvas.");
+  }
+  return (
+    <Dialog onClose={onClose}>
+      <section className="settings-dialog">
+        <div className="editor-heading">
+          <div>
+            <p className="eyebrow">Aplicativo</p>
+            <h2>Configurações</h2>
+          </div>
+          <button className="icon-button" onClick={onClose}>
+            ×
+          </button>
+        </div>
+        <div className="settings-groups">
+          <section>
+            <h3>Aparência e idioma</h3>
+            <div className="settings-list">
+              <div>
+                <span>
+                  <strong>Tema</strong>
+                  <small>Claro, escuro ou conforme o sistema.</small>
+                </span>
+                <select
+                  value={preferences.theme}
+                  onChange={(event) =>
+                    void savePreferences({
+                      ...preferences,
+                      theme: event.target.value as Preferences["theme"],
+                    })
+                  }
+                >
+                  <option value="light">Claro</option>
+                  <option value="dark">Escuro</option>
+                  <option value="system">Sistema</option>
+                </select>
+              </div>
+              <div>
+                <span>
+                  <strong>Idioma</strong>
+                  <small>Idioma usado na interface.</small>
+                </span>
+                <select
+                  value={preferences.language}
+                  onChange={(event) =>
+                    void savePreferences({
+                      ...preferences,
+                      language: event.target.value as Language,
+                    })
+                  }
+                >
+                  <option value="pt">Português</option>
+                  <option value="en">English</option>
+                </select>
+              </div>
+            </div>
+          </section>
+          <section>
+            <h3>Sons e notificações</h3>
+            <div className="settings-list">
+              <label className="setting-switch">
+                <span>
+                  <strong>Sons</strong>
+                  <small>Ao entrar e concluir tarefas.</small>
+                </span>
+                <input
+                  type="checkbox"
+                  checked={preferences.soundEnabled}
+                  onChange={(event) =>
+                    void savePreferences({
+                      ...preferences,
+                      soundEnabled: event.target.checked,
+                    })
+                  }
+                />
+              </label>
+              <label className="setting-switch">
+                <span>
+                  <strong>Notificações</strong>
+                  <small>Exibir novidades no centro de notificações.</small>
+                </span>
+                <input
+                  type="checkbox"
+                  checked={preferences.notificationsEnabled}
+                  onChange={(event) =>
+                    void savePreferences({
+                      ...preferences,
+                      notificationsEnabled: event.target.checked,
+                    })
+                  }
+                />
+              </label>
+              <label className="setting-switch">
+                <span>
+                  <strong>Avisos de prazo</strong>
+                  <small>
+                    Manter lembretes para tarefas próximas do prazo.
+                  </small>
+                </span>
+                <input
+                  type="checkbox"
+                  checked={preferences.dueDateReminders}
+                  onChange={(event) =>
+                    void savePreferences({
+                      ...preferences,
+                      dueDateReminders: event.target.checked,
+                    })
+                  }
+                />
+              </label>
+            </div>
+          </section>
+          <section>
+            <h3>Exibição</h3>
+            <div className="settings-list">
+              <div>
+                <span>
+                  <strong>Tarefas visíveis</strong>
+                  <small>Quantidade inicial em Próximas tarefas.</small>
+                </span>
+                <select
+                  value={taskPreviewCount}
+                  onChange={(event) =>
+                    changePreview(Number(event.target.value))
+                  }
+                >
+                  <option value="3">3 tarefas</option>
+                  <option value="5">5 tarefas</option>
+                  <option value="10">10 tarefas</option>
+                </select>
+              </div>
+              <label className="setting-switch">
+                <span>
+                  <strong>Confirmar exclusões</strong>
+                  <small>Pedir confirmação antes de apagar uma tarefa.</small>
+                </span>
+                <input
+                  type="checkbox"
+                  checked={confirmBeforeDelete}
+                  onChange={(event) => {
+                    onConfirmBeforeDelete(event.target.checked);
+                    localStorage.setItem(
+                      "taskly_confirm_before_delete",
+                      String(event.target.checked),
+                    );
+                    setMessage("Configurações salvas.");
+                  }}
+                />
+              </label>
+            </div>
+          </section>
+          <section>
+            <h3>Acessibilidade</h3>
+            <div className="settings-list">
+              <label className="setting-switch">
+                <span>
+                  <strong>Reduzir animações</strong>
+                  <small>Minimiza movimentos na interface.</small>
+                </span>
+                <input
+                  type="checkbox"
+                  checked={reduceMotion}
+                  onChange={(event) => onReduceMotion(event.target.checked)}
+                />
+              </label>
+              <label className="setting-switch">
+                <span>
+                  <strong>Alto contraste</strong>
+                  <small>Aumenta a diferença entre textos e superfícies.</small>
+                </span>
+                <input
+                  type="checkbox"
+                  checked={highContrast}
+                  onChange={(event) => onHighContrast(event.target.checked)}
+                />
+              </label>
+            </div>
+          </section>
+          <section className="about-section">
+            <h3>Sobre o Taskly</h3>
+            <p className="app-version">
+              Versão 1.0.0 — primeira versão do projeto.
+            </p>
+            <p className="app-description">
+              Taskly é uma aplicação para organização de tarefas.
+            </p>
+            <a
+              href="https://github.com/joseluucaas/taskly"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Ver repositório no GitHub ↗
+            </a>
+          </section>
+        </div>
+        {message && <p className="profile-success">{message}</p>}
+        {error && <p className="dashboard-error">{error}</p>}
+      </section>
+    </Dialog>
+  );
+}
+function TaskEditor({
+  task,
+  categories: categoryList,
+  tags: tagList,
+  onClose,
+  onSave,
+  onDelete,
+}: {
+  task: Task | null;
+  categories: Category[];
+  tags: TaskTag[];
+  onClose: () => void;
+  onSave: (data: TaskInput, id?: string) => Promise<void>;
+  onDelete: (task: Task) => Promise<void>;
+}) {
+  const [title, setTitle] = useState(task?.title || "");
+  const [description, setDescription] = useState(task?.description || "");
+  const [dueDateText, setDueDateText] = useState(
+    task?.dueDate
+      ? task.dueDate.slice(0, 10).split("-").reverse().join(" / ")
+      : "",
+  );
+  const [categoryId, setCategoryId] = useState(task?.category?.id || "");
+  const [tagIds, setTagIds] = useState<string[]>(
+    task?.tags.map((tag) => tag.id) || [],
+  );
+  const [saving, setSaving] = useState(false);
+  async function submit(event: React.FormEvent) {
+    event.preventDefault();
+    if (!title.trim()) return;
+    const dateDigits = dueDateText.replace(/\\D/g, "");
+    if (dateDigits.length > 0 && dateDigits.length !== 8) return;
+    const dueDate = dateDigits
+      ? `${dateDigits.slice(4)}-${dateDigits.slice(2, 4)}-${dateDigits.slice(0, 2)}`
+      : undefined;
+    setSaving(true);
+    await onSave(
+      {
+        title: title.trim(),
+        description: description.trim(),
+        dueDate,
+        categoryId: categoryId || null,
+        tagIds,
+      },
+      task?.id,
+    );
+    setSaving(false);
+  }
+  return (
+    <Dialog onClose={onClose}>
+      <section className="editor-dialog">
+        <div className="editor-heading">
+          <div>
+            <p className="eyebrow">{task ? "Editar tarefa" : "Nova tarefa"}</p>
+            <h2>{task ? task.title : "O que você quer fazer?"}</h2>
+          </div>
+          <button className="icon-button" onClick={onClose}>
+            ×
+          </button>
+        </div>
+        <form className="editor-form" onSubmit={submit}>
+          <label>
+            Título
+            <input
+              value={title}
+              onChange={(event) => setTitle(event.target.value)}
+              maxLength={100}
+              autoFocus
+            />
+          </label>
+          <label>
+            Descrição
+            <textarea
+              value={description}
+              onChange={(event) => setDescription(event.target.value)}
+              maxLength={2000}
+            />
+          </label>
+          <div className="editor-columns">
+            <label>
+              Prazo
+              <input
+                value={dueDateText}
+                onChange={(event) => {
+                  const digits = event.target.value
+                    .replace(/\\D/g, "")
+                    .slice(0, 8);
+                  setDueDateText(
+                    [digits.slice(0, 2), digits.slice(2, 4), digits.slice(4, 8)]
+                      .filter(Boolean)
+                      .join(" / "),
+                  );
+                }}
+                placeholder="dia / mês / ano"
+                inputMode="numeric"
+                maxLength={14}
+                aria-label="Prazo: dia, mês e ano"
+              />
+            </label>
+            <label>
+              Categoria
+              <select
+                value={categoryId}
+                onChange={(event) => setCategoryId(event.target.value)}
+              >
+                <option value="">Sem categoria</option>
+                {categoryList.map((category) => (
+                  <option value={category.id} key={category.id}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+          <fieldset>
+            <legend>Etiquetas</legend>
+            <div className="tag-options">
+              {tagList.map((tag) => (
+                <label key={tag.id}>
+                  <input
+                    type="checkbox"
+                    checked={tagIds.includes(tag.id)}
+                    onChange={() =>
+                      setTagIds((ids) =>
+                        ids.includes(tag.id)
+                          ? ids.filter((id) => id !== tag.id)
+                          : [...ids, tag.id],
+                      )
+                    }
+                  />
+                  <span style={{ background: tag.color || undefined }} />
+                  {tag.name}
+                </label>
+              ))}
+            </div>
+          </fieldset>
+          <div className="editor-actions">
+            {task && (
+              <button
+                type="button"
+                className="delete-button"
+                onClick={() => void onDelete(task)}
+              >
+                <Trash2 size={15} />
+                Excluir
+              </button>
+            )}
+            <span />
+            <button type="button" className="dialog-cancel" onClick={onClose}>
+              Cancelar
+            </button>
+            <button className="dialog-confirm" disabled={saving}>
+              {saving ? "Salvando..." : "Salvar tarefa"}
+            </button>
+          </div>
+        </form>
+      </section>
+    </Dialog>
+  );
+}
+function OrganizationEditor({
+  kind,
+  categories: categoryList,
+  tags: tagList,
+  onClose,
+  onChanged,
+}: {
+  kind: "categories" | "tags";
+  categories: Category[];
+  tags: TaskTag[];
+  onClose: () => void;
+  onChanged: () => Promise<void>;
+}) {
+  const items = kind === "categories" ? categoryList : tagList;
+  const service = kind === "categories" ? categories : tags;
+  const [name, setName] = useState(""),
+    [color, setColor] = useState("#777777"),
+    [editingId, setEditingId] = useState<string | null>(null),
+    [error, setError] = useState("");
+  async function submit(event: React.FormEvent) {
+    event.preventDefault();
+    if (!name.trim()) return;
+    try {
+      setError("");
+      if (editingId)
+        await service.update(editingId, { name: name.trim(), color });
+      else await service.create({ name: name.trim(), color });
+      setName("");
+      setColor("#777777");
+      setEditingId(null);
+      await onChanged();
+    } catch {
+      setError("Não foi possível salvar este item.");
+    }
+  }
+  async function remove(id: string) {
+    if (!window.confirm("Excluir este item?")) return;
+    try {
+      await service.remove(id);
+      await onChanged();
+    } catch {
+      setError("Não foi possível excluir este item.");
+    }
+  }
+  return (
+    <Dialog onClose={onClose}>
+      <section className="editor-dialog">
+        <div className="editor-heading">
+          <div>
+            <p className="eyebrow">Organização</p>
+            <h2>{kind === "categories" ? "Categorias" : "Etiquetas"}</h2>
+          </div>
+          <button className="icon-button" onClick={onClose}>
+            ×
+          </button>
+        </div>
+        <form className="resource-form" onSubmit={submit}>
+          <input
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            placeholder={
+              kind === "categories" ? "Nome da categoria" : "Nome da etiqueta"
+            }
+            maxLength={50}
+          />
+          <input
+            type="color"
+            value={color}
+            onChange={(event) => setColor(event.target.value)}
+            aria-label="Cor"
+          />
+          <button className="dialog-confirm">
+            {editingId ? "Salvar" : "Adicionar"}
+          </button>
+        </form>
+        {error && <p className="dashboard-error">{error}</p>}
+        <div className="resource-list">
+          {items.length ? (
+            items.map((item) => (
+              <article key={item.id}>
+                <span
+                  className="color-dot"
+                  style={{ background: item.color || "#777" }}
+                />
+                <strong>{item.name}</strong>
+                <button
+                  onClick={() => {
+                    setEditingId(item.id);
+                    setName(item.name);
+                    setColor(item.color || "#777777");
+                  }}
+                  aria-label="Editar"
+                >
+                  <Pencil size={15} />
+                </button>
+                <button
+                  onClick={() => void remove(item.id)}
+                  aria-label="Excluir"
+                >
+                  <Trash2 size={15} />
+                </button>
+              </article>
+            ))
+          ) : (
+            <p className="empty-state">Nenhum item criado ainda.</p>
+          )}
+        </div>
+        <div className="editor-actions">
+          <span />
+          <button className="dialog-cancel" onClick={onClose}>
+            Fechar
+          </button>
+        </div>
+      </section>
+    </Dialog>
+  );
+}
+function TaskDetails({
+  task,
+  onClose,
+  onEdit,
+  onDelete,
+}: {
+  task: Task;
+  onClose: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
+}) {
+  const [comments, setComments] = useState<Comment[]>([]),
+    [content, setContent] = useState(""),
+    [editing, setEditing] = useState<string | null>(null),
+    [error, setError] = useState("");
+  async function load() {
+    try {
+      setComments(await listComments(task.id));
+    } catch {
+      setError("Não foi possível carregar os comentários.");
+    }
+  }
+  useEffect(() => {
+    let isActive = true;
+
+    void listComments(task.id)
+      .then((items) => {
+        if (isActive) setComments(items);
+      })
+      .catch(() => {
+        if (isActive) setError("Não foi possível carregar os comentários.");
+      });
+
+    return () => {
+      isActive = false;
+    };
+  }, [task.id]);
+  async function submit(event: React.FormEvent) {
+    event.preventDefault();
+    if (!content.trim()) return;
+    try {
+      if (editing) await updateComment(task.id, editing, content.trim());
+      else await createComment(task.id, content.trim());
+      setContent("");
+      setEditing(null);
+      await load();
+    } catch {
+      setError("Não foi possível salvar o comentário.");
+    }
+  }
+  return (
+    <Dialog onClose={onClose}>
+      <section className="editor-dialog details-dialog">
+        <div className="editor-heading">
+          <div>
+            <p className="eyebrow">Tarefa</p>
+            <h2>{task.title}</h2>
+          </div>
+          <button className="icon-button" onClick={onClose}>
+            ×
+          </button>
+        </div>
+        {task.description && (
+          <p className="task-description">{task.description}</p>
+        )}
+        <div className="task-tags">
+          {task.tags.map((tag) => (
+            <span key={tag.id} style={{ borderColor: tag.color || undefined }}>
+              {tag.name}
+            </span>
+          ))}
+        </div>
+        <div className="comments">
+          <h3>Comentários</h3>
+          {comments.map((comment) => (
+            <article key={comment.id}>
+              <p>{comment.content}</p>
+              <small>
+                {new Intl.DateTimeFormat("pt-BR", {
+                  dateStyle: "short",
+                  timeStyle: "short",
+                }).format(new Date(comment.createdAt))}
+              </small>
+              <button
+                onClick={() => {
+                  setEditing(comment.id);
+                  setContent(comment.content);
+                }}
+                aria-label="Editar comentário"
+              >
+                <Pencil size={14} />
+              </button>
+              <button
+                onClick={async () => {
+                  try {
+                    await deleteComment(task.id, comment.id);
+                    await load();
+                  } catch {
+                    setError("Não foi possível excluir o comentário.");
+                  }
+                }}
+                aria-label="Excluir comentário"
+              >
+                <Trash2 size={14} />
+              </button>
+            </article>
+          ))}
+          {!comments.length && (
+            <p className="empty-state">Nenhum comentário ainda.</p>
+          )}
+          <form className="comment-form" onSubmit={submit}>
+            <textarea
+              value={content}
+              onChange={(event) => setContent(event.target.value)}
+              placeholder="Escreva um comentário"
+              maxLength={1000}
+            />
+            <button className="dialog-confirm">
+              {editing ? "Salvar" : "Comentar"}
+            </button>
+          </form>
+          {error && <p className="dashboard-error">{error}</p>}
+        </div>
+        <div className="editor-actions">
+          <button className="delete-button" onClick={onDelete}>
+            <Trash2 size={15} />
+            Excluir tarefa
+          </button>
+          <span />
+          <button className="dialog-cancel" onClick={onEdit}>
+            Editar tarefa
+          </button>
+          <button className="dialog-cancel" onClick={onClose}>
+            Fechar
+          </button>
+        </div>
+      </section>
+    </Dialog>
+  );
+}
+function ProfilePanel({
+  session,
+  language,
+  theme,
+  onClose,
+  onLanguageChange,
+  onThemeChange,
+  onProfileUpdated,
+  onRequestLogout,
+  onLogout,
+}: {
+  session: LoginResult;
+  language: Language;
+  theme: Theme;
+  onClose: () => void;
+  onLanguageChange: (value: Language) => void;
+  onThemeChange: (value: Theme) => void;
+  onProfileUpdated: (user: LoginResult["user"]) => void;
+  onRequestLogout: () => void;
+  onLogout: () => void;
+}) {
+  const [section, setSection] = useState<
+      "profile" | "preferences" | "notifications" | "security" | "help"
+    >("profile"),
+    [profile, setProfile] = useState<Profile | null>(null),
+    [name, setName] = useState(session.user.name),
+    [email, setEmail] = useState(session.user.email),
+    [currentPassword, setCurrentPassword] = useState(""),
+    [newPassword, setNewPassword] = useState(""),
+    [message, setMessage] = useState(""),
+    [error, setError] = useState("");
+  useEffect(() => {
+    void getProfile()
+      .then((data) => {
+        setProfile(data);
+        setName(data.name);
+        setEmail(data.email);
+      })
+      .catch(() => setError("Não foi possível carregar seu perfil."));
+  }, []);
+  function changeSection(
+    nextSection: "profile" | "preferences" | "notifications" | "security" | "help",
+  ) {
+    setSection(nextSection);
+    setError("");
+    setMessage("");
+  }
+  const preferences: Preferences = profile?.preferences || {
+    language,
+    theme,
+    soundEnabled: localStorage.getItem("taskly_sound_enabled") !== "false",
+    notificationsEnabled: true,
+    dueDateReminders: true,
+  };
+  async function savePreferences(data: Preferences) {
+    try {
+      setError("");
+      const saved = await updatePreferences(data);
+      setProfile((current) =>
+        current ? { ...current, preferences: saved } : current,
+      );
+      setSoundEnabled(saved.soundEnabled);
+      onLanguageChange(saved.language);
+      onThemeChange(
+        saved.theme === "system"
+          ? window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light"
+          : saved.theme,
+      );
+      setMessage("Preferências salvas.");
+    } catch {
+      setError("Não foi possível salvar as preferências.");
+    }
+  }
+  async function saveProfile(event: React.FormEvent) {
+    event.preventDefault();
+    try {
+      setError("");
+      const saved = await saveUserProfile({ name, email });
+      setProfile(saved);
+      onProfileUpdated({ id: saved.id, name: saved.name, email: saved.email });
+      setMessage("Perfil atualizado com sucesso.");
+    } catch {
+      setError("Não foi possível atualizar o perfil.");
+    }
+  }
+  async function savePassword(event: React.FormEvent) {
+    event.preventDefault();
+    try {
+      setError("");
+      await changePassword(currentPassword, newPassword);
+      onLogout();
+    } catch {
+      setError("Não foi possível alterar a senha. Verifique a senha atual.");
+    }
+  }
+  async function endSessions() {
+    try {
+      await logoutAllSessions();
+      onLogout();
+    } catch {
+      setError("Não foi possível encerrar as sessões.");
+    }
+  }
+  return (
+    <Dialog onClose={onClose}>
+      <section className="profile-dialog">
+        <div className="editor-heading">
+          <div>
+            <p className="eyebrow">Conta</p>
+            <h2>Minha conta</h2>
+          </div>
+          <button className="icon-button" onClick={onClose}>
+            ×
+          </button>
+        </div>
+        <div className="profile-layout">
+          <nav className="profile-nav">
+            <button
+              className={section === "profile" ? "selected" : ""}
+              onClick={() => changeSection("profile")}
+            >
+              Meu perfil
+            </button>
+            <button
+              className={section === "preferences" ? "selected" : ""}
+              onClick={() => changeSection("preferences")}
+            >
+              Preferências
+            </button>
+            <button
+              className={section === "notifications" ? "selected" : ""}
+              onClick={() => changeSection("notifications")}
+            >
+              Notificações
+            </button>
+            <button
+              className={section === "security" ? "selected" : ""}
+              onClick={() => changeSection("security")}
+            >
+              Segurança
+            </button>
+            <button
+              className={section === "help" ? "selected" : ""}
+              onClick={() => changeSection("help")}
+            >
+              Ajuda e atalhos
+            </button>
+            <button className="profile-logout" onClick={onRequestLogout}>
+              Sair da conta
+            </button>
+          </nav>
+          <div className="profile-content">
+            {section === "profile" && (
+              <form className="editor-form" onSubmit={saveProfile}>
+                <p>Atualize os dados visíveis da sua conta.</p>
+                <label>
+                  Nome
+                  <input
+                    value={name}
+                    onChange={(event) => setName(event.target.value)}
+                    minLength={2}
+                  />
+                </label>
+                <label>
+                  E-mail
+                  <input
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                    type="email"
+                  />
+                </label>
+                <button className="dialog-confirm">Salvar alterações</button>
+              </form>
+            )}
+            {section === "preferences" && (
+              <div className="settings-list">
+                <p>
+                  Escolha como o Taskly deve se comportar neste dispositivo.
+                </p>
+                <div>
+                  <span>
+                    <strong>Tema</strong>
+                    <small>Defina a aparência da interface.</small>
+                  </span>
+                  <select
+                    value={preferences.theme}
+                    onChange={(event) =>
+                      void savePreferences({
+                        ...preferences,
+                        theme: event.target.value as Preferences["theme"],
+                      })
+                    }
+                  >
+                    <option value="light">Claro</option>
+                    <option value="dark">Escuro</option>
+                    <option value="system">Sistema</option>
+                  </select>
+                </div>
+                <div>
+                  <span>
+                    <strong>Idioma</strong>
+                    <small>Português ou inglês.</small>
+                  </span>
+                  <select
+                    value={preferences.language}
+                    onChange={(event) =>
+                      void savePreferences({
+                        ...preferences,
+                        language: event.target.value as Language,
+                      })
+                    }
+                  >
+                    <option value="pt">Português</option>
+                    <option value="en">English</option>
+                  </select>
+                </div>
+                <label className="setting-switch">
+                  <span>
+                    <strong>Sons</strong>
+                    <small>Reproduzir sons ao entrar e concluir tarefas.</small>
+                  </span>
+                  <input
+                    type="checkbox"
+                    checked={preferences.soundEnabled}
+                    onChange={(event) =>
+                      void savePreferences({
+                        ...preferences,
+                        soundEnabled: event.target.checked,
+                      })
+                    }
+                  />
+                </label>
+              </div>
+            )}
+            {section === "notifications" && (
+              <div className="settings-list">
+                <p>Controle os avisos exibidos pelo Taskly.</p>
+                <label className="setting-switch">
+                  <span>
+                    <strong>Notificações</strong>
+                    <small>Receber novidades no centro de notificações.</small>
+                  </span>
+                  <input
+                    type="checkbox"
+                    checked={preferences.notificationsEnabled}
+                    onChange={(event) =>
+                      void savePreferences({
+                        ...preferences,
+                        notificationsEnabled: event.target.checked,
+                      })
+                    }
+                  />
+                </label>
+                <label className="setting-switch">
+                  <span>
+                    <strong>Avisos de prazo</strong>
+                    <small>
+                      Manter ativados os lembretes para tarefas próximas do
+                      prazo.
+                    </small>
+                  </span>
+                  <input
+                    type="checkbox"
+                    checked={preferences.dueDateReminders}
+                    onChange={(event) =>
+                      void savePreferences({
+                        ...preferences,
+                        dueDateReminders: event.target.checked,
+                      })
+                    }
+                  />
+                </label>
+              </div>
+            )}
+            {section === "security" && (
+              <div className="security-section">
+                <form className="editor-form" onSubmit={savePassword}>
+                  <p>
+                    Ao trocar a senha, a conta será desconectada em todos os
+                    dispositivos.
+                  </p>
+                  <label>
+                    Senha atual
+                    <input
+                      value={currentPassword}
+                      onChange={(event) =>
+                        setCurrentPassword(event.target.value)
+                      }
+                      type="password"
+                      autoComplete="current-password"
+                    />
+                  </label>
+                  <label>
+                    Nova senha
+                    <input
+                      value={newPassword}
+                      onChange={(event) => setNewPassword(event.target.value)}
+                      type="password"
+                      minLength={6}
+                      autoComplete="new-password"
+                    />
+                  </label>
+                  <button className="dialog-confirm">Alterar senha</button>
+                </form>
+                <button
+                  className="dialog-cancel"
+                  onClick={() => void endSessions()}
+                >
+                  Encerrar todas as sessões
+                </button>
+              </div>
+            )}
+            {section === "help" && (
+              <div className="help-section">
+                <p>
+                  <strong>Atalhos rápidos</strong>
+                </p>
+                <p>
+                  <kbd>/</kbd> Foca na busca de tarefas.
+                </p>
+                <p>
+                  <kbd>Esc</kbd> Fecha janelas abertas.
+                </p>
+                <p>
+                  Use o botão “Nova tarefa” para registrar uma atividade e
+                  clique nela para editar, comentar ou excluir.
+                </p>
+                <p>Precisa sair? Use “Sair da conta” neste menu.</p>
+              </div>
+            )}
+            {message && <p className="profile-success">{message}</p>}
+            {error && <p className="dashboard-error">{error}</p>}
+          </div>
+        </div>
+      </section>
+    </Dialog>
+  );
+}
 export default App;
