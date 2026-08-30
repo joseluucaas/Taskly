@@ -8,90 +8,112 @@
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)
 ![JWT](https://img.shields.io/badge/JWT-black?logo=JSON%20web%20tokens)
+![Zod](https://img.shields.io/badge/Zod-3E67B1?logo=zod&logoColor=white)
 ![Jest](https://img.shields.io/badge/Jest-C21325?logo=jest&logoColor=white)
 ![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)
-<!-- ![Tailwind](https://img.shields.io/badge/TailwindCSS-38B2AC?logo=tailwind-css&logoColor=white) -->
+![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white)
 ![License](https://img.shields.io/badge/license-MIT-informational)
 
-Taskly e uma aplicação de gerenciamento de tarefas com autenticação de usuários, construída como projeto de estudo aprofundado em back-end, com foco em **Clean Code**, **SOLID** e **Programação Orientada a Objetos**.
+O **Taskly** é uma aplicação full-stack de gerenciamento de tarefas. O projeto aplica arquitetura de APIs REST, TypeScript, autenticação, segurança, banco de dados relacional e boas práticas de engenharia de software.
 
-> 🚧 Projeto em desenvolvimento ativo. Este README é atualizado conforme novas partes são construídas.
+O back-end está concluído localmente e pronto para deploy. O front-end será desenvolvido em uma etapa própria, consumindo a API existente.
 
 ---
 
 ## 📚 Índice
 
 - [Sobre o projeto](#-sobre-o-projeto)
+- [Funcionalidades](#-funcionalidades)
 - [Stack utilizada](#-stack-utilizada)
 - [Arquitetura](#-arquitetura)
 - [Modelagem do banco de dados](#-modelagem-do-banco-de-dados)
 - [Como rodar o projeto localmente](#-como-rodar-o-projeto-localmente)
-- [API e Endpoints](#-api-e-endpoints)
+- [API e endpoints](#-api-e-endpoints)
 - [Segurança](#-segurança)
 - [Estrutura de pastas](#-estrutura-de-pastas)
 - [Roadmap](#-roadmap)
-- [Convenções e Padrões](#-convenções-e-padrões)
 - [Autor](#-autor)
 
 ---
 
 ## 📖 Sobre o projeto
 
-Uma lista de tarefas (Taskly) onde cada usuário se cadastra, faz login e gerencia suas próprias tarefas com título, descrição, prazo e status de conclusão.
+Cada pessoa possui uma área privada para organizar tarefas, categorias e etiquetas, acompanhar indicadores no dashboard, registrar comentários e consultar notificações.
 
-O objetivo principal deste projeto **não é só a funcionalidade em si**, mas o processo de construí-la seguindo boas práticas de arquitetura de back-end, separação de responsabilidades (routes → controllers → services → repository), tipagem forte com TypeScript, autenticação segura com hash de senha e JWT, e modelagem de dados relacional.
+Além das funcionalidades, a API possui autenticação JWT com refresh token, autorização por recurso, validação de dados, tratamento global de erros, testes de integração e documentação interativa.
+
+---
+
+## ✨ Funcionalidades
+
+### 👤 Autenticação
+
+- Cadastro, login, logout e renovação de sessão;
+- Hash de senhas com bcrypt;
+- Access token JWT e refresh token;
+- Proteção de rotas e rate limit no login.
+
+### 📝 Tarefas e organização
+
+- CRUD de tarefas com descrição, prazo e status;
+- Paginação, busca, filtros por status/período e ordenação;
+- Categorias com cor e vínculo opcional;
+- Etiquetas com relação muitos-para-muitos;
+- Comentários em tarefas;
+- Dashboard com métricas e próximas tarefas;
+- Notificações internas com leitura e exclusão.
+
+### 🛡️ Qualidade da API
+
+- Validação com Zod e respostas padronizadas;
+- Middleware global de erros e logs estruturados com Winston;
+- Swagger/OpenAPI e health check;
+- 20 testes de integração em oito suítes.
 
 ---
 
 ## 🛠 Stack utilizada
 
 **Back-end**
-- [Node.js](https://nodejs.org/) — ambiente de execução
-- [Express](https://expressjs.com/) — framework do servidor HTTP
-- [TypeScript](https://www.typescriptlang.org/) (ESM/`nodenext`) — tipagem estática
-- [Prisma](https://www.prisma.io/) — ORM (mapeamento objeto-relacional)
-- [PostgreSQL](https://www.postgresql.org/) — banco de dados relacional
-- [Docker](https://www.docker.com/) — containerização do banco em ambiente local
-- [bcrypt](https://www.npmjs.com/package/bcrypt) — hash de senhas
-- [jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken) — autenticação via JWT
-- [Zod](https://zod.dev/) — validação de dados de entrada
-- [Swagger / OpenAPI](https://swagger.io/) — interface interativa para documentar e testar a API
-- [Winston](https://github.com/winstonjs/winston) — logs estruturados
-- [Jest](https://jestjs.io/) + [Supertest](https://www.npmjs.com/package/supertest) — testes automatizados
 
-**Front-end** 
-- [React](https://react.dev/)
-- [Tailwind CSS](https://tailwindcss.com/)
+- [Node.js](https://nodejs.org/) — ambiente de execução;
+- [Express](https://expressjs.com/) — framework do servidor HTTP;
+- [TypeScript](https://www.typescriptlang.org/) com ESM/`nodenext` — tipagem estática;
+- [Prisma](https://www.prisma.io/) — ORM para comunicação com o banco;
+- [PostgreSQL](https://www.postgresql.org/) — banco de dados relacional;
+- [Docker](https://www.docker.com/) — PostgreSQL no ambiente local;
+- [bcrypt](https://www.npmjs.com/package/bcrypt) e [jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken) — autenticação;
+- [Zod](https://zod.dev/), [Swagger/OpenAPI](https://swagger.io/), Winston, Helmet, CORS e express-rate-limit — qualidade e segurança;
+- [Jest](https://jestjs.io/) + [Supertest](https://www.npmjs.com/package/supertest) — testes automatizados.
+
+**Front-end — planejado**
+
+- [React](https://react.dev/) — construção da interface;
+- [TypeScript](https://www.typescriptlang.org/) — tipagem estática;
+- [Vite](https://vite.dev/) — ambiente de desenvolvimento e build;
+- [React Router](https://reactrouter.com/) — roteamento;
+- [Tailwind CSS](https://tailwindcss.com/) — estilização responsiva;
+- [TanStack Query](https://tanstack.com/query/latest) e [Axios](https://axios-http.com/) — consumo e cache da API;
+- [React Hook Form](https://react-hook-form.com/) + Zod — formulários e validação;
+- [Lucide](https://lucide.dev/) e [Framer Motion](https://motion.dev/) — ícones e animações;
+- [Vitest](https://vitest.dev/) + React Testing Library — testes de interface.
 
 ---
 
 ## 🏗 Arquitetura
 
-O back-end segue uma separação de camadas, onde cada uma tem uma única responsabilidade:
-
 ```mermaid
 flowchart TB
-    Client["Cliente (React)"]
-
+    Client["Cliente / Front-end React"]
     subgraph API["Back-end · Express"]
-        Routes["Routes<br/><i>define os endpoints</i>"]
-        Middlewares["Middlewares<br/><i>autenticação (JWT) e validação (Zod)</i>"]
-        Controllers["Controllers<br/><i>recebem request, devolvem response</i>"]
-        Services["Services<br/><i>regras de negócio</i>"]
-        Repository["Repository / Prisma Client<br/><i>acesso a dados</i>"]
+      Routes["Routes"] --> Middlewares["Middlewares"] --> Controllers["Controllers"] --> Services["Services"] --> Prisma["Prisma Client"]
     end
-
     DB[("PostgreSQL")]
-
-    Client -- "HTTP (JSON)" --> Routes
-    Routes --> Middlewares
-    Middlewares --> Controllers
-    Controllers --> Services
-    Services --> Repository
-    Repository --> DB
+    Client -- HTTP/JSON --> Routes
+    Prisma --> DB
 ```
 
-**Por que essa separação importa?** cada camada só conhece a camada logo abaixo dela. O `Controller` não sabe como o banco funciona, o `Service` não sabe se a requisição veio de uma rota HTTP ou de um teste automatizado, isso torna o código mais fácil de testar e de modificar sem quebrar outras partes.
+Routes definem endpoints; middlewares tratam autenticação, validação e erros; controllers lidam com HTTP; services concentram regras de negócio; e Prisma acessa o banco. Essa separação reduz acoplamento e facilita testes e manutenção.
 
 ---
 
@@ -100,6 +122,13 @@ flowchart TB
 ```mermaid
 erDiagram
     USER ||--o{ TASK : possui
+    USER ||--o{ CATEGORY : cria
+    USER ||--o{ TAG : cria
+    USER ||--o{ NOTIFICATION : recebe
+    USER ||--o{ REFRESH_TOKEN : possui
+    TASK }o--|| CATEGORY : pertence
+    TASK }o--o{ TAG : recebe
+    TASK ||--o{ COMMENT : possui
     USER {
         string id PK
         string name
@@ -115,133 +144,182 @@ erDiagram
         boolean completed
         datetime dueDate
         string userId FK
+        string categoryId FK
         datetime createdAt
         datetime updatedAt
     }
+    CATEGORY {
+        string id PK
+        string name
+        string color
+        string userId FK
+    }
+    TAG {
+        string id PK
+        string name
+        string color
+        string userId FK
+    }
+    COMMENT {
+        string id PK
+        string content
+        string taskId FK
+    }
+    NOTIFICATION {
+        string id PK
+        string title
+        string message
+        datetime readAt
+        string userId FK
+    }
+    REFRESH_TOKEN {
+        string id PK
+        string token UK
+        datetime expiresAt
+        string userId FK
+    }
 ```
 
-Um `User` pode ter várias `Task`s (relação um-para-muitos) cada tarefa pertence a exatamente um usuário, garantido pela chave estrangeira `userId`, todas as consultas de tarefas são filtradas por `userId` na camada de serviço, garantindo que um usuário nunca acesse ou modifique tarefas de outro.
+Um `User` pode possuir várias tarefas, categorias, etiquetas, notificações e refresh tokens. Cada tarefa pertence a um usuário, pode ter uma categoria, várias etiquetas e vários comentários. As consultas consideram o `userId` autenticado, impedindo acesso ou associação indevida a recursos de outra conta.
 
 ---
 
 ## 🚀 Como rodar o projeto localmente
 
 ### Pré-requisitos
-- Node.js 20+
-- Docker Desktop
 
-### Passo a passo
+- Node.js 20 ou superior;
+- Docker Desktop;
+- Git.
 
 ```bash
-# 1. Clone o repositório
 git clone https://github.com/joseluucaas/taskly.git
 cd taskly
-
-# 2. Suba o banco de dados PostgreSQL
 docker compose up -d
-
-# 3. Configure as variáveis de ambiente do back-end
-cd backend
-cp .env.example .env
-# edite o .env com suas credenciais, se necessário
-
-# 4. Instale as dependências
+cd Backend
 npm install
+```
 
-# 5. Rode as migrations do Prisma
+Crie `Backend/.env`:
+
+```env
+DATABASE_URL="postgresql://taskly_user:lucas123@localhost:5432/taskly"
+JWT_SECRET="gere-uma-chave-segura-para-desenvolvimento"
+NODE_ENV=development
+PORT=8080
+```
+
+```bash
 npx prisma migrate dev
-
-# 6. Suba o servidor em modo desenvolvimento
 npm run dev
 ```
 
-O servidor sobe por padrão em `http://localhost:3000`.
+A API ficará disponível em `http://localhost:8080`. Para validar, use `npm test`, `npm run build` e `npm run lint`.
 
 ---
 
-## 🔌 API e Endpoints
+## 🔌 API e endpoints
 
-Todos os endpoints protegidos exigem o header `Authorization: Bearer <token>`.
+Rotas protegidas exigem `Authorization: Bearer <accessToken>`.
 
-### Autenticação
+| Grupo | Método | Endpoint | Descrição |
+|---|---|---|---|
+| Auth | POST | `/auth/register` | Cadastra um usuário |
+| Auth | POST | `/auth/login` | Retorna access e refresh token |
+| Auth | POST | `/auth/refresh` | Renova o access token |
+| Auth | POST | `/auth/logout` | Invalida o refresh token |
+| Tarefas | POST/GET | `/tasks` | Cria ou lista tarefas |
+| Tarefas | GET/PUT/DELETE | `/tasks/:id` | Gerencia uma tarefa |
+| Dashboard | GET | `/dashboard` | Retorna métricas e próximas tarefas |
+| Categorias | GET/POST | `/categories` | Lista ou cria categorias |
+| Categorias | GET/PUT/DELETE | `/categories/:id` | Gerencia categoria |
+| Etiquetas | GET/POST | `/tags` | Lista ou cria etiquetas |
+| Etiquetas | GET/PUT/DELETE | `/tags/:id` | Gerencia etiqueta |
+| Comentários | GET/POST | `/tasks/:taskId/comments` | Lista ou cria comentários |
+| Comentários | PUT/DELETE | `/tasks/:taskId/comments/:id` | Gerencia comentário |
+| Notificações | GET | `/notifications` | Lista notificações |
+| Notificações | PATCH | `/notifications/:id/read` | Marca como lida |
+| Notificações | DELETE | `/notifications/:id` | Exclui notificação |
+| Sistema | GET | `/health` | Verifica a saúde da API |
 
-| Método | Endpoint | Descrição | Corpo da requisição | Resposta |
-|--------|----------|-----------|----------------------|----------|
-| POST | `/auth/register` | Cadastra um novo usuário | `{ "name", "email", "password" }` | `{ "id", "name", "email", "createdAt" }` |
-| POST | `/auth/login` | Autentica e retorna um token JWT | `{ "email", "password" }` | `{ "token" }` |
+### Documentação da API
 
-### Tarefas 🔒
+O Taskly utiliza Swagger/OpenAPI para documentar e testar a API diretamente pelo navegador.
 
-> Todas as rotas abaixo exigem autenticação e operam apenas sobre as tarefas do usuário logado.
+Em ambiente de desenvolvimento, a documentação está disponível em:
 
-| Método | Endpoint | Descrição | Corpo da requisição | Resposta |
-|--------|----------|-----------|----------------------|----------|
-| POST | `/tasks` | Cria uma nova tarefa | `{ "title", "description?", "dueDate?" }` | Tarefa criada (`201`) |
-| GET | `/tasks` | Lista as tarefas do usuário logado | — | Array de tarefas (`200`) |
-| GET | `/tasks/:id` | Busca uma tarefa específica | — | Tarefa (`200`) ou `404` |
-| PUT | `/tasks/:id` | Atualiza uma tarefa | Campos a atualizar | Tarefa atualizada (`200`) ou `404` |
-| DELETE | `/tasks/:id` | Remove uma tarefa | — | `204 No Content` ou `404` |
+- Swagger UI: `http://localhost:8080/api-docs`;
+- OpenAPI JSON: `http://localhost:8080/openapi.json`;
+- Atalho: `http://localhost:8080/docs`.
+
+A interface permite visualizar e testar os endpoints, informando o Bearer Token quando necessário. Nela é possível consultar:
+
+- endpoints de autenticação, tarefas, dashboard, categorias, etiquetas, comentários e notificações;
+- parâmetros de consulta de paginação, filtros e ordenação;
+- autenticação via JWT Bearer Token;
+- corpos de requisição, respostas e códigos HTTP;
+- modelos utilizados pela API.
+
+A integração utiliza `swagger-jsdoc` para gerar a especificação e `swagger-ui-express` para disponibilizar a interface interativa.
 
 ---
 
-### Documentação (Swagger / OpenAPI)
+## 📦 Padronização das respostas
 
-A API possui documentação interativa utilizando Swagger/OpenAPI, permitindo visualizar, testar e explorar os endpoints diretamente pelo navegador.
+```json
+{ "success": true, "data": {} }
+```
 
-A documentação está disponível em:
+Listagens paginadas acrescentam `meta`. Erros seguem este formato:
 
-- Swagger UI: http://localhost:3000/api-docs
-- OpenAPI JSON: http://localhost:3000/openapi.json
-
-Recursos documentados:
-
-- Endpoints de autenticação (`/auth`);
-- Rotas de tarefas (`/tasks`);
-- Autenticação via JWT Bearer Token;
-- Estrutura de requisições e respostas;
-- Códigos HTTP retornados pela API.
-
-A integração foi realizada utilizando `swagger-jsdoc` e `swagger-ui-express`.
+```json
+{ "success": false, "error": { "code": "TASK_NOT_FOUND", "message": "Tarefa não encontrada", "details": null } }
+```
 
 ---
 
 ## 🔒 Segurança
 
-- **Hash de senhas com bcrypt** (salt rounds : 10) a senha em texto puro nunca é armazenada
-- **Mensagens de erro genéricas no login** a API responde a mesma mensagem tanto para email inexistente quanto para senha incorreta, evitando enumeração de usuários
-- **Restrição de unicidade de email** a nível de banco de dados (`@unique` no schema)
-- **Tokens JWT assinados** com segredo forte, armazenado em variável de ambiente (nunca no código-fonte)
-- **Autorização por recurso (IDOR-safe)** toda operação sobre uma tarefa (buscar, atualizar, deletar) valida que ela pertence ao usuário autenticado antes de executar, prevenindo acesso indevido a dados de terceiros
-- **Variáveis sensíveis fora do controle de versão** (`.env` no `.gitignore`, apenas `.env.example` é versionado)
-- Middleware de autenticação (`authMiddleware`) protegendo todas as rotas privadas
-- `helmet` configurado para headers de segurança HTTP *(planejado)*
-- Rate limiting no endpoint de login, prevenindo força bruta *(planejado)*
+- Senhas protegidas com bcrypt; nunca são armazenadas em texto puro;
+- JWT e refresh tokens para sessões;
+- Autorização por recurso via `userId`;
+- Zod valida entradas antes das regras de negócio;
+- Helmet, CORS e limite de JSON de 100 KB;
+- Em produção, `FRONTEND_URL` é obrigatória para restringir CORS;
+- Rate limit contra tentativas repetidas de login;
+- Segredos ficam em variáveis de ambiente, fora do Git;
+- Erros possuem códigos previsíveis sem expor detalhes internos.
 
 ---
 
 ## 📂 Estrutura de pastas
 
-```
+```text
 Taskly/
 ├── Backend/
-│   ├── prisma/
-│   │   ├── schema.prisma       # modelagem do banco (User, Task)
-│   │   └── migrations/         # histórico de mudanças no banco
+│   ├── prisma/                 # schema, migrations e seed
 │   ├── src/
-│   │   ├── config/              # configuração do Prisma Client (singleton)
-│   │   ├── controllers/         # AuthController, TaskController
-│   │   ├── services/            # AuthService, TaskService (regras de negócio)
-│   │   ├── routes/              # auth.routes.ts, task.routes.ts
-│   │   ├── middlewares/         # authMiddleware (proteção JWT)
-│   │   ├── types/                # augmentation de tipos do Express (req.userId)
-│   │   ├── generated/            # Prisma Client (gerado automaticamente)
-│   │   ├── app.ts                # configuração do Express
-│   │   └── server.ts             # inicialização do servidor
+│   │   ├── config/             # Prisma, logs e Swagger
+│   │   ├── controllers/        # camada HTTP
+│   │   ├── errors/             # erros da aplicação
+│   │   ├── generated/          # Prisma Client gerado automaticamente
+│   │   ├── middlewares/        # autenticação, validação e erros
+│   │   ├── routes/             # endpoints
+│   │   ├── schemas/            # validações Zod
+│   │   ├── services/           # regras de negócio
+│   │   ├── types/              # tipos globais
+│   │   ├── utils/              # respostas padronizadas
+│   │   ├── app.ts              # configuração do Express
+│   │   └── server.ts           # inicialização do servidor
+│   ├── tests/                  # testes de integração
+│   ├── eslint.config.ts
+│   ├── jest.config.mjs
+│   ├── package.json
 │   ├── prisma.config.ts
-│   ├── tsconfig.json
-│   └── package.json
-├── FrontEnd/                   # React + Tailwind (em construção)
-├── docker-compose.yml          # container do PostgreSQL
+│   └── tsconfig.json
+├── FrontEnd/                   # reservado para a aplicação React
+├── docker-compose.yml          # PostgreSQL local
+├── .gitignore
 └── README.md
 ```
 
@@ -249,43 +327,68 @@ Taskly/
 
 ## 🗺 Roadmap
 
+## Back-end
+
 - [x] **Configuração do ambiente**
   - [x] TypeScript com ESM (`nodenext`)
   - [x] ESLint + Prettier
 - [x] **Banco de dados**
   - [x] Prisma + PostgreSQL via Docker
-  - [x] Modelagem do schema (`User`, `Task`)
+  - [x] Modelagem de `User`, `Task`, `Category`, `Tag`, `Comment`, `Notification` e `RefreshToken`
   - [x] Migrations aplicadas
-- [x] **Servidor**
+- [x] **Servidor e arquitetura**
   - [x] Express configurado
   - [x] Rota de health check
+  - [x] Arquitetura em camadas
 - [x] **Autenticação**
-  - [x] Cadastro de usuário (hash de senha com bcrypt)
-  - [x] Login com geração de token JWT
-  - [x] Middleware de proteção de rotas
-- [x] **CRUD de tarefas**
-  - [x] Criar tarefa
-  - [x] Listar tarefas do usuário
-  - [x] Buscar tarefa por ID
-  - [x] Atualizar tarefa
-  - [x] Excluir tarefa
-- [X] **Tratamento de erros e validação**
-  - [X] Error handler centralizado (middleware do Express)
-  - [X] Validação de entrada com Zod em todas as rotas
-- [X] **Testes automatizados**
-  - [X] Testes de autenticação
-  - [X] Testes de CRUD de tarefas 
-- [X] **Documentação da API**
-  - [X] Swagger/OpenAPI configurado
-  - [X] Documentação dos endpoints de autenticação e tarefas
-  - [X] Testes das rotas através do Swagger UI
-- [ ] **Front-end**
-  - [ ] Setup React + Tailwind
-  - [ ] Telas de login/cadastro
-  - [ ] Dashboard de tarefas
-- [ ] **Deploy**
-  - [ ] Back-end
-  - [ ] Front-end
+  - [x] Cadastro, login e proteção por JWT
+  - [x] Refresh token, renovação de sessão e logout
+  - [x] Rate limiting no login
+- [x] **Tarefas e organização**
+  - [x] CRUD de tarefas
+  - [x] Paginação, filtros e ordenação
+  - [x] Dashboard de tarefas
+  - [x] Categorias e etiquetas
+  - [x] Comentários e notificações
+- [x] **Tratamento de erros e validação**
+  - [x] Error handler centralizado
+  - [x] Validação com Zod em todas as rotas
+  - [x] Respostas padronizadas e logs estruturados
+- [x] **Testes automatizados**
+  - [x] Testes de autenticação, tarefas, dashboard e recursos auxiliares
+  - [x] 20 testes de integração
+- [x] **Documentação da API**
+  - [x] Swagger/OpenAPI, Swagger UI e OpenAPI JSON
+  - [x] Documentação das rotas implementadas
+- [x] **Segurança**
+  - [x] Helmet, CORS, limite de JSON e autorização por recurso
+
+### 🚀 Deploy do back-end
+
+- [ ] PostgreSQL gerenciado no Render
+- [ ] Web Service, variáveis de ambiente e migrations no Render
+- [ ] Publicação, health check e monitoramento em produção
+
+## Front-end
+
+- [ ] **Configuração do ambiente**
+  - [ ] React + TypeScript + Vite
+  - [ ] Tailwind CSS e organização de pastas
+- [ ] **Autenticação**
+  - [ ] Telas de cadastro e login
+  - [ ] Renovação de sessão e logout
+- [ ] **Gerenciamento de tarefas**
+  - [ ] Dashboard, CRUD, filtros, paginação e ordenação
+  - [ ] Categorias, etiquetas, comentários e notificações
+- [ ] **Qualidade**
+  - [ ] Acessibilidade, estados de carregamento e tratamento de erros
+  - [ ] Testes de interface
+
+### 🚀 Deploy do front-end
+
+- [ ] Static Site no Render
+- [ ] Variável de ambiente da API e fallback de SPA
+- [ ] Integração com o back-end e validação de CORS
 
 ---
 
@@ -297,7 +400,7 @@ O projeto segue estritamente `routes → middlewares → controllers → service
 
 ### Commits
 
-Este projeto segue a convenção [Conventional Commits](https://www.conventionalcommits.org/pt-br/v1.0.0/) facilitando a leitura do histórico e a identificação do tipo de cada mudança.
+Este projeto segue a convenção [Conventional Commits](https://www.conventionalcommits.org/pt-br/v1.0.0/) facilitando a leitura do histórico e a identificação de cada mudança.
 
 | Prefixo | Uso |
 |---------|-----|
@@ -305,12 +408,23 @@ Este projeto segue a convenção [Conventional Commits](https://www.conventional
 | `fix:` | Correção de bug |
 | `refactor:` | Reorganização de código sem mudar comportamento |
 | `docs:` | Mudanças na documentação |
-| `chore:` | Configuração, tarefas de manutenção |
+| `chore:` | Configuração e tarefas de manutenção |
 | `test:` | Adição ou ajuste de testes |
+
+Exemplos:
+
+```bash
+feat: adiciona paginação nas tarefas
+feat: adiciona dashboard de tarefas
+fix: corrige validação do login
+docs: atualiza roadmap do projeto
+test: adiciona testes para autenticação
+```
 
 ---
 
 ## 👤 Autor
 
-**Jose Lucas**
-Desenvolvedor Full-Stack
+**José Lucas**
+
+Desenvolvedor Full-Stack com foco em back-end, arquitetura de aplicações e boas práticas de engenharia de software.
