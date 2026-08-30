@@ -245,7 +245,7 @@ erDiagram
         boolean soundEnabled
         boolean notificationsEnabled
         boolean dueDateReminders
-        string userId FK_UK
+        string userId FK
         datetime createdAt
         datetime updatedAt
     }
