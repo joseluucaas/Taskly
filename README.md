@@ -82,7 +82,7 @@ Além das funcionalidades, a API possui autenticação JWT com refresh token, au
 - [TypeScript](https://www.typescriptlang.org/) com ESM/`nodenext` — tipagem estática;
 - [Prisma](https://www.prisma.io/) — ORM para comunicação com o banco;
 - [PostgreSQL](https://www.postgresql.org/) — banco de dados relacional;
-- [Docker](https://www.docker.com/) — PostgreSQL no ambiente local;
+- [Docker](https://www.docker.com/) — execução local do front-end, back-end e PostgreSQL;
 - [bcrypt](https://www.npmjs.com/package/bcrypt) e [jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken) — autenticação;
 - [Zod](https://zod.dev/), [Swagger/OpenAPI](https://swagger.io/), Winston, Helmet, CORS e express-rate-limit — qualidade e segurança;
 - [Jest](https://jestjs.io/) + [Supertest](https://www.npmjs.com/package/supertest) — testes automatizados.
@@ -120,7 +120,7 @@ Routes definem endpoints; middlewares tratam autenticação, validação e erros
 
 ## 🐳 Executando localmente com Docker
 
-O Docker executa o PostgreSQL e o back-end em containers separados. Nesta etapa, o front-end continua sendo executado localmente com Vite.
+O Docker executa o front-end, o back-end e o PostgreSQL em containers separados. Isso permite reproduzir a aplicação completa em qualquer máquina com Docker instalado.
 
 ### 1. Configure as variáveis locais
 
@@ -146,6 +146,7 @@ docker compose up --build
 
 Na primeira execução, o Docker cria o banco, aguarda o PostgreSQL ficar saudável, aplica as migrations do Prisma e inicia a API.
 
+- Front-end: `http://localhost:5173`
 - API: `http://localhost:8080`
 - Health check: `http://localhost:8080/health`
 - PostgreSQL: `localhost:5432`
@@ -163,18 +164,6 @@ docker compose down -v
 ```
 
 > Atenção: `docker compose down -v` remove permanentemente o banco local criado pelo Docker.
-
-### 3. Inicie o front-end
-
-Em outro terminal:
-
-```bash
-cd FrontEnd
-npm install
-npm run dev
-```
-
-Abra `http://localhost:5173`. O front-end se comunica com a API do container em `http://localhost:8080`.
 
 ---
 
@@ -438,6 +427,7 @@ Taskly/
 - [x] **Configuração do ambiente**
   - [x] React + TypeScript + Vite
   - [x] Organização inicial de componentes e serviços
+  - [x] Container Docker para execução local
 - [x] **Autenticação**
   - [x] Telas de cadastro e login conectadas à API
   - [x] Logout e armazenamento local da sessão
@@ -488,4 +478,4 @@ Este projeto segue a convenção [Conventional Commits](https://www.conventional
 
 **José Lucas**
 
-Desenvolvedor Full-Stack com foco em back-end, arquitetura de aplicações e boas práticas de engenharia de software.
+Desenvolvedor Full-Stack 
