@@ -1,7 +1,5 @@
-// This is your Prisma schema file, 
-// learn more about it in the docs: https://pris.ly/d/prisma-schema 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions? 
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init 
+// Prisma schema
+// Defines the database models and relationships used by Taskly.
 
 generator client {
   provider = "prisma-client"
@@ -14,25 +12,26 @@ datasource db {
 }
 
 model User {
-  id           String      @id @default(uuid())
+  id           String   @id @default(uuid())
   name         String
-  email        String      @unique
+  email        String   @unique
   passwordHash String
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  tasks        Task[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  tasks Task[]
 }
 
 model Task {
-  id          String   @id @default(uuid())
+  id          String    @id @default(uuid())
   title       String
   description String?
-  completed   Boolean  @default(false)
+  completed   Boolean   @default(false)
   dueDate     DateTime?
-  userId      String
-  user        User     @relation(fields: [userId], references: [id])
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
-
-

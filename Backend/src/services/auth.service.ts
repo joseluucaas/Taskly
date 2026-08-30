@@ -1,7 +1,9 @@
 import bcrypt from 'bcrypt';
-import { prisma } from '../config/prisma.js';
 import jwt from 'jsonwebtoken';
 
+import { prisma } from '../config/prisma.js';
+import { AppError } from '../errors/AppError.js';
+import logger from '../config/logger.js';
 
 export class AuthService {
   async register(name: string, email: string, password: string) {
@@ -21,37 +23,76 @@ export class AuthService {
       },
     });
 
+    logger.info('Usuário criado com sucesso', {
+      userId: user.id,
+      email: user.email,
+    });
+
     return user;
   }
 
-
   async login(email: string, password: string) {
     const user = await prisma.user.findUnique({
-      where: { email },
+      where: {
+        email,
+      },
     });
 
     if (!user) {
-      throw new Error('Email ou senha inválidos');
+      logger.warn('Tentativa de login com usuário inexistente', {
+        email,
+      });
+
+      throw new AppError(
+        'Email ou senha inválidos',
+        401,
+      );
     }
 
-
-    const passwordMatches = await bcrypt.compare(password, user.passwordHash);
+    const passwordMatches = await bcrypt.compare(
+      password,
+      user.passwordHash,
+    );
 
     if (!passwordMatches) {
-      throw new Error('Email ou senha inválidos');
+      logger.warn('Tentativa de login com senha inválida', {
+        email,
+      });
+
+      throw new AppError(
+        'Email ou senha inválidos',
+        401,
+      );
     }
 
-    
     const jwtSecret = process.env.JWT_SECRET;
 
     if (!jwtSecret) {
-      throw new Error('JWT_SECRET não configurado');
+      logger.error('JWT_SECRET não configurado');
+
+      throw new AppError(
+        'Configuração interna inválida',
+        500,
+      );
     }
 
-    const token = jwt.sign({ sub: user.id }, jwtSecret, {
-      expiresIn: '1d',
+    const token = jwt.sign(
+      {
+        sub: user.id,
+      },
+      jwtSecret,
+      {
+        expiresIn: '1d',
+      },
+    );
+
+    logger.info('Login realizado com sucesso', {
+      userId: user.id,
+      email: user.email,
     });
 
-    return { token };
+    return {
+      token,
+    };
   }
 }

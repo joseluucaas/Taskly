@@ -1,11 +1,22 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
+
+import { AppError } from '../errors/AppError.js';
+import {
+  createTaskSchema,
+  updateTaskSchema,
+} from '../schemas/task.schema.js';
+import { listTasksQuerySchema } from '../schemas/taskQuery.schema.js';
 import { TaskService } from '../services/task.service.js';
+import { successResponse } from '../utils/apiResponse.js';
+
 
 const taskService = new TaskService();
+
 
 export class TaskController {
   private getTaskId(req: Request): string | null {
     const { id } = req.params;
+
     if (Array.isArray(id)) {
       return id[0] ?? null;
     }
@@ -13,70 +24,123 @@ export class TaskController {
     return id ?? null;
   }
 
-  async create(req: Request, res: Response) {
-    const { title, description, dueDate } = req.body;
-    const userId = req.userId!;
 
-    const task = await taskService.create(userId, { title, description, dueDate });
-
-    return res.status(201).json(task);
-  }
-
-  async findAll(req: Request, res: Response) {
-    const userId = req.userId!;
-
-    const tasks = await taskService.findAllByUser(userId);
-
-    return res.status(200).json(tasks);
-  }
-
-  async findOne(req: Request, res: Response) {
-    const id = this.getTaskId(req);
-    const userId = req.userId!;
-
-    if (!id) {
-      return res.status(400).json({ message: 'ID da tarefa inválido' });
-    }
-
-    const task = await taskService.findByIdAndUser(id, userId);
-
-    if (!task) {
-      return res.status(404).json({ message: 'Tarefa não encontrada' });
-    }
-
-    return res.status(200).json(task);
-  }
-
-  async update(req: Request, res: Response) {
-    const id = this.getTaskId(req);
-    const userId = req.userId!;
-    const data = req.body;
-
-    if (!id) {
-      return res.status(400).json({ message: 'ID da tarefa inválido' });
-    }
-
+  async create(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
     try {
-      const updatedTask = await taskService.update(id, userId, data);
-      return res.status(200).json(updatedTask);
-    } catch {
-      return res.status(404).json({ message: 'Tarefa não encontrada' });
+      const data = createTaskSchema.parse(req.body);
+      const task = await taskService.create(req.userId!, data);
+
+      return res.status(201).json(successResponse(task));
+    } catch (error) {
+      return next(error);
     }
   }
 
-  async delete(req: Request, res: Response) {
-    const id = this.getTaskId(req);
-    const userId = req.userId!;
 
-    if (!id) {
-      return res.status(400).json({ message: 'ID da tarefa inválido' });
-    }
-
+  async findAll(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
     try {
-      await taskService.delete(id, userId);
+      // O middleware já valida a query; este parse mantém o controller seguro
+      // se ele também for reutilizado fora da rota HTTP.
+      const query = listTasksQuerySchema.parse(req.query);
+      const result = await taskService.findAllByUser(req.userId!, query);
+
+      return res.status(200).json(
+        successResponse(result.tasks, result.meta),
+      );
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+
+  async findOne(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const id = this.getTaskId(req);
+
+      if (!id) {
+        throw new AppError(
+          'ID da tarefa inválido',
+          400,
+          'INVALID_TASK_ID',
+        );
+      }
+
+      const task = await taskService.findByIdAndUser(id, req.userId!);
+
+      if (!task) {
+        throw new AppError(
+          'Tarefa não encontrada',
+          404,
+          'TASK_NOT_FOUND',
+        );
+      }
+
+      return res.status(200).json(successResponse(task));
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+
+  async update(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const id = this.getTaskId(req);
+
+      if (!id) {
+        throw new AppError(
+          'ID da tarefa inválido',
+          400,
+          'INVALID_TASK_ID',
+        );
+      }
+
+      const data = updateTaskSchema.parse(req.body);
+      const updatedTask = await taskService.update(id, req.userId!, data);
+
+      return res.status(200).json(successResponse(updatedTask));
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+
+  async delete(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const id = this.getTaskId(req);
+
+      if (!id) {
+        throw new AppError(
+          'ID da tarefa inválido',
+          400,
+          'INVALID_TASK_ID',
+        );
+      }
+
+      await taskService.delete(id, req.userId!);
+
       return res.status(204).send();
-    } catch {
-      return res.status(404).json({ message: 'Tarefa não encontrada' });
+    } catch (error) {
+      return next(error);
     }
   }
 }

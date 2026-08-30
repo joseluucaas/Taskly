@@ -13,15 +13,22 @@ node_modules/
 .env
 .env.*
 
-# Gerados do Prisma
+# Prisma
 /generated/
 /prisma/migrations/
 
-# Logs e cache
+# Logs
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Lock files
+*.lock
+
+# Editor
+.vscode/
+.idea/
 
 # Sistema
 .DS_Store
