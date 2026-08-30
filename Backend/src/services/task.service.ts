@@ -11,6 +11,7 @@ type TaskData = {
   description?: string;
   dueDate?: Date;
   categoryId?: string | null;
+  tagIds?: string[];
 };
 
 type UpdateTaskData = {
@@ -19,6 +20,7 @@ type UpdateTaskData = {
   completed?: boolean;
   dueDate?: Date;
   categoryId?: string | null;
+  tagIds?: string[];
 };
 
 
@@ -41,8 +43,24 @@ export class TaskService {
     }
   }
 
+  private async ensureTagsBelongToUser(tagIds: string[] | undefined, userId: string) {
+    if (!tagIds || tagIds.length === 0) {
+      return;
+    }
+
+    const uniqueTagIds = [...new Set(tagIds)];
+    const tagsCount = await prisma.tag.count({
+      where: { id: { in: uniqueTagIds }, userId },
+    });
+
+    if (tagsCount !== uniqueTagIds.length) {
+      throw new AppError('Etiqueta não encontrada', 404, 'TAG_NOT_FOUND');
+    }
+  }
+
   async create(userId: string, data: TaskData) {
     await this.ensureCategoryBelongsToUser(data.categoryId, userId);
+    await this.ensureTagsBelongToUser(data.tagIds, userId);
 
     const task = await prisma.task.create({
       data: {
@@ -50,6 +68,7 @@ export class TaskService {
         description: data.description,
         dueDate: data.dueDate,
         categoryId: data.categoryId,
+        tags: data.tagIds ? { connect: data.tagIds.map((id) => ({ id })) } : undefined,
         userId,
       },
     });
@@ -127,7 +146,7 @@ export class TaskService {
         orderBy,
         skip: (page - 1) * limit,
         take: limit,
-        include: { category: true },
+        include: { category: true, tags: true },
       }),
       prisma.task.count({ where }),
     ]);
@@ -158,7 +177,7 @@ export class TaskService {
   async findByIdAndUser(id: string, userId: string) {
     return prisma.task.findFirst({
       where: { id, userId },
-      include: { category: true },
+      include: { category: true, tags: true },
     });
   }
 
@@ -175,11 +194,19 @@ export class TaskService {
     }
 
     await this.ensureCategoryBelongsToUser(data.categoryId, userId);
+    await this.ensureTagsBelongToUser(data.tagIds, userId);
+
+    const { tagIds, ...taskData } = data;
 
     const updatedTask = await prisma.task.update({
       where: { id },
-      data,
-      include: { category: true },
+      data: {
+        ...taskData,
+        ...(tagIds !== undefined
+          ? { tags: { set: tagIds.map((tagId) => ({ id: tagId })) } }
+          : {}),
+      },
+      include: { category: true, tags: true },
     });
 
     logger.info('Tarefa atualizada com sucesso', {

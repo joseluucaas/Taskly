@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+
 export const registerSchema = z.object({
   name: z
     .string()
@@ -24,3 +25,9 @@ export const loginSchema = z.object({
     .string()
     .min(6, 'A senha deve ter pelo menos 6 caracteres'),
 });
+
+
+// Tipos gerados automaticamente pelo Zod
+export type RegisterInput = z.infer<typeof registerSchema>;
+
+export type LoginInput = z.infer<typeof loginSchema>;

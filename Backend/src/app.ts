@@ -5,44 +5,49 @@ import swaggerUi from 'swagger-ui-express';
 
 import authRoutes from './routes/auth.routes.js';
 import categoryRoutes from './routes/category.routes.js';
+import commentRoutes from './routes/comment.routes.js';
+import notificationRoutes from './routes/notification.routes.js';
 import dashboardRoutes from './routes/dashboard.routes.js';
+import tagRoutes from './routes/tag.routes.js';
 import taskRoutes from './routes/task.routes.js';
 
 import { errorHandler } from './middlewares/errorHandler.middleware.js';
 import swaggerSpec from './config/swagger.js';
 
 const app = express();
+const frontendUrl = process.env.FRONTEND_URL;
+
+if (process.env.NODE_ENV === 'production' && !frontendUrl) {
+  throw new Error('FRONTEND_URL deve ser configurada em produção');
+}
 
 // ─────────────────────────────────────────────
 // Middlewares globais
 // ─────────────────────────────────────────────
 
-// Helmet: adiciona headers de segurança HTTP (proteção contra
-// ataques comuns como XSS, sniffing de MIME type, etc).
+// Helmet: adiciona headers de segurança HTTP.
 app.use(helmet());
 
-// CORS: libera o acesso da API para o frontend.
-// Em produção, usa a URL definida em FRONTEND_URL;
-// em desenvolvimento, libera qualquer origem.
+// CORS: permite comunicação com o frontend.
+// Em produção, deve usar uma origem específica.
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || true,
+    origin: frontendUrl || true,
   }),
 );
 
-// Habilita o parsing automático de JSON no corpo das requisições.
-app.use(express.json());
+// Permite receber JSON no body das requisições.
+app.use(express.json({ limit: '100kb' }));
+
 
 // ─────────────────────────────────────────────
-// Documentação (Swagger/OpenAPI)
+// Swagger / OpenAPI
 // ─────────────────────────────────────────────
 
-// Disponível apenas fora de produção, evitando expor
-// a documentação da API publicamente.
+// Documentação disponível apenas em desenvolvimento.
 if (process.env.NODE_ENV !== 'production') {
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-  // Atalho amigável para acessar a documentação.
   app.get('/docs', (_req, res) => {
     res.redirect('/api-docs');
   });
@@ -52,33 +57,47 @@ if (process.env.NODE_ENV !== 'production') {
   });
 }
 
+
 // ─────────────────────────────────────────────
-// Health check
+// Health Check
 // ─────────────────────────────────────────────
 
-// Usado para monitoramento (ex: Docker, CI/CD, uptime checks)
-// verificar se a API está de pé.
+// Endpoint usado para verificar se a API está funcionando.
 app.get('/health', (_req, res) => {
-  res.status(200).json({ status: 'ok' });
+  res.status(200).json({
+    status: 'ok',
+  });
 });
 
+
 // ─────────────────────────────────────────────
-// Rotas principais
+// Rotas da aplicação
 // ─────────────────────────────────────────────
 
 app.use('/auth', authRoutes);
+
 app.use('/dashboard', dashboardRoutes);
 
 app.use('/categories', categoryRoutes);
+
+app.use('/', commentRoutes);
+
+app.use('/notifications', notificationRoutes);
+
+app.use('/tags', tagRoutes);
+
 app.use('/tasks', taskRoutes);
 
+
 // ─────────────────────────────────────────────
-// Tratamento de erros
+// Middleware global de erros
 // ─────────────────────────────────────────────
 
-// Importante: precisa ser o ÚLTIMO middleware registrado,
-// pois o Express só chama error handlers depois de todos
-// os outros middlewares/rotas.
+// IMPORTANTE:
+// Deve ser sempre o último middleware.
+// Ele captura erros lançados pelas rotas,
+// controllers e services.
 app.use(errorHandler);
+
 
 export default app;

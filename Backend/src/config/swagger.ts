@@ -65,6 +65,17 @@ const options = {
             updatedAt: { type: 'string', format: 'date-time' },
           },
         },
+        Tag: {
+          type: 'object',
+          properties: {
+            id: { type: 'string' },
+            name: { type: 'string' },
+            color: { type: 'string', nullable: true, example: '#2563EB' },
+            userId: { type: 'string' },
+            createdAt: { type: 'string', format: 'date-time' },
+            updatedAt: { type: 'string', format: 'date-time' },
+          },
+        },
         DashboardResponse: {
           type: 'object',
           properties: {
@@ -128,6 +139,7 @@ const options = {
             description: { type: 'string', nullable: true },
             dueDate: { type: 'string', format: 'date-time', nullable: true },
             categoryId: { type: 'string', nullable: true },
+            tagIds: { type: 'array', items: { type: 'string' } },
           },
         },
         UpdateTaskInput: {
@@ -137,6 +149,7 @@ const options = {
             description: { type: 'string', nullable: true },
             dueDate: { type: 'string', format: 'date-time', nullable: true },
             categoryId: { type: 'string', nullable: true },
+            tagIds: { type: 'array', items: { type: 'string' } },
             completed: { type: 'boolean' },
           },
         },

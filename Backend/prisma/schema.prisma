@@ -1,6 +1,3 @@
-// Prisma schema
-// Defines the database models and relationships used by Taskly.
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -12,15 +9,33 @@ datasource db {
 }
 
 model User {
-  id           String   @id @default(uuid())
+  id           String @id @default(uuid())
   name         String
-  email        String   @unique
+  email        String @unique
   passwordHash String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
 
-  tasks Task[]
-  categories Category[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tasks         Task[]
+  categories    Category[]
+  tags          Tag[]
+  notifications Notification[]
+  refreshTokens RefreshToken[]
+}
+
+model Notification {
+  id      String  @id @default(uuid())
+  title   String
+  message String
+  readAt  DateTime?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([userId, readAt])
 }
 
 model Task {
@@ -32,13 +47,31 @@ model Task {
   categoryId  String?
 
   userId String
-  user     User      @relation(fields: [userId], references: [id])
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   category Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  tags     Tag[]
+  comments Comment[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-}
+
+  @@index([userId])
   @@index([categoryId])
+}
+
+model Comment {
+  id      String @id @default(uuid())
+  content String
+
+  taskId String
+  task   Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([taskId])
+}
 
 model Category {
   id    String  @id @default(uuid())
@@ -54,5 +87,38 @@ model Category {
   updatedAt DateTime @updatedAt
 
   @@unique([userId, name])
+  @@index([userId])
+}
+
+model Tag {
+  id    String  @id @default(uuid())
+  name  String
+  color String?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  tasks Task[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, name])
+  @@index([userId])
+}
+
+model RefreshToken {
+  id String @id @default(uuid())
+
+  token String @unique
+
+  userId String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  expiresAt DateTime
+
+  createdAt DateTime @default(now())
+
   @@index([userId])
 }
