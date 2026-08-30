@@ -48,26 +48,26 @@ Além das funcionalidades, a API possui autenticação JWT com refresh token, au
 
 ### 👤 Autenticação
 
-- Cadastro, login, logout e renovação de sessão;
-- Hash de senhas com bcrypt;
-- Access token JWT e refresh token;
+- Cadastro, login, logout e renovação de sessão.
+- Hash de senhas com bcrypt.
+- Access token JWT e refresh token.
 - Proteção de rotas e rate limit no login.
 
 ### 📝 Tarefas e organização
 
-- CRUD de tarefas com descrição, prazo e status;
-- Paginação, busca por título e descrição, filtros por status/período e ordenação;
-- Categorias com cor e vínculo opcional;
-- Etiquetas com relação muitos-para-muitos;
-- Comentários em tarefas;
-- Dashboard com métricas e próximas tarefas;
+- CRUD de tarefas com descrição, prazo e status.
+- Paginação, busca por título e descrição, filtros por status, período e ordenação.
+- Categorias com cor e vínculo opcional.
+- Etiquetas com relação muitos-para-muitos.
+- Comentários em tarefas.
+- Dashboard com métricas e próximas tarefas.
 - Notificações internas com leitura e exclusão.
 
 ### 🛡️ Qualidade da API
 
-- Validação com Zod e respostas padronizadas;
-- Middleware global de erros e logs estruturados com Winston;
-- Swagger/OpenAPI e health check;
+- Validação com Zod e respostas padronizadas.
+- Middleware global de erros e logs estruturados com Winston.
+- Swagger/OpenAPI e health check.
 - 20 testes de integração em oito suítes.
 
 ---
@@ -77,50 +77,50 @@ Além das funcionalidades, a API possui autenticação JWT com refresh token, au
 **Back-end**
 
 - [Node.js](https://nodejs.org/) : ambiente de execução;
-- [Express](https://expressjs.com/) : framework do servidor HTTP;
-- [TypeScript](https://www.typescriptlang.org/) com ESM/`nodenext` — tipagem estática;
-- [Prisma](https://www.prisma.io/) : ORM para comunicação com o banco;
-- [PostgreSQL](https://www.postgresql.org/) : banco de dados relacional;
-- [Docker](https://www.docker.com/) : execução local do front-end, back-end e PostgreSQL;
-- [bcrypt](https://www.npmjs.com/package/bcrypt) e [jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken) : autenticação;
-- [Zod](https://zod.dev/), [Swagger/OpenAPI](https://swagger.io/), Winston, Helmet, CORS e express-rate-limit : qualidade e segurança;
+- [Express](https://expressjs.com/) : framework do servidor HTTP.
+- [TypeScript](https://www.typescriptlang.org/) : com ESM/`nodenext` — tipagem estática.
+- [Prisma](https://www.prisma.io/) : ORM para comunicação com o banco.
+- [PostgreSQL](https://www.postgresql.org/) : banco de dados relacional.
+- [Docker](https://www.docker.com/) : execução local do front-end, back-end e PostgreSQL.
+- [bcrypt](https://www.npmjs.com/package/bcrypt) e [jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken) : autenticação.
+- [Zod](https://zod.dev/), [Swagger/OpenAPI](https://swagger.io/), Winston, Helmet, CORS e express-rate-limit : qualidade e segurança.
 - [Jest](https://jestjs.io/) + [Supertest](https://www.npmjs.com/package/supertest) : testes automatizados.
 
 **Front-end — interface integrada à API**
 
-- [React](https://react.dev/) : construção da interface;
-- [TypeScript](https://www.typescriptlang.org/) — tipagem estática;
-- [Vite](https://vite.dev/) : ambiente de desenvolvimento e build;
-- CSS com variáveis de tema : estilização responsiva e temas claro/escuro;
-- [Axios](https://axios-http.com/) : consumo da API e renovação de sessão;
-- [React Hook Form](https://react-hook-form.com/) + Zod — formulários e validação;
-- [Lucide](https://lucide.dev/) e [Framer Motion](https://motion.dev/) : ícones e animações;
+- [React](https://react.dev/) : construção da interface.
+- [TypeScript](https://www.typescriptlang.org/) : tipagem estática.
+- [Vite](https://vite.dev/) : ambiente de desenvolvimento e build.
+- CSS com variáveis de tema : estilização responsiva e temas claro/escuro.
+- [Axios](https://axios-http.com/) : consumo da API e renovação de sessão.
+- [React Hook Form](https://react-hook-form.com/) + [Zod](https://zod.dev/) formulários e validação.
+- [Lucide](https://lucide.dev/) e [Framer Motion](https://motion.dev/) : ícones e animações.
 
 ---
 
 ## 🧩 Princípios de engenharia
 
-O Taskly aplica padrões de engenharia de forma pragmática, priorizando legibilidade, testes e manutenção. O projeto não se apresenta como uma implementação formal de Clean Architecture; a organização descrita abaixo corresponde ao código existente.
+O Taskly aplica padrões de engenharia de forma pragmática, priorizando legibilidade, testes e manutenção. O projeto não se apresenta como uma implementação formal de Clean Architecture a organização descrita abaixo corresponde ao código existente.
 
 **Clean Code e qualidade**
 
-- Nomes semânticos, funções com responsabilidades delimitadas e respostas de API padronizadas;
-- TypeScript com modo estrito, ESLint/Oxlint e Prettier;
-- Validação centralizada com Zod e tratamento global de erros;
+- Nomes semânticos, funções com responsabilidades delimitadas e respostas de API padronizadas.
+- TypeScript com modo estrito, ESLint/Oxlint e Prettier.
+- Validação centralizada com Zod e tratamento global de erros.
 - Testes de integração no back-end e tipagem explícita nas integrações do front-end.
 
 **SOLID e orientação a objetos — back-end**
 
 - **SRP:** rotas, middlewares, controllers e services possuem responsabilidades separadas;
-- **DIP aplicado nas fronteiras HTTP:** controllers recebem services por injeção de dependência, configurada em um ponto único de composição (`src/container.ts`);
-- **POO:** controllers, services e erros de domínio são modelados por classes, com encapsulamento de regras internas;
+- **DIP aplicado nas fronteiras HTTP:** controllers recebem services por injeção de dependência, configurada em um ponto único de composição (`src/container.ts`).
+- **POO:** controllers, services e erros de domínio são modelados por classes, com encapsulamento de regras internas.
 - **OCP de forma prática:** novos recursos podem adicionar rotas, services e controllers sem alterar o fluxo central da aplicação.
 
 **Composição e separação de responsabilidades — front-end**
 
-- Componentes funcionais React, hooks e services para consumo da API;
-- Componentes reutilizáveis para elementos de interface, como `Dialog` e `ConfirmDialog`;
-- Separação entre apresentação, estado de tela e integrações HTTP;
+- Componentes funcionais React, hooks e services para consumo da API.
+- Componentes reutilizáveis para elementos de interface, como `Dialog` e `ConfirmDialog`.
+- Separação entre apresentação, estado de tela e integrações HTTP.
 - O front-end privilegia composição de componentes em vez de classes, que é o padrão atual recomendado pelo React.
 
 ---
@@ -140,13 +140,13 @@ flowchart TB
     Prisma --> DB
 ```
 
-Routes definem endpoints; middlewares tratam autenticação, validação e erros; controllers lidam com HTTP; services concentram regras de negócio; e Prisma acessa o banco. Essa separação reduz acoplamento e facilita testes e manutenção.
+Routes definem endpoints, middlewares tratam autenticação, validação e erros, controllers lidam com HTTP, services concentram regras de negócio, e Prisma acessa o banco. Essa separação reduz acoplamento e facilita testes e manutenção.
 
 ---
 
 ## 🐳 Executando localmente com Docker
 
-O Docker executa o front-end, o back-end e o PostgreSQL em containers separados. Isso permite reproduzir a aplicação completa em qualquer máquina com Docker instalado.
+O Docker executa o front-end, o back-end e o PostgreSQL em containers separados, isso permite reproduzir a aplicação completa em qualquer máquina com Docker instalado.
 
 ### 1. Configure as variáveis locais
 
@@ -164,7 +164,7 @@ Copy-Item .env.example .env
 
 Se o seu `.env` já existir, não o sobrescreva: use o `.env.example` como referência e adicione as variáveis que estiverem faltando, especialmente `JWT_SECRET`.
 
-Preencha obrigatoriamente `POSTGRES_PASSWORD` e `JWT_SECRET` com valores próprios. Para gerar um segredo no PowerShell:
+Preencha obrigatoriamente `POSTGRES_PASSWORD` e `JWT_SECRET` com valores próprios, para gerar um segredo no PowerShell.
 
 ```powershell
 $bytes = New-Object byte[] 32
@@ -180,20 +180,20 @@ Cole o resultado em `JWT_SECRET`. O arquivo `.env` é local e não deve ser envi
 docker compose up -d --build
 ```
 
-Na primeira execução, o Docker cria o banco, aguarda o PostgreSQL ficar saudável, aplica as migrations do Prisma, inicia a API e só então inicia o front-end. Os três serviços usam a rede interna `taskly-net`.
+Na primeira execução, o Docker cria o banco, aguarda o PostgreSQL ficar saudável, aplica as migrations do Prisma, inicia a API e só então inicia o front-end, 0s três serviços usam a rede interna `taskly-net`.
 
 - Front-end: `http://localhost:5173`
 - API: `http://localhost:8080`
 - Health check: `http://localhost:8080/health`
 - PostgreSQL: `localhost:5432`
 
-Confira o estado dos serviços antes de abrir a aplicação:
+Confira o estado dos serviços antes de abrir a aplicação.
 
 ```bash
 docker compose ps
 ```
 
-O esperado é `postgres` e `backend` com status `healthy` e `frontend` em execução. Caso algum serviço não inicie, consulte os logs:
+O esperado é `postgres` e `backend` com status `healthy` e `frontend` em execução. Caso algum serviço não inicie, consulte os logs.
 
 ```bash
 docker compose logs -f backend
@@ -201,13 +201,13 @@ docker compose logs -f frontend
 docker compose logs -f postgres
 ```
 
-Para encerrar os containers mantendo os dados do banco:
+Para encerrar os containers mantendo os dados do banco.
 
 ```bash
 docker compose down
 ```
 
-Para apagar também os dados locais do PostgreSQL e começar do zero:
+Para apagar também os dados locais do PostgreSQL e começar do zero.
 
 ```bash
 docker compose down -v
@@ -294,29 +294,29 @@ erDiagram
     }
 ```
 
-Um `User` pode possuir várias tarefas, categorias, etiquetas, notificações e refresh tokens, além de uma única preferência de uso. Cada tarefa pertence a um usuário, pode ter uma categoria, várias etiquetas e vários comentários. As consultas consideram o `userId` autenticado, impedindo acesso ou associação indevida a recursos de outra conta. As exclusões em cadeia removem os recursos dependentes de uma conta ou tarefa; ao excluir uma categoria, a tarefa permanece e sua categoria é removida.
+Um `User` pode possuir várias tarefas, categorias, etiquetas, notificações e refresh tokens, além de uma única preferência de uso. Cada tarefa pertence a um usuário, pode ter uma categoria, várias etiquetas e vários comentários, as consultas consideram o `userId` autenticado, impedindo acesso ou associação indevida a recursos de outra conta, as exclusões em cadeia removem os recursos dependentes de uma conta ou tarefa, ao excluir uma categoria a tarefa permanece e sua categoria é removida.
 
 ---
 
 ## 💻 Execução manual para desenvolvimento
 
-Para conhecer e executar o projeto completo, prefira o fluxo com Docker acima. O fluxo manual abaixo é opcional e útil para desenvolver ou acessar o Swagger, que é exposto apenas com `NODE_ENV=development`.
+Para conhecer e executar o projeto completo, prefira o fluxo com Docker acima, o fluxo manual abaixo é opcional e útil para desenvolver ou acessar o Swagger, que é exposto apenas com `NODE_ENV=development`.
 
 ### Pré-requisitos
 
-- Node.js 20 ou superior;
-- Docker Desktop;
+- Node.js 20 ou superior.
+- Docker Desktop.
 - Git.
 
 ```bash
 git clone https://github.com/joseluucaas/taskly.git
-cd Taskly
+cd taskly
 docker compose up -d postgres
-cd Backend
+cd backend
 npm install
 ```
 
-Crie `Backend/.env`. Para conectar ao PostgreSQL iniciado pelo Compose, use as mesmas credenciais definidas no `.env` da raiz:
+Crie `backend/.env`. Para conectar ao PostgreSQL iniciado pelo Compose, use as mesmas credenciais definidas no `.env` da raiz:
 
 ```env
 DATABASE_URL="postgresql://taskly:SUA_POSTGRES_PASSWORD@localhost:5432/taskly?schema=public"
@@ -331,15 +331,15 @@ npx prisma migrate dev
 npm run dev
 ```
 
-Em outro terminal:
+Em outro terminal.
 
 ```bash
-cd FrontEnd
+cd frontEnd
 npm install
 npm run dev
 ```
 
-O front-end ficará disponível em `http://localhost:5173`, a API em `http://localhost:8080` e o Swagger em `http://localhost:8080/api-docs`. Para validar o back-end, use `npm test`, `npm run build` e `npm run lint` dentro de `Backend`; no front-end, use `npm run build` e `npm run lint` dentro de `FrontEnd`.
+O front-end ficará disponível em `http://localhost:5173`, a API em `http://localhost:8080` e o Swagger em `http://localhost:8080/api-docs`, para validar o back-end, use `npm test`, `npm run build` e `npm run lint` dentro de `Backend`, no front-end, use `npm run build` e `npm run lint` dentro de `FrontEnd`.
 
 ---
 
@@ -371,7 +371,7 @@ Rotas protegidas exigem `Authorization: Bearer <accessToken>`.
 | Notificações | DELETE         | `/notifications/:id`          | Exclui notificação                                             |
 | Sistema      | GET            | `/health`                     | Verifica a saúde da API                                        |
 
-Na listagem de tarefas, os parâmetros opcionais são `page`, `limit`, `completed`, `search`, `dueDateFrom`, `dueDateTo`, `sort` e `order`. A busca considera o título e a descrição; os filtros de data usam o formato `AAAA-MM-DD`.
+Na listagem de tarefas, os parâmetros opcionais são `page`, `limit`, `completed`, `search`, `dueDateFrom`, `dueDateTo`, `sort` e `order`. A busca considera o título e a descrição; os filtros de data usam o formato `dia-mês-ano`.
 
 ---
 
@@ -379,18 +379,18 @@ Na listagem de tarefas, os parâmetros opcionais são `page`, `limit`, `complete
 
 O Taskly utiliza Swagger/OpenAPI para documentar e testar a API diretamente pelo navegador.
 
-Em ambiente de desenvolvimento, a documentação está disponível em:
+Em ambiente de desenvolvimento, a documentação está disponível em.
 
-- Swagger UI: `http://localhost:8080/api-docs`;
-- OpenAPI JSON: `http://localhost:8080/openapi.json`;
+- Swagger UI: `http://localhost:8080/api-docs`.
+- OpenAPI JSON: `http://localhost:8080/openapi.json`.
 - Atalho: `http://localhost:8080/docs`.
 
-A interface permite visualizar e testar os endpoints, informando o Bearer Token quando necessário. Por segurança, ela não é exposta pelo container do back-end, que executa com `NODE_ENV=production`. Nela é possível consultar:
+A interface permite visualizar e testar os endpoints, informando o Bearer Token quando necessário, por segurança ela não é exposta pelo container do back-end, que executa com `NODE_ENV=production`, nela é possível consultar:
 
-- endpoints de autenticação, tarefas, dashboard, categorias, etiquetas, comentários e notificações;
-- parâmetros de consulta de paginação, filtros e ordenação;
-- autenticação via JWT Bearer Token;
-- corpos de requisição, respostas e códigos HTTP;
+- endpoints de autenticação, tarefas, dashboard, categorias, etiquetas, comentários e notificações.
+- parâmetros de consulta de paginação, filtros e ordenação.
+- autenticação via JWT Bearer Token.
+- corpos de requisição, respostas e códigos HTTP.
 - modelos utilizados pela API.
 
 A integração utiliza `swagger-jsdoc` para gerar a especificação e `swagger-ui-express` para disponibilizar a interface interativa.
@@ -420,15 +420,15 @@ Listagens paginadas acrescentam `meta` com dados como página atual, limite e to
 
 ## 🔒 Segurança
 
-- Senhas protegidas com bcrypt; nunca são armazenadas em texto puro;
-- JWT e refresh tokens para sessões;
-- Refresh tokens persistidos e invalidados no logout ou no encerramento de sessões;
-- Autorização por recurso via `userId`;
-- Zod valida entradas antes das regras de negócio;
-- Helmet, CORS e limite de JSON de 100 KB;
-- Em produção, `FRONTEND_URL` é obrigatória para restringir CORS;
-- Rate limit contra tentativas repetidas de login;
-- Segredos ficam em variáveis de ambiente, fora do Git;
+- Senhas protegidas com bcrypt; nunca são armazenadas em texto puro.
+- JWT e refresh tokens para sessões.
+- Refresh tokens persistidos e invalidados no logout ou no encerramento de sessões.
+- Autorização por recurso via `userId`.
+- Zod valida entradas antes das regras de negócio.
+- Helmet, CORS e limite de JSON de 100 KB.
+- Em produção, `FRONTEND_URL` é obrigatória para restringir CORS.
+- Rate limit contra tentativas repetidas de login.
+- Segredos ficam em variáveis de ambiente, fora do Git.
 - Erros possuem códigos previsíveis sem expor detalhes internos.
 - Health checks e reinício automático dos containers para a execução local.
 
