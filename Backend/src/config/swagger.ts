@@ -53,6 +53,31 @@ const options = {
             updatedAt: { type: 'string', format: 'date-time' },
           },
         },
+        DashboardResponse: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean', example: true },
+            data: {
+              type: 'object',
+              properties: {
+                summary: {
+                  type: 'object',
+                  properties: {
+                    total: { type: 'integer' },
+                    completed: { type: 'integer' },
+                    pending: { type: 'integer' },
+                    overdue: { type: 'integer' },
+                    dueToday: { type: 'integer' },
+                  },
+                },
+                upcomingTasks: {
+                  type: 'array',
+                  items: { $ref: '#/components/schemas/Task' },
+                },
+              },
+            },
+          },
+        },
         RegisterUserInput: {
           type: 'object',
           required: ['name', 'email', 'password'],
