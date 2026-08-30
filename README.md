@@ -23,10 +23,11 @@ O **Taskly** é uma aplicação full-stack de gerenciamento de tarefas, o projet
 - [Sobre o projeto](#-sobre-o-projeto)
 - [Funcionalidades](#-funcionalidades)
 - [Stack utilizada](#-stack-utilizada)
+- [Princípios de engenharia](#-princípios-de-engenharia)
 - [Arquitetura](#-arquitetura)
 - [Executando localmente com Docker](#-executando-localmente-com-docker)
 - [Modelagem do banco de dados](#-modelagem-do-banco-de-dados)
-- [Como rodar o projeto localmente](#-como-rodar-o-projeto-localmente)
+- [Execução manual para desenvolvimento](#-execução-manual-para-desenvolvimento)
 - [API e endpoints](#-api-e-endpoints)
 - [Segurança](#-segurança)
 - [Estrutura de pastas](#-estrutura-de-pastas)
@@ -75,25 +76,52 @@ Além das funcionalidades, a API possui autenticação JWT com refresh token, au
 
 **Back-end**
 
-- [Node.js](https://nodejs.org/) — ambiente de execução;
-- [Express](https://expressjs.com/) — framework do servidor HTTP;
+- [Node.js](https://nodejs.org/) : ambiente de execução;
+- [Express](https://expressjs.com/) : framework do servidor HTTP;
 - [TypeScript](https://www.typescriptlang.org/) com ESM/`nodenext` — tipagem estática;
-- [Prisma](https://www.prisma.io/) — ORM para comunicação com o banco;
-- [PostgreSQL](https://www.postgresql.org/) — banco de dados relacional;
-- [Docker](https://www.docker.com/) — execução local do front-end, back-end e PostgreSQL;
-- [bcrypt](https://www.npmjs.com/package/bcrypt) e [jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken) — autenticação;
-- [Zod](https://zod.dev/), [Swagger/OpenAPI](https://swagger.io/), Winston, Helmet, CORS e express-rate-limit — qualidade e segurança;
-- [Jest](https://jestjs.io/) + [Supertest](https://www.npmjs.com/package/supertest) — testes automatizados.
+- [Prisma](https://www.prisma.io/) : ORM para comunicação com o banco;
+- [PostgreSQL](https://www.postgresql.org/) : banco de dados relacional;
+- [Docker](https://www.docker.com/) : execução local do front-end, back-end e PostgreSQL;
+- [bcrypt](https://www.npmjs.com/package/bcrypt) e [jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken) : autenticação;
+- [Zod](https://zod.dev/), [Swagger/OpenAPI](https://swagger.io/), Winston, Helmet, CORS e express-rate-limit : qualidade e segurança;
+- [Jest](https://jestjs.io/) + [Supertest](https://www.npmjs.com/package/supertest) : testes automatizados.
 
 **Front-end — interface integrada à API**
 
-- [React](https://react.dev/) — construção da interface;
+- [React](https://react.dev/) : construção da interface;
 - [TypeScript](https://www.typescriptlang.org/) — tipagem estática;
-- [Vite](https://vite.dev/) — ambiente de desenvolvimento e build;
-- CSS com variáveis de tema — estilização responsiva e temas claro/escuro;
-- [Axios](https://axios-http.com/) — consumo da API e renovação de sessão;
+- [Vite](https://vite.dev/) : ambiente de desenvolvimento e build;
+- CSS com variáveis de tema : estilização responsiva e temas claro/escuro;
+- [Axios](https://axios-http.com/) : consumo da API e renovação de sessão;
 - [React Hook Form](https://react-hook-form.com/) + Zod — formulários e validação;
-- [Lucide](https://lucide.dev/) e [Framer Motion](https://motion.dev/) — ícones e animações;
+- [Lucide](https://lucide.dev/) e [Framer Motion](https://motion.dev/) : ícones e animações;
+
+---
+
+## 🧩 Princípios de engenharia
+
+O Taskly aplica padrões de engenharia de forma pragmática, priorizando legibilidade, testes e manutenção. O projeto não se apresenta como uma implementação formal de Clean Architecture; a organização descrita abaixo corresponde ao código existente.
+
+**Clean Code e qualidade**
+
+- Nomes semânticos, funções com responsabilidades delimitadas e respostas de API padronizadas;
+- TypeScript com modo estrito, ESLint/Oxlint e Prettier;
+- Validação centralizada com Zod e tratamento global de erros;
+- Testes de integração no back-end e tipagem explícita nas integrações do front-end.
+
+**SOLID e orientação a objetos — back-end**
+
+- **SRP:** rotas, middlewares, controllers e services possuem responsabilidades separadas;
+- **DIP aplicado nas fronteiras HTTP:** controllers recebem services por injeção de dependência, configurada em um ponto único de composição (`src/container.ts`);
+- **POO:** controllers, services e erros de domínio são modelados por classes, com encapsulamento de regras internas;
+- **OCP de forma prática:** novos recursos podem adicionar rotas, services e controllers sem alterar o fluxo central da aplicação.
+
+**Composição e separação de responsabilidades — front-end**
+
+- Componentes funcionais React, hooks e services para consumo da API;
+- Componentes reutilizáveis para elementos de interface, como `Dialog` e `ConfirmDialog`;
+- Separação entre apresentação, estado de tela e integrações HTTP;
+- O front-end privilegia composição de componentes em vez de classes, que é o padrão atual recomendado pelo React.
 
 ---
 
@@ -102,9 +130,11 @@ Além das funcionalidades, a API possui autenticação JWT com refresh token, au
 ```mermaid
 flowchart TB
     Client["Cliente / Front-end React"]
+    Container["Container de composição"]
     subgraph API["Back-end · Express"]
       Routes["Routes"] --> Middlewares["Middlewares"] --> Controllers["Controllers"] --> Services["Services"] --> Prisma["Prisma Client"]
     end
+    Container -. injeta dependências .-> Controllers
     DB[("PostgreSQL")]
     Client -- HTTP/JSON --> Routes
     Prisma --> DB
@@ -134,20 +164,44 @@ Copy-Item .env.example .env
 
 Se o seu `.env` já existir, não o sobrescreva: use o `.env.example` como referência e adicione as variáveis que estiverem faltando, especialmente `JWT_SECRET`.
 
-### 2. Inicie banco e API
+Preencha obrigatoriamente `POSTGRES_PASSWORD` e `JWT_SECRET` com valores próprios. Para gerar um segredo no PowerShell:
 
-```bash
-docker compose up --build
+```powershell
+$bytes = New-Object byte[] 32
+[System.Security.Cryptography.RandomNumberGenerator]::Fill($bytes)
+[Convert]::ToBase64String($bytes)
 ```
 
-Na primeira execução, o Docker cria o banco, aguarda o PostgreSQL ficar saudável, aplica as migrations do Prisma e inicia a API.
+Cole o resultado em `JWT_SECRET`. O arquivo `.env` é local e não deve ser enviado ao Git.
+
+### 2. Inicie a aplicação completa
+
+```bash
+docker compose up -d --build
+```
+
+Na primeira execução, o Docker cria o banco, aguarda o PostgreSQL ficar saudável, aplica as migrations do Prisma, inicia a API e só então inicia o front-end. Os três serviços usam a rede interna `taskly-net`.
 
 - Front-end: `http://localhost:5173`
 - API: `http://localhost:8080`
 - Health check: `http://localhost:8080/health`
 - PostgreSQL: `localhost:5432`
 
-Para encerrar os containers, pressione `Ctrl + C`. Para removê-los mantendo os dados do banco:
+Confira o estado dos serviços antes de abrir a aplicação:
+
+```bash
+docker compose ps
+```
+
+O esperado é `postgres` e `backend` com status `healthy` e `frontend` em execução. Caso algum serviço não inicie, consulte os logs:
+
+```bash
+docker compose logs -f backend
+docker compose logs -f frontend
+docker compose logs -f postgres
+```
+
+Para encerrar os containers mantendo os dados do banco:
 
 ```bash
 docker compose down
@@ -172,6 +226,7 @@ erDiagram
     USER ||--o{ TAG : cria
     USER ||--o{ NOTIFICATION : recebe
     USER ||--o{ REFRESH_TOKEN : possui
+    USER ||--|| USER_PREFERENCE : configura
     TASK }o--|| CATEGORY : pertence
     TASK }o--o{ TAG : recebe
     TASK ||--o{ COMMENT : possui
@@ -180,6 +235,17 @@ erDiagram
         string name
         string email UK
         string passwordHash
+        datetime createdAt
+        datetime updatedAt
+    }
+    USER_PREFERENCE {
+        string id PK
+        string language
+        string theme
+        boolean soundEnabled
+        boolean notificationsEnabled
+        boolean dueDateReminders
+        string userId FK_UK
         datetime createdAt
         datetime updatedAt
     }
@@ -210,6 +276,8 @@ erDiagram
         string id PK
         string content
         string taskId FK
+        datetime createdAt
+        datetime updatedAt
     }
     NOTIFICATION {
         string id PK
@@ -226,11 +294,13 @@ erDiagram
     }
 ```
 
-Um `User` pode possuir várias tarefas, categorias, etiquetas, notificações e refresh tokens. Cada tarefa pertence a um usuário, pode ter uma categoria, várias etiquetas e vários comentários. As consultas consideram o `userId` autenticado, impedindo acesso ou associação indevida a recursos de outra conta.
+Um `User` pode possuir várias tarefas, categorias, etiquetas, notificações e refresh tokens, além de uma única preferência de uso. Cada tarefa pertence a um usuário, pode ter uma categoria, várias etiquetas e vários comentários. As consultas consideram o `userId` autenticado, impedindo acesso ou associação indevida a recursos de outra conta. As exclusões em cadeia removem os recursos dependentes de uma conta ou tarefa; ao excluir uma categoria, a tarefa permanece e sua categoria é removida.
 
 ---
 
-## 🚀 Como rodar o projeto localmente
+## 💻 Execução manual para desenvolvimento
+
+Para conhecer e executar o projeto completo, prefira o fluxo com Docker acima. O fluxo manual abaixo é opcional e útil para desenvolver ou acessar o Swagger, que é exposto apenas com `NODE_ENV=development`.
 
 ### Pré-requisitos
 
@@ -240,19 +310,20 @@ Um `User` pode possuir várias tarefas, categorias, etiquetas, notificações e 
 
 ```bash
 git clone https://github.com/joseluucaas/taskly.git
-cd taskly
-docker compose up -d
+cd Taskly
+docker compose up -d postgres
 cd Backend
 npm install
 ```
 
-Crie `Backend/.env`:
+Crie `Backend/.env`. Para conectar ao PostgreSQL iniciado pelo Compose, use as mesmas credenciais definidas no `.env` da raiz:
 
 ```env
-DATABASE_URL="postgresql://taskly_user:lucas123@localhost:5432/taskly"
-JWT_SECRET="gere-uma-chave-segura-para-desenvolvimento"
+DATABASE_URL="postgresql://taskly:SUA_POSTGRES_PASSWORD@localhost:5432/taskly?schema=public"
+JWT_SECRET="SEU_JWT_SECRET"
 NODE_ENV=development
 PORT=8080
+FRONTEND_URL="http://localhost:5173,http://127.0.0.1:5173"
 ```
 
 ```bash
@@ -260,7 +331,15 @@ npx prisma migrate dev
 npm run dev
 ```
 
-A API ficará disponível em `http://localhost:8080`. Para validar, use `npm test`, `npm run build` e `npm run lint`.
+Em outro terminal:
+
+```bash
+cd FrontEnd
+npm install
+npm run dev
+```
+
+O front-end ficará disponível em `http://localhost:5173`, a API em `http://localhost:8080` e o Swagger em `http://localhost:8080/api-docs`. Para validar o back-end, use `npm test`, `npm run build` e `npm run lint` dentro de `Backend`; no front-end, use `npm run build` e `npm run lint` dentro de `FrontEnd`.
 
 ---
 
@@ -268,29 +347,31 @@ A API ficará disponível em `http://localhost:8080`. Para validar, use `npm tes
 
 Rotas protegidas exigem `Authorization: Bearer <accessToken>`.
 
-| Grupo | Método | Endpoint | Descrição |
-|---|---|---|---|
-| Auth | POST | `/auth/register` | Cadastra um usuário |
-| Auth | POST | `/auth/login` | Retorna access e refresh token |
-| Auth | POST | `/auth/refresh` | Renova o access token |
-| Auth | POST | `/auth/logout` | Invalida o refresh token |
-| Conta | GET/PATCH | `/users/me` | Consulta ou atualiza nome e e-mail do perfil |
-| Conta | PATCH | `/users/me/preferences` | Salva idioma, tema, sons e preferências de notificações |
-| Conta | PATCH | `/users/me/password` | Altera a senha e encerra as sessões ativas |
-| Conta | POST | `/users/me/logout-all` | Encerra todas as sessões da conta |
-| Tarefas | POST/GET | `/tasks` | Cria ou lista tarefas; `search` busca no título e na descrição |
-| Tarefas | GET/PUT/DELETE | `/tasks/:id` | Gerencia uma tarefa |
-| Dashboard | GET | `/dashboard` | Retorna métricas e próximas tarefas |
-| Categorias | GET/POST | `/categories` | Lista ou cria categorias |
-| Categorias | GET/PUT/DELETE | `/categories/:id` | Gerencia categoria |
-| Etiquetas | GET/POST | `/tags` | Lista ou cria etiquetas |
-| Etiquetas | GET/PUT/DELETE | `/tags/:id` | Gerencia etiqueta |
-| Comentários | GET/POST | `/tasks/:taskId/comments` | Lista ou cria comentários |
-| Comentários | PUT/DELETE | `/tasks/:taskId/comments/:id` | Gerencia comentário |
-| Notificações | GET | `/notifications` | Lista notificações |
-| Notificações | PATCH | `/notifications/:id/read` | Marca como lida |
-| Notificações | DELETE | `/notifications/:id` | Exclui notificação |
-| Sistema | GET | `/health` | Verifica a saúde da API |
+| Grupo        | Método         | Endpoint                      | Descrição                                                      |
+| ------------ | -------------- | ----------------------------- | -------------------------------------------------------------- |
+| Auth         | POST           | `/auth/register`              | Cadastra um usuário                                            |
+| Auth         | POST           | `/auth/login`                 | Retorna access e refresh token                                 |
+| Auth         | POST           | `/auth/refresh`               | Renova o access token                                          |
+| Auth         | POST           | `/auth/logout`                | Invalida o refresh token                                       |
+| Conta        | GET/PATCH      | `/users/me`                   | Consulta ou atualiza nome e e-mail do perfil                   |
+| Conta        | PATCH          | `/users/me/preferences`       | Salva idioma, tema, sons e preferências de notificações        |
+| Conta        | PATCH          | `/users/me/password`          | Altera a senha e encerra as sessões ativas                     |
+| Conta        | POST           | `/users/me/logout-all`        | Encerra todas as sessões da conta                              |
+| Tarefas      | POST/GET       | `/tasks`                      | Cria ou lista tarefas; `search` busca no título e na descrição |
+| Tarefas      | GET/PUT/DELETE | `/tasks/:id`                  | Gerencia uma tarefa                                            |
+| Dashboard    | GET            | `/dashboard`                  | Retorna métricas e próximas tarefas                            |
+| Categorias   | GET/POST       | `/categories`                 | Lista ou cria categorias                                       |
+| Categorias   | GET/PUT/DELETE | `/categories/:id`             | Gerencia categoria                                             |
+| Etiquetas    | GET/POST       | `/tags`                       | Lista ou cria etiquetas                                        |
+| Etiquetas    | GET/PUT/DELETE | `/tags/:id`                   | Gerencia etiqueta                                              |
+| Comentários  | GET/POST       | `/tasks/:taskId/comments`     | Lista ou cria comentários                                      |
+| Comentários  | PUT/DELETE     | `/tasks/:taskId/comments/:id` | Gerencia comentário                                            |
+| Notificações | GET            | `/notifications`              | Lista notificações                                             |
+| Notificações | PATCH          | `/notifications/:id/read`     | Marca como lida                                                |
+| Notificações | DELETE         | `/notifications/:id`          | Exclui notificação                                             |
+| Sistema      | GET            | `/health`                     | Verifica a saúde da API                                        |
+
+Na listagem de tarefas, os parâmetros opcionais são `page`, `limit`, `completed`, `search`, `dueDateFrom`, `dueDateTo`, `sort` e `order`. A busca considera o título e a descrição; os filtros de data usam o formato `AAAA-MM-DD`.
 
 ---
 
@@ -304,7 +385,7 @@ Em ambiente de desenvolvimento, a documentação está disponível em:
 - OpenAPI JSON: `http://localhost:8080/openapi.json`;
 - Atalho: `http://localhost:8080/docs`.
 
-A interface permite visualizar e testar os endpoints, informando o Bearer Token quando necessário. Nela é possível consultar:
+A interface permite visualizar e testar os endpoints, informando o Bearer Token quando necessário. Por segurança, ela não é exposta pelo container do back-end, que executa com `NODE_ENV=production`. Nela é possível consultar:
 
 - endpoints de autenticação, tarefas, dashboard, categorias, etiquetas, comentários e notificações;
 - parâmetros de consulta de paginação, filtros e ordenação;
@@ -322,10 +403,17 @@ A integração utiliza `swagger-jsdoc` para gerar a especificação e `swagger-u
 { "success": true, "data": {} }
 ```
 
-Listagens paginadas acrescentam `meta`. Erros seguem este formato:
+Listagens paginadas acrescentam `meta` com dados como página atual, limite e total. Endpoints de exclusão bem-sucedidos retornam `204 No Content`. Erros seguem este formato:
 
 ```json
-{ "success": false, "error": { "code": "TASK_NOT_FOUND", "message": "Tarefa não encontrada", "details": null } }
+{
+  "success": false,
+  "error": {
+    "code": "TASK_NOT_FOUND",
+    "message": "Tarefa não encontrada",
+    "details": null
+  }
+}
 ```
 
 ---
@@ -334,6 +422,7 @@ Listagens paginadas acrescentam `meta`. Erros seguem este formato:
 
 - Senhas protegidas com bcrypt; nunca são armazenadas em texto puro;
 - JWT e refresh tokens para sessões;
+- Refresh tokens persistidos e invalidados no logout ou no encerramento de sessões;
 - Autorização por recurso via `userId`;
 - Zod valida entradas antes das regras de negócio;
 - Helmet, CORS e limite de JSON de 100 KB;
@@ -341,6 +430,7 @@ Listagens paginadas acrescentam `meta`. Erros seguem este formato:
 - Rate limit contra tentativas repetidas de login;
 - Segredos ficam em variáveis de ambiente, fora do Git;
 - Erros possuem códigos previsíveis sem expor detalhes internos.
+- Health checks e reinício automático dos containers para a execução local.
 
 ---
 
@@ -352,6 +442,7 @@ Taskly/
 │   ├── prisma/                 # schema, migrations e seed
 │   ├── src/
 │   │   ├── config/             # Prisma, logs e Swagger
+│   │   ├── container.ts         # composição das dependências da aplicação
 │   │   ├── controllers/        # camada HTTP
 │   │   ├── errors/             # erros da aplicação
 │   │   ├── generated/          # Prisma Client gerado automaticamente
@@ -368,9 +459,18 @@ Taskly/
 │   ├── jest.config.mjs
 │   ├── package.json
 │   ├── prisma.config.ts
-│   └── tsconfig.json
-├── FrontEnd/                   # reservado para a aplicação React
-├── docker-compose.yml          # PostgreSQL local
+│   ├── tsconfig.json
+│   └── Dockerfile              # imagem de produção do back-end
+├── FrontEnd/
+│   ├── src/
+│   │   ├── components/ui/      # diálogos reutilizáveis
+│   │   ├── services/           # integrações HTTP e sons da interface
+│   │   ├── App.tsx             # composição das telas e estado principal
+│   │   └── App.css             # estilos e temas da aplicação
+│   ├── package.json
+│   └── Dockerfile              # build Vite e servidor Nginx
+├── docker-compose.yml          # front-end, back-end e PostgreSQL locais
+├── .env.example                # variáveis necessárias ao Docker Compose
 ├── .gitignore
 └── README.md
 ```
@@ -386,7 +486,7 @@ Taskly/
   - [x] ESLint + Prettier
 - [x] **Banco de dados**
   - [x] Prisma + PostgreSQL via Docker
-  - [x] Modelagem de `User`, `Task`, `Category`, `Tag`, `Comment`, `Notification` e `RefreshToken`
+  - [x] Modelagem de `User`, `Task`, `Category`, `Tag`, `Comment`, `Notification`, `RefreshToken` e `UserPreference`
   - [x] Migrations aplicadas
 - [x] **Servidor e arquitetura**
   - [x] Express configurado
@@ -416,12 +516,6 @@ Taskly/
 - [x] **Segurança**
   - [x] Helmet, CORS, limite de JSON e autorização por recurso
 
-### 🚀 Deploy do back-end
-
-- [ ] PostgreSQL gerenciado no Render
-- [ ] Web Service, variáveis de ambiente e migrations no Render
-- [ ] Publicação, health check e monitoramento em produção
-
 ## Front-end
 
 - [x] **Configuração do ambiente**
@@ -446,34 +540,20 @@ Taskly/
   - [ ] Acessibilidade completa e estados de carregamento avançados
   - [ ] Testes de interface
 
-### 🚀 Deploy do front-end
-
-- [ ] Static Site no Render
-- [ ] Variável de ambiente da API e fallback de SPA
-- [x] Integração local com o back-end e validação de CORS
-
----
-
-## 📐 Convenções e padrões
-
-### Arquitetura em camadas
-
-O projeto segue estritamente `routes → middlewares → controllers → services → repository (Prisma)`, sem misturar responsabilidades entre camadas (ver [Arquitetura](#-arquitetura)).
-
 ---
 
 ### Commits
 
 Este projeto segue a convenção [Conventional Commits](https://www.conventionalcommits.org/pt-br/v1.0.0/) facilitando a leitura do histórico e a identificação de cada mudança.
 
-| Prefixo | Uso |
-|---------|-----|
-| `feat:` | Nova funcionalidade |
-| `fix:` | Correção de bug |
+| Prefixo     | Uso                                             |
+| ----------- | ----------------------------------------------- |
+| `feat:`     | Nova funcionalidade                             |
+| `fix:`      | Correção de bug                                 |
 | `refactor:` | Reorganização de código sem mudar comportamento |
-| `docs:` | Mudanças na documentação |
-| `chore:` | Configuração e tarefas de manutenção |
-| `test:` | Adição ou ajuste de testes |
+| `docs:`     | Mudanças na documentação                        |
+| `chore:`    | Configuração e tarefas de manutenção            |
+| `test:`     | Adição ou ajuste de testes                      |
 
 ---
 
@@ -481,4 +561,4 @@ Este projeto segue a convenção [Conventional Commits](https://www.conventional
 
 **José Lucas**
 
-Desenvolvedor Full-Stack 
+Desenvolvedor Full-Stack
