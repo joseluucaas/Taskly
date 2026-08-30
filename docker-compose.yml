@@ -2,6 +2,7 @@ services:
   postgres:
     image: postgres:16-alpine
     container_name: taskly-postgres
+    restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-taskly}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Defina POSTGRES_PASSWORD no arquivo .env}
@@ -10,6 +11,8 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - taskly-net
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 5s
@@ -21,6 +24,7 @@ services:
       context: ./Backend
       dockerfile: Dockerfile
     container_name: taskly-backend
+    restart: unless-stopped
     environment:
       NODE_ENV: production
       PORT: 8080
@@ -29,9 +33,21 @@ services:
       FRONTEND_URL: ${FRONTEND_URL:-http://localhost:5173,http://127.0.0.1:5173}
     ports:
       - "8080:8080"
+    networks:
+      - taskly-net
     depends_on:
       postgres:
         condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          'node -e "fetch(''http://127.0.0.1:8080/health'').then((response) => process.exit(response.ok ? 0 : 1)).catch(() => process.exit(1))"',
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
 
   frontend:
     build:
@@ -40,10 +56,18 @@ services:
       args:
         VITE_API_URL: ${VITE_API_URL:-http://localhost:8080}
     container_name: taskly-frontend
+    restart: unless-stopped
     ports:
       - "5173:80"
+    networks:
+      - taskly-net
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
+
+networks:
+  taskly-net:
+    driver: bridge
 
 volumes:
-  postgres_data: 
+  postgres_data:
