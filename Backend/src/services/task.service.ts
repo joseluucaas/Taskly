@@ -10,6 +10,7 @@ type TaskData = {
   title: string;
   description?: string;
   dueDate?: Date;
+  categoryId?: string | null;
 };
 
 type UpdateTaskData = {
@@ -17,16 +18,38 @@ type UpdateTaskData = {
   description?: string | null;
   completed?: boolean;
   dueDate?: Date;
+  categoryId?: string | null;
 };
 
 
 export class TaskService {
+  private async ensureCategoryBelongsToUser(
+    categoryId: string | null | undefined,
+    userId: string,
+  ) {
+    if (!categoryId) {
+      return;
+    }
+
+    const category = await prisma.category.findFirst({
+      where: { id: categoryId, userId },
+      select: { id: true },
+    });
+
+    if (!category) {
+      throw new AppError('Categoria não encontrada', 404, 'CATEGORY_NOT_FOUND');
+    }
+  }
+
   async create(userId: string, data: TaskData) {
+    await this.ensureCategoryBelongsToUser(data.categoryId, userId);
+
     const task = await prisma.task.create({
       data: {
         title: data.title,
         description: data.description,
         dueDate: data.dueDate,
+        categoryId: data.categoryId,
         userId,
       },
     });
@@ -104,6 +127,7 @@ export class TaskService {
         orderBy,
         skip: (page - 1) * limit,
         take: limit,
+        include: { category: true },
       }),
       prisma.task.count({ where }),
     ]);
@@ -134,6 +158,7 @@ export class TaskService {
   async findByIdAndUser(id: string, userId: string) {
     return prisma.task.findFirst({
       where: { id, userId },
+      include: { category: true },
     });
   }
 
@@ -149,9 +174,12 @@ export class TaskService {
       throw new AppError('Tarefa não encontrada', 404, 'TASK_NOT_FOUND');
     }
 
+    await this.ensureCategoryBelongsToUser(data.categoryId, userId);
+
     const updatedTask = await prisma.task.update({
       where: { id },
       data,
+      include: { category: true },
     });
 
     logger.info('Tarefa atualizada com sucesso', {

@@ -20,6 +20,7 @@ model User {
   updatedAt    DateTime @updatedAt
 
   tasks Task[]
+  categories Category[]
 }
 
 model Task {
@@ -28,10 +29,30 @@ model Task {
   description String?
   completed   Boolean   @default(false)
   dueDate     DateTime?
+  categoryId  String?
 
   userId String
-  user   User   @relation(fields: [userId], references: [id])
+  user     User      @relation(fields: [userId], references: [id])
+  category Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+  @@index([categoryId])
+
+model Category {
+  id    String  @id @default(uuid())
+  name  String
+  color String?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  tasks Task[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, name])
+  @@index([userId])
 }

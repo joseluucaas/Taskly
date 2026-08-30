@@ -9,6 +9,11 @@ export const createTaskSchema = z.object({
   description: z.string().optional(),
 
   dueDate: z.coerce.date().optional(),
+
+  categoryId: z
+    .uuid('A categoria selecionada é inválida')
+    .nullable()
+    .optional(),
 });
 
 export const updateTaskSchema = z.object({
@@ -23,4 +28,9 @@ export const updateTaskSchema = z.object({
   completed: z.boolean().optional(),
 
   dueDate: z.coerce.date().optional(),
+
+  categoryId: z
+    .uuid('A categoria selecionada é inválida')
+    .nullable()
+    .optional(),
 });

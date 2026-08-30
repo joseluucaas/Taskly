@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import swaggerUi from 'swagger-ui-express';
 
 import authRoutes from './routes/auth.routes.js';
+import categoryRoutes from './routes/category.routes.js';
 import dashboardRoutes from './routes/dashboard.routes.js';
 import taskRoutes from './routes/task.routes.js';
 
@@ -67,6 +68,8 @@ app.get('/health', (_req, res) => {
 
 app.use('/auth', authRoutes);
 app.use('/dashboard', dashboardRoutes);
+
+app.use('/categories', categoryRoutes);
 app.use('/tasks', taskRoutes);
 
 // ─────────────────────────────────────────────
