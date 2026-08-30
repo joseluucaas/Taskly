@@ -16,7 +16,7 @@
 
 O **Taskly** é uma aplicação full-stack de gerenciamento de tarefas. O projeto aplica arquitetura de APIs REST, TypeScript, autenticação, segurança, banco de dados relacional e boas práticas de engenharia de software.
 
-O back-end está concluído localmente e pronto para deploy. O front-end será desenvolvido em uma etapa própria, consumindo a API existente.
+O back-end está concluído localmente e pronto para deploy. O front-end está em desenvolvimento, consumindo a API local já disponível.
 
 ---
 
@@ -26,6 +26,7 @@ O back-end está concluído localmente e pronto para deploy. O front-end será d
 - [Funcionalidades](#-funcionalidades)
 - [Stack utilizada](#-stack-utilizada)
 - [Arquitetura](#-arquitetura)
+- [Executando localmente com Docker](#-executando-localmente-com-docker)
 - [Modelagem do banco de dados](#-modelagem-do-banco-de-dados)
 - [Como rodar o projeto localmente](#-como-rodar-o-projeto-localmente)
 - [API e endpoints](#-api-e-endpoints)
@@ -86,7 +87,7 @@ Além das funcionalidades, a API possui autenticação JWT com refresh token, au
 - [Zod](https://zod.dev/), [Swagger/OpenAPI](https://swagger.io/), Winston, Helmet, CORS e express-rate-limit — qualidade e segurança;
 - [Jest](https://jestjs.io/) + [Supertest](https://www.npmjs.com/package/supertest) — testes automatizados.
 
-**Front-end — planejado**
+**Front-end — em desenvolvimento**
 
 - [React](https://react.dev/) — construção da interface;
 - [TypeScript](https://www.typescriptlang.org/) — tipagem estática;
@@ -114,6 +115,66 @@ flowchart TB
 ```
 
 Routes definem endpoints; middlewares tratam autenticação, validação e erros; controllers lidam com HTTP; services concentram regras de negócio; e Prisma acessa o banco. Essa separação reduz acoplamento e facilita testes e manutenção.
+
+---
+
+## 🐳 Executando localmente com Docker
+
+O Docker executa o PostgreSQL e o back-end em containers separados. Nesta etapa, o front-end continua sendo executado localmente com Vite.
+
+### 1. Configure as variáveis locais
+
+Se ainda não existir um arquivo `.env` na raiz, crie-o a partir do exemplo e altere a senha e o segredo antes de iniciar:
+
+```bash
+cp .env.example .env
+```
+
+No PowerShell, use:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Se o seu `.env` já existir, não o sobrescreva: use o `.env.example` como referência e adicione as variáveis que estiverem faltando, especialmente `JWT_SECRET`.
+
+### 2. Inicie banco e API
+
+```bash
+docker compose up --build
+```
+
+Na primeira execução, o Docker cria o banco, aguarda o PostgreSQL ficar saudável, aplica as migrations do Prisma e inicia a API.
+
+- API: `http://localhost:8080`
+- Health check: `http://localhost:8080/health`
+- PostgreSQL: `localhost:5432`
+
+Para encerrar os containers, pressione `Ctrl + C`. Para removê-los mantendo os dados do banco:
+
+```bash
+docker compose down
+```
+
+Para apagar também os dados locais do PostgreSQL e começar do zero:
+
+```bash
+docker compose down -v
+```
+
+> Atenção: `docker compose down -v` remove permanentemente o banco local criado pelo Docker.
+
+### 3. Inicie o front-end
+
+Em outro terminal:
+
+```bash
+cd FrontEnd
+npm install
+npm run dev
+```
+
+Abra `http://localhost:5173`. O front-end se comunica com a API do container em `http://localhost:8080`.
 
 ---
 
@@ -242,6 +303,8 @@ Rotas protegidas exigem `Authorization: Bearer <accessToken>`.
 | Notificações | DELETE | `/notifications/:id` | Exclui notificação |
 | Sistema | GET | `/health` | Verifica a saúde da API |
 
+---
+
 ### Documentação da API
 
 O Taskly utiliza Swagger/OpenAPI para documentar e testar a API diretamente pelo navegador.
@@ -340,6 +403,7 @@ Taskly/
   - [x] Express configurado
   - [x] Rota de health check
   - [x] Arquitetura em camadas
+  - [x] Container Docker do back-end com migrations automáticas
 - [x] **Autenticação**
   - [x] Cadastro, login e proteção por JWT
   - [x] Refresh token, renovação de sessão e logout
@@ -371,17 +435,22 @@ Taskly/
 
 ## Front-end
 
-- [ ] **Configuração do ambiente**
-  - [ ] React + TypeScript + Vite
-  - [ ] Tailwind CSS e organização de pastas
-- [ ] **Autenticação**
-  - [ ] Telas de cadastro e login
-  - [ ] Renovação de sessão e logout
-- [ ] **Gerenciamento de tarefas**
-  - [ ] Dashboard, CRUD, filtros, paginação e ordenação
+- [x] **Configuração do ambiente**
+  - [x] React + TypeScript + Vite
+  - [x] Organização inicial de componentes e serviços
+- [x] **Autenticação**
+  - [x] Telas de cadastro e login conectadas à API
+  - [x] Logout e armazenamento local da sessão
+  - [x] Tema inicial conforme o sistema e idioma PT/EN
+- [x] **Dashboard inicial**
+  - [x] Métricas, listagem e conclusão de tarefas pela API
+  - [x] Animação de boas-vindas após a autenticação
+- [ ] **Gerenciamento completo de tarefas**
+  - [ ] CRUD, filtros, paginação e ordenação
   - [ ] Categorias, etiquetas, comentários e notificações
 - [ ] **Qualidade**
-  - [ ] Acessibilidade, estados de carregamento e tratamento de erros
+  - [x] Estados de vazio e tratamento inicial de erros
+  - [ ] Acessibilidade completa e estados de carregamento avançados
   - [ ] Testes de interface
 
 ### 🚀 Deploy do front-end
@@ -398,6 +467,8 @@ Taskly/
 
 O projeto segue estritamente `routes → middlewares → controllers → services → repository (Prisma)`, sem misturar responsabilidades entre camadas (ver [Arquitetura](#-arquitetura)).
 
+---
+
 ### Commits
 
 Este projeto segue a convenção [Conventional Commits](https://www.conventionalcommits.org/pt-br/v1.0.0/) facilitando a leitura do histórico e a identificação de cada mudança.
@@ -410,16 +481,6 @@ Este projeto segue a convenção [Conventional Commits](https://www.conventional
 | `docs:` | Mudanças na documentação |
 | `chore:` | Configuração e tarefas de manutenção |
 | `test:` | Adição ou ajuste de testes |
-
-Exemplos:
-
-```bash
-feat: adiciona paginação nas tarefas
-feat: adiciona dashboard de tarefas
-fix: corrige validação do login
-docs: atualiza roadmap do projeto
-test: adiciona testes para autenticação
-```
 
 ---
 
