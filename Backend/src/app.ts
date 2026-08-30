@@ -10,6 +10,7 @@ import notificationRoutes from './routes/notification.routes.js';
 import dashboardRoutes from './routes/dashboard.routes.js';
 import tagRoutes from './routes/tag.routes.js';
 import taskRoutes from './routes/task.routes.js';
+import userRoutes from './routes/user.routes.js';
 
 import { errorHandler } from './middlewares/errorHandler.middleware.js';
 import swaggerSpec from './config/swagger.js';
@@ -91,6 +92,8 @@ app.use('/notifications', notificationRoutes);
 app.use('/tags', tagRoutes);
 
 app.use('/tasks', taskRoutes);
+
+app.use('/users', userRoutes);
 
 
 // ─────────────────────────────────────────────

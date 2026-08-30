@@ -274,6 +274,10 @@ Rotas protegidas exigem `Authorization: Bearer <accessToken>`.
 | Auth | POST | `/auth/login` | Retorna access e refresh token |
 | Auth | POST | `/auth/refresh` | Renova o access token |
 | Auth | POST | `/auth/logout` | Invalida o refresh token |
+| Conta | GET/PATCH | `/users/me` | Consulta ou atualiza nome e e-mail do perfil |
+| Conta | PATCH | `/users/me/preferences` | Salva idioma, tema, sons e preferências de notificações |
+| Conta | PATCH | `/users/me/password` | Altera a senha e encerra as sessões ativas |
+| Conta | POST | `/users/me/logout-all` | Encerra todas as sessões da conta |
 | Tarefas | POST/GET | `/tasks` | Cria ou lista tarefas; `search` busca no título e na descrição |
 | Tarefas | GET/PUT/DELETE | `/tasks/:id` | Gerencia uma tarefa |
 | Dashboard | GET | `/dashboard` | Retorna métricas e próximas tarefas |
@@ -424,10 +428,12 @@ Taskly/
   - [x] React + TypeScript + Vite
   - [x] Organização inicial de componentes e serviços
   - [x] Container Docker para execução local
+  - [x] Configurações de tema, idioma, sons, exibição e acessibilidade
 - [x] **Autenticação**
   - [x] Telas de cadastro e login conectadas à API
   - [x] Logout e armazenamento local da sessão
   - [x] Tema inicial conforme o sistema e idioma PT/EN
+  - [x] Perfil editável, preferências persistentes e controles de segurança
 - [x] **Dashboard inicial**
   - [x] Métricas, listagem e conclusão de tarefas pela API
   - [x] Animação de boas-vindas após a autenticação

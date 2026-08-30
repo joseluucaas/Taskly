@@ -1,6 +1,12 @@
 type SoundType = "login" | "taskCompleted";
 
 let audioContext: AudioContext | null = null;
+let enabled = localStorage.getItem("taskly_sound_enabled") !== "false";
+
+export function setSoundEnabled(value: boolean) {
+  enabled = value;
+  localStorage.setItem("taskly_sound_enabled", String(value));
+}
 
 function getAudioContext() {
   if (audioContext) return audioContext;
@@ -20,12 +26,14 @@ function getAudioContext() {
 // Deve ser chamado durante uma interação direta, como clique ou envio de formulário.
 // Assim o navegador libera o contexto de áudio antes da chamada assíncrona da API.
 export function prepareSound() {
+  if (!enabled) return;
   const context = getAudioContext();
   if (context?.state === "suspended") void context.resume();
 }
 
 // Sons breves sintetizados no navegador evitam arquivos de áudio extras e carregamento adicional.
 export function playSound(type: SoundType) {
+  if (!enabled) return;
   const context = getAudioContext();
   if (!context) return;
 
