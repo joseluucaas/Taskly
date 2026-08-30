@@ -1,7 +1,7 @@
 # 📝 Todo List Full-Stack
 
 ![Status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow)
-![Node.js](https://img.shields.io/badge/Node.js-333333?logo=node.js&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-339933?logo=node.js&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
 ![Express](https://img.shields.io/badge/Express_5-000000?logo=express&logoColor=white)
 ![Prisma](https://img.shields.io/badge/Prisma-2D3748?logo=prisma&logoColor=white)
@@ -248,12 +248,12 @@ todo-list-fullstack/
   - [x] Buscar tarefa por ID
   - [x] Atualizar tarefa
   - [x] Excluir tarefa
-- [ ] **Tratamento de erros e validação**
-  - [ ] Error handler centralizado (middleware do Express)
-  - [ ] Validação de entrada com Zod em todas as rotas
-- [ ] **Testes automatizados**
-  - [ ] Testes de autenticação
-  - [ ] Testes de CRUD de tarefas
+- [X] **Tratamento de erros e validação**
+  - [X] Error handler centralizado (middleware do Express)
+  - [X] Validação de entrada com Zod em todas as rotas
+- [X] **Testes automatizados**
+  - [X] Testes de autenticação
+  - [X] Testes de CRUD de tarefas
 - [ ] **Front-end**
   - [ ] Setup React + Tailwind
   - [ ] Telas de login/cadastro
