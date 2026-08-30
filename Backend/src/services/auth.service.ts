@@ -176,6 +176,14 @@ export class AuthService {
 
       refreshToken: refreshToken.token,
 
+      // O front-end precisa de dados públicos para personalizar a experiência
+      // após o login. A senha e o hash nunca são expostos nesta resposta.
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+      },
+
     };
   }
 

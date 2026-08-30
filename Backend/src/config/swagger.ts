@@ -127,6 +127,14 @@ const options = {
               properties: {
                 accessToken: { type: 'string' },
                 refreshToken: { type: 'string' },
+                user: {
+                  type: 'object',
+                  properties: {
+                    id: { type: 'string', format: 'uuid' },
+                    name: { type: 'string' },
+                    email: { type: 'string', format: 'email' },
+                  },
+                },
               },
             },
           },
