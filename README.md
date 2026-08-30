@@ -12,10 +12,12 @@ Aplicação de gerenciamento de tarefas com autenticação de usuários, constru
 - [Stack utilizada](#-stack-utilizada)
 - [Arquitetura](#-arquitetura)
 - [Modelagem do banco de dados](#-modelagem-do-banco-de-dados)
-- [Fluxo de autenticação](#-fluxo-de-autenticação)
 - [Como rodar o projeto localmente](#-como-rodar-o-projeto-localmente)
+- [API e Endpoints](#-api-e-endpoints)
+- [Segurança](#-segurança)
 - [Estrutura de pastas](#-estrutura-de-pastas)
 - [Roadmap](#-roadmap)
+- [Convenções e Padrões](#-convenções-e-padrões)
 - [Autor](#-autor)
 
 ---
@@ -107,33 +109,6 @@ Um `User` pode ter várias `Task`s (relação um-para-muitos). Cada tarefa perte
 
 ---
 
-## 🔐 Fluxo de autenticação
-
-```mermaid
-sequenceDiagram
-    participant U as Usuário
-    participant F as Front-end (React)
-    participant B as Back-end (Express)
-    participant D as Banco (PostgreSQL)
-
-    U->>F: Preenche email e senha
-    F->>B: POST /auth/login
-    B->>D: Busca usuário pelo email
-    D-->>B: Retorna usuário (com passwordHash)
-    B->>B: Compara senha com bcrypt.compare()
-    alt Senha correta
-        B->>B: Gera token JWT
-        B-->>F: 200 OK + token
-        F->>F: Armazena o token
-        F-->>U: Redireciona para o dashboard
-    else Senha incorreta
-        B-->>F: 401 Unauthorized
-        F-->>U: Exibe mensagem de erro
-    end
-```
-
----
-
 ## 🚀 Como rodar o projeto localmente
 
 ### Pré-requisitos
@@ -169,6 +144,41 @@ O servidor sobe por padrão em `http://localhost:3000`.
 
 ---
 
+## 🔌 API e Endpoints
+
+Todos os endpoints protegidos exigem o header `Authorization: Bearer <token>`.
+
+### Autenticação
+
+| Método | Endpoint | Descrição | Corpo da requisição | Resposta |
+|--------|----------|-----------|----------------------|----------|
+| POST | `/auth/register` | Cadastra um novo usuário | `{ "name", "email", "password" }` | `{ "id", "name", "email", "createdAt" }` |
+| POST | `/auth/login` | Autentica e retorna um token JWT | `{ "email", "password" }` | `{ "token" }` |
+
+### Tarefas *(em desenvolvimento)*
+
+| Método | Endpoint | Descrição | Corpo da requisição | Resposta |
+|--------|----------|-----------|----------------------|----------|
+| POST | `/tasks` | Cria uma nova tarefa | `{ "title", "description?", "dueDate?" }` | Tarefa criada |
+| GET | `/tasks` | Lista as tarefas do usuário logado | — | Array de tarefas |
+| PUT | `/tasks/:id` | Atualiza uma tarefa | Campos a atualizar | Tarefa atualizada |
+| DELETE | `/tasks/:id` | Remove uma tarefa | — | Status 204 |
+
+---
+
+## 🔒 Segurança
+
+- **Hash de senhas com bcrypt** (salt rounds: 10) — a senha em texto puro nunca é armazenada
+- **Mensagens de erro genéricas no login** — a API responde a mesma mensagem tanto para email inexistente quanto para senha incorreta, evitando enumeração de usuários
+- **Restrição de unicidade de email** a nível de banco de dados (`@unique` no schema)
+- **Tokens JWT assinados** com segredo forte, armazenado em variável de ambiente (nunca no código-fonte)
+- **Variáveis sensíveis fora do controle de versão** (`.env` no `.gitignore`, apenas `.env.example` é versionado)
+- `helmet` configurado para headers de segurança HTTP *(planejado)*
+- Middleware de autenticação para proteger rotas privadas *(em desenvolvimento)*
+- Rate limiting no endpoint de login, prevenindo força bruta *(planejado)*
+
+---
+
 ## 📂 Estrutura de pastas
 
 ```
@@ -193,15 +203,52 @@ todo-list-fullstack/
 
 ## 🗺 Roadmap
 
-- [x] Configuração do ambiente (TypeScript, ESLint, Prettier)
-- [x] Configuração do Prisma + PostgreSQL via Docker
-- [x] Modelagem do schema (`User`, `Task`)
-- [x] Servidor Express básico com rota de health check
-- [x] Autenticação (cadastro, login, JWT, bcrypt)
-- [ ] CRUD de tarefas
-- [ ] Testes automatizados
-- [ ] Front-end (React + Tailwind)
-- [ ] Deploy
+- [x] **Configuração do ambiente**
+  - [x] TypeScript com ESM (`nodenext`)
+  - [x] ESLint + Prettier
+- [x] **Banco de dados**
+  - [x] Prisma + PostgreSQL via Docker
+  - [x] Modelagem do schema (`User`, `Task`)
+  - [x] Migrations aplicadas
+- [x] **Servidor**
+  - [x] Express configurado
+  - [x] Rota de health check
+- [x] **Autenticação**
+  - [x] Cadastro de usuário (hash de senha com bcrypt)
+  - [x] Login com geração de token JWT
+  - [x] Middleware de proteção de rotas
+- [ ] **CRUD de tarefas**
+  - [ ] Criar tarefa
+  - [ ] Listar tarefas do usuário
+  - [ ] Atualizar tarefa
+  - [ ] Excluir tarefa
+- [ ] **Testes automatizados**
+  - [ ] Testes de autenticação
+  - [ ] Testes de CRUD de tarefas
+- [ ] **Front-end**
+  - [ ] Setup React + Tailwind
+  - [ ] Telas de login/cadastro
+  - [ ] Dashboard de tarefas
+- [ ] **Deploy**
+  - [ ] Back-end
+  - [ ] Front-end
+
+---
+
+## 📐 Convenções e padrões
+
+### Commits
+
+Este projeto segue a convenção [Conventional Commits](https://www.conventionalcommits.org/pt-br/v1.0.0/), facilitando a leitura do histórico e a identificação do tipo de cada mudança:
+
+| Prefixo | Uso |
+|---------|-----|
+| `feat:` | Nova funcionalidade |
+| `fix:` | Correção de bug |
+| `refactor:` | Reorganização de código sem mudar comportamento |
+| `docs:` | Mudanças na documentação |
+| `chore:` | Configuração, tarefas de manutenção |
+| `test:` | Adição ou ajuste de testes |
 
 ---
 
