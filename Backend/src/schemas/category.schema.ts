@@ -1,11 +1,12 @@
 import { z } from 'zod';
 
-
 const colorSchema = z
   .string()
   .trim()
-  .regex(/^#[0-9A-Fa-f]{6}$/, 'A cor deve estar no formato hexadecimal #RRGGBB');
-
+  .regex(
+    /^#[0-9A-Fa-f]{6}$/,
+    'A cor deve estar no formato hexadecimal #RRGGBB'
+  );
 
 export const createCategorySchema = z.object({
   name: z
@@ -16,13 +17,11 @@ export const createCategorySchema = z.object({
   color: colorSchema.optional(),
 });
 
-
 export const updateCategorySchema = createCategorySchema
   .partial()
   .refine((data) => Object.keys(data).length > 0, {
     message: 'Informe ao menos um campo para atualização',
   });
-
 
 export type CreateCategoryInput = z.infer<typeof createCategorySchema>;
 export type UpdateCategoryInput = z.infer<typeof updateCategorySchema>;

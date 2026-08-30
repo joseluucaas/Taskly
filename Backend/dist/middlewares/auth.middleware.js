@@ -1,24 +1,42 @@
 import jwt from 'jsonwebtoken';
-export function authMiddleware(req, res, next) {
+import logger from '../config/logger.js';
+import { AppError } from '../errors/AppError.js';
+export function authMiddleware(req, _res, next) {
     const authHeader = req.headers.authorization;
     if (!authHeader) {
-        return res.status(401).json({ message: 'Token não fornecido' });
+        return next(new AppError('Token não fornecido', 401, 'MISSING_TOKEN'));
     }
     const [scheme, token] = authHeader.split(' ');
     if (scheme !== 'Bearer' || !token) {
-        return res.status(401).json({ message: 'Formato de token inválido' });
+        logger.warn('Tentativa de autenticação com formato inválido', {
+            path: req.path,
+        });
+        return next(new AppError('Formato de token inválido', 401, 'INVALID_TOKEN_FORMAT'));
+    }
+    const jwtSecret = process.env.JWT_SECRET;
+    if (!jwtSecret) {
+        logger.error('JWT_SECRET não configurado');
+        return next(new AppError('Configuração interna inválida', 500, 'JWT_CONFIGURATION_ERROR'));
     }
     try {
-        const jwtSecret = process.env.JWT_SECRET;
-        if (!jwtSecret) {
-            throw new Error('JWT_SECRET não configurado');
-        }
         const decoded = jwt.verify(token, jwtSecret);
+        // O `sub` identifica o dono do token. Ele é usado nas consultas para
+        // garantir que cada usuário enxergue apenas os próprios recursos.
+        if (!decoded.sub) {
+            throw new AppError('Token inválido', 401, 'INVALID_TOKEN');
+        }
         req.userId = decoded.sub;
         return next();
     }
-    catch {
-        return res.status(401).json({ message: 'Token inválido ou expirado' });
+    catch (error) {
+        if (error instanceof AppError) {
+            return next(error);
+        }
+        logger.warn('Token inválido ou expirado', {
+            path: req.path,
+            method: req.method,
+        });
+        return next(new AppError('Token inválido ou expirado', 401, 'INVALID_OR_EXPIRED_TOKEN'));
     }
 }
 //# sourceMappingURL=auth.middleware.js.map

@@ -1,15 +1,10 @@
 import { z } from 'zod';
 
-
 const dateQuerySchema = z
   .string()
   .trim()
-  .regex(
-    /^\d{4}-\d{2}-\d{2}$/,
-    'A data deve estar no formato AAAA-MM-DD',
-  )
+  .regex(/^\d{4}-\d{2}-\d{2}$/, 'A data deve estar no formato AAAA-MM-DD')
   .transform((value) => new Date(`${value}T00:00:00.000Z`));
-
 
 export const listTasksQuerySchema = z
   .object({
@@ -42,18 +37,10 @@ export const listTasksQuerySchema = z
     dueDateTo: dateQuerySchema.optional(),
 
     sort: z
-      .enum([
-        'createdAt',
-        'updatedAt',
-        'dueDate',
-        'title',
-        'completed',
-      ])
+      .enum(['createdAt', 'updatedAt', 'dueDate', 'title', 'completed'])
       .default('createdAt'),
 
-    order: z
-      .enum(['asc', 'desc'])
-      .default('desc'),
+    order: z.enum(['asc', 'desc']).default('desc'),
   })
   .refine(
     (data) => {
@@ -66,10 +53,7 @@ export const listTasksQuerySchema = z
     {
       message: 'A data inicial não pode ser posterior à data final',
       path: ['dueDateTo'],
-    },
+    }
   );
 
-
-export type ListTasksQuery = z.infer<
-  typeof listTasksQuerySchema
->;
+export type ListTasksQuery = z.infer<typeof listTasksQuerySchema>;

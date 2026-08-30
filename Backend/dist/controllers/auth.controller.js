@@ -1,15 +1,52 @@
-import { AuthService } from '../services/auth.service.js';
-const authService = new AuthService();
+import { registerSchema, loginSchema } from '../schemas/auth.schema.js';
+import { refreshTokenSchema } from '../schemas/refreshToken.schema.js';
+import { successResponse } from '../utils/apiResponse.js';
 export class AuthController {
-    async register(req, res) {
-        const { name, email, password } = req.body;
-        const user = await authService.register(name, email, password);
-        return res.status(201).json(user);
+    authService;
+    constructor(authService) {
+        this.authService = authService;
     }
-    async login(req, res) {
-        const { email, password } = req.body;
-        const result = await authService.login(email, password);
-        return res.status(200).json(result);
+    async register(req, res, next) {
+        try {
+            const data = registerSchema.parse(req.body);
+            const user = await this.authService.register(data.name, data.email, data.password);
+            return res.status(201).json(successResponse(user));
+        }
+        catch (error) {
+            return next(error);
+        }
+    }
+    async login(req, res, next) {
+        try {
+            const data = loginSchema.parse(req.body);
+            const result = await this.authService.login(data.email, data.password);
+            return res.status(200).json(successResponse(result));
+        }
+        catch (error) {
+            return next(error);
+        }
+    }
+    async refresh(req, res, next) {
+        try {
+            const data = refreshTokenSchema.parse(req.body);
+            const result = await this.authService.refresh(data.refreshToken);
+            return res.status(200).json(successResponse(result));
+        }
+        catch (error) {
+            return next(error);
+        }
+    }
+    async logout(req, res, next) {
+        try {
+            const data = refreshTokenSchema.parse(req.body);
+            await this.authService.logout(data.refreshToken);
+            return res.status(200).json(successResponse({
+                message: 'Logout realizado com sucesso',
+            }));
+        }
+        catch (error) {
+            return next(error);
+        }
     }
 }
 //# sourceMappingURL=auth.controller.js.map

@@ -1,18 +1,17 @@
 import { prisma } from '../config/prisma.js';
 
-
 export class DashboardService {
   async getSummary(userId: string) {
     const now = new Date();
     const startOfToday = new Date(
       now.getFullYear(),
       now.getMonth(),
-      now.getDate(),
+      now.getDate()
     );
     const startOfTomorrow = new Date(
       now.getFullYear(),
       now.getMonth(),
-      now.getDate() + 1,
+      now.getDate() + 1
     );
 
     const [total, completed, overdue, dueToday, upcomingTasks] =

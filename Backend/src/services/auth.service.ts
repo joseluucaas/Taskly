@@ -7,24 +7,11 @@ import logger from '../config/logger.js';
 
 import { RefreshTokenService } from './refreshToken.service.js';
 
-
-const refreshTokenService = new RefreshTokenService();
-
-
-
 export class AuthService {
+  constructor(private readonly refreshTokenService: RefreshTokenService) {}
 
-  async register(
-    name: string,
-    email: string,
-    password: string,
-  ) {
-
-    const passwordHash = await bcrypt.hash(
-      password,
-      10,
-    );
-
+  async register(name: string, email: string, password: string) {
+    const passwordHash = await bcrypt.hash(password, 10);
 
     const user = await prisma.user.create({
       data: {
@@ -41,101 +28,58 @@ export class AuthService {
       },
     });
 
-
     logger.info('Usuário criado com sucesso', {
       userId: user.id,
       email: user.email,
     });
 
-
     return user;
   }
 
-
-
-
-
-  async login(
-    email: string,
-    password: string,
-  ) {
-
+  async login(email: string, password: string) {
     const user = await prisma.user.findUnique({
       where: {
         email,
       },
     });
 
-
-
     if (!user) {
-
-      logger.warn(
-        'Tentativa de login com usuário inexistente',
-        {
-          email,
-        },
-      );
-
+      logger.warn('Tentativa de login com usuário inexistente', {
+        email,
+      });
 
       throw new AppError(
         'Email ou senha inválidos',
         401,
-        'INVALID_CREDENTIALS',
+        'INVALID_CREDENTIALS'
       );
     }
 
-
-
-
-    const passwordMatches =
-      await bcrypt.compare(
-        password,
-        user.passwordHash,
-      );
-
-
+    const passwordMatches = await bcrypt.compare(password, user.passwordHash);
 
     if (!passwordMatches) {
-
-      logger.warn(
-        'Tentativa de login com senha inválida',
-        {
-          email,
-        },
-      );
-
+      logger.warn('Tentativa de login com senha inválida', {
+        email,
+      });
 
       throw new AppError(
         'Email ou senha inválidos',
         401,
-        'INVALID_CREDENTIALS',
+        'INVALID_CREDENTIALS'
       );
     }
-
-
-
 
     const jwtSecret = process.env.JWT_SECRET;
 
-
-
     if (!jwtSecret) {
-
-      logger.error(
-        'JWT_SECRET não configurado',
-      );
-
+      logger.error('JWT_SECRET não configurado');
 
       throw new AppError(
         'Configuração interna inválida',
         500,
-        'JWT_CONFIGURATION_ERROR',
+        'JWT_CONFIGURATION_ERROR'
       );
     }
-
-
-
 
     const accessToken = jwt.sign(
       {
@@ -146,32 +90,17 @@ export class AuthService {
 
       {
         expiresIn: '15m',
-      },
+      }
     );
 
+    const refreshToken = await this.refreshTokenService.create(user.id);
 
-
-
-    const refreshToken =
-      await refreshTokenService.create(
-        user.id,
-      );
-
-
-
-
-    logger.info(
-      'Login realizado com sucesso',
-      {
-        userId: user.id,
-        email: user.email,
-      },
-    );
-
-
+    logger.info('Login realizado com sucesso', {
+      userId: user.id,
+      email: user.email,
+    });
 
     return {
-
       accessToken,
 
       refreshToken: refreshToken.token,
@@ -183,74 +112,42 @@ export class AuthService {
         name: user.name,
         email: user.email,
       },
-
     };
   }
 
-
-
-
-
-  async refresh(
-    refreshToken: string,
-  ) {
-
+  async refresh(refreshToken: string) {
     const storedToken =
-      await refreshTokenService.findByToken(
-        refreshToken,
-      );
-
-
+      await this.refreshTokenService.findByToken(refreshToken);
 
     if (!storedToken) {
-
       throw new AppError(
         'Refresh token inválido',
         401,
-        'INVALID_REFRESH_TOKEN',
+        'INVALID_REFRESH_TOKEN'
       );
     }
 
-
-
-
     if (storedToken.expiresAt < new Date()) {
-
-      await refreshTokenService.delete(
-        refreshToken,
-      );
-
+      await this.refreshTokenService.delete(refreshToken);
 
       throw new AppError(
         'Refresh token expirado',
         401,
-        'EXPIRED_REFRESH_TOKEN',
+        'EXPIRED_REFRESH_TOKEN'
       );
     }
 
-
-
-
     const jwtSecret = process.env.JWT_SECRET;
 
-
-
     if (!jwtSecret) {
-
-      logger.error(
-        'JWT_SECRET não configurado',
-      );
-
+      logger.error('JWT_SECRET não configurado');
 
       throw new AppError(
         'Configuração interna inválida',
         500,
-        'JWT_CONFIGURATION_ERROR',
+        'JWT_CONFIGURATION_ERROR'
       );
     }
-
-
-
 
     const accessToken = jwt.sign(
       {
@@ -261,64 +158,34 @@ export class AuthService {
 
       {
         expiresIn: '15m',
-      },
+      }
     );
 
-
-
-
-    logger.info(
-      'Access token renovado com sucesso',
-      {
-        userId: storedToken.userId,
-      },
-    );
-
-
+    logger.info('Access token renovado com sucesso', {
+      userId: storedToken.userId,
+    });
 
     return {
       accessToken,
     };
   }
 
-
-
-
-
-  async logout(
-    refreshToken: string,
-  ) {
-
+  async logout(refreshToken: string) {
     const storedToken =
-      await refreshTokenService.findByToken(
-        refreshToken,
-      );
-
+      await this.refreshTokenService.findByToken(refreshToken);
 
     if (!storedToken) {
-
       throw new AppError(
         'Refresh token inválido',
         401,
-        'INVALID_REFRESH_TOKEN',
+        'INVALID_REFRESH_TOKEN'
       );
     }
 
+    await this.refreshTokenService.delete(refreshToken);
 
-
-    await refreshTokenService.delete(
-      refreshToken,
-    );
-
-
-
-    logger.info(
-      'Logout realizado com sucesso',
-      {
-        userId: storedToken.userId,
-      },
-    );
-
+    logger.info('Logout realizado com sucesso', {
+      userId: storedToken.userId,
+    });
   }
-
 }

@@ -1,6 +1,12 @@
-import { TaskService } from '../services/task.service.js';
-const taskService = new TaskService();
+import { AppError } from '../errors/AppError.js';
+import { createTaskSchema, updateTaskSchema } from '../schemas/task.schema.js';
+import { listTasksQuerySchema } from '../schemas/taskQuery.schema.js';
+import { successResponse } from '../utils/apiResponse.js';
 export class TaskController {
+    taskService;
+    constructor(taskService) {
+        this.taskService = taskService;
+    }
     getTaskId(req) {
         const { id } = req.params;
         if (Array.isArray(id)) {
@@ -8,56 +14,69 @@ export class TaskController {
         }
         return id ?? null;
     }
-    async create(req, res) {
-        const { title, description, dueDate } = req.body;
-        const userId = req.userId;
-        const task = await taskService.create(userId, { title, description, dueDate });
-        return res.status(201).json(task);
-    }
-    async findAll(req, res) {
-        const userId = req.userId;
-        const tasks = await taskService.findAllByUser(userId);
-        return res.status(200).json(tasks);
-    }
-    async findOne(req, res) {
-        const id = this.getTaskId(req);
-        const userId = req.userId;
-        if (!id) {
-            return res.status(400).json({ message: 'ID da tarefa inválido' });
-        }
-        const task = await taskService.findByIdAndUser(id, userId);
-        if (!task) {
-            return res.status(404).json({ message: 'Tarefa não encontrada' });
-        }
-        return res.status(200).json(task);
-    }
-    async update(req, res) {
-        const id = this.getTaskId(req);
-        const userId = req.userId;
-        const data = req.body;
-        if (!id) {
-            return res.status(400).json({ message: 'ID da tarefa inválido' });
-        }
+    async create(req, res, next) {
         try {
-            const updatedTask = await taskService.update(id, userId, data);
-            return res.status(200).json(updatedTask);
+            const data = createTaskSchema.parse(req.body);
+            const task = await this.taskService.create(req.userId, data);
+            return res.status(201).json(successResponse(task));
         }
-        catch {
-            return res.status(404).json({ message: 'Tarefa não encontrada' });
+        catch (error) {
+            return next(error);
         }
     }
-    async delete(req, res) {
-        const id = this.getTaskId(req);
-        const userId = req.userId;
-        if (!id) {
-            return res.status(400).json({ message: 'ID da tarefa inválido' });
-        }
+    async findAll(req, res, next) {
         try {
-            await taskService.delete(id, userId);
+            // O middleware já valida a query; este parse mantém o controller seguro
+            // se ele também for reutilizado fora da rota HTTP.
+            const query = listTasksQuerySchema.parse(req.query);
+            const result = await this.taskService.findAllByUser(req.userId, query);
+            return res.status(200).json(successResponse(result.tasks, result.meta));
+        }
+        catch (error) {
+            return next(error);
+        }
+    }
+    async findOne(req, res, next) {
+        try {
+            const id = this.getTaskId(req);
+            if (!id) {
+                throw new AppError('ID da tarefa inválido', 400, 'INVALID_TASK_ID');
+            }
+            const task = await this.taskService.findByIdAndUser(id, req.userId);
+            if (!task) {
+                throw new AppError('Tarefa não encontrada', 404, 'TASK_NOT_FOUND');
+            }
+            return res.status(200).json(successResponse(task));
+        }
+        catch (error) {
+            return next(error);
+        }
+    }
+    async update(req, res, next) {
+        try {
+            const id = this.getTaskId(req);
+            if (!id) {
+                throw new AppError('ID da tarefa inválido', 400, 'INVALID_TASK_ID');
+            }
+            const data = updateTaskSchema.parse(req.body);
+            const updatedTask = await this.taskService.update(id, req.userId, data);
+            return res.status(200).json(successResponse(updatedTask));
+        }
+        catch (error) {
+            return next(error);
+        }
+    }
+    async delete(req, res, next) {
+        try {
+            const id = this.getTaskId(req);
+            if (!id) {
+                throw new AppError('ID da tarefa inválido', 400, 'INVALID_TASK_ID');
+            }
+            await this.taskService.delete(id, req.userId);
             return res.status(204).send();
         }
-        catch {
-            return res.status(404).json({ message: 'Tarefa não encontrada' });
+        catch (error) {
+            return next(error);
         }
     }
 }

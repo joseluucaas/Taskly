@@ -5,7 +5,6 @@ import type {
   UpdateCategoryInput,
 } from '../schemas/category.schema.js';
 
-
 export class CategoryService {
   async create(userId: string, data: CreateCategoryInput) {
     return prisma.category.create({

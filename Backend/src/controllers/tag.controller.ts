@@ -5,11 +5,9 @@ import { createTagSchema, updateTagSchema } from '../schemas/tag.schema.js';
 import { TagService } from '../services/tag.service.js';
 import { successResponse } from '../utils/apiResponse.js';
 
-
-const tagService = new TagService();
-
-
 export class TagController {
+  constructor(private readonly tagService: TagService) {}
+
   private getTagId(req: Request): string {
     const { id } = req.params;
 
@@ -22,7 +20,10 @@ export class TagController {
 
   async create(req: Request, res: Response, next: NextFunction) {
     try {
-      const tag = await tagService.create(req.userId!, createTagSchema.parse(req.body));
+      const tag = await this.tagService.create(
+        req.userId!,
+        createTagSchema.parse(req.body)
+      );
       return res.status(201).json(successResponse(tag));
     } catch (error) {
       return next(error);
@@ -31,7 +32,7 @@ export class TagController {
 
   async findAll(req: Request, res: Response, next: NextFunction) {
     try {
-      const tags = await tagService.findAllByUser(req.userId!);
+      const tags = await this.tagService.findAllByUser(req.userId!);
       return res.status(200).json(successResponse(tags));
     } catch (error) {
       return next(error);
@@ -40,7 +41,10 @@ export class TagController {
 
   async findOne(req: Request, res: Response, next: NextFunction) {
     try {
-      const tag = await tagService.findByIdAndUser(this.getTagId(req), req.userId!);
+      const tag = await this.tagService.findByIdAndUser(
+        this.getTagId(req),
+        req.userId!
+      );
       if (!tag) {
         throw new AppError('Etiqueta não encontrada', 404, 'TAG_NOT_FOUND');
       }
@@ -53,10 +57,10 @@ export class TagController {
 
   async update(req: Request, res: Response, next: NextFunction) {
     try {
-      const tag = await tagService.update(
+      const tag = await this.tagService.update(
         this.getTagId(req),
         req.userId!,
-        updateTagSchema.parse(req.body),
+        updateTagSchema.parse(req.body)
       );
       return res.status(200).json(successResponse(tag));
     } catch (error) {
@@ -66,7 +70,7 @@ export class TagController {
 
   async delete(req: Request, res: Response, next: NextFunction) {
     try {
-      await tagService.delete(this.getTagId(req), req.userId!);
+      await this.tagService.delete(this.getTagId(req), req.userId!);
       return res.status(204).send();
     } catch (error) {
       return next(error);

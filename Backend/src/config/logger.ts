@@ -9,28 +9,22 @@ const developmentFormat = winston.format.combine(
   winston.format.colorize(),
 
   winston.format.printf(({ timestamp, level, message, ...meta }) => {
-    const extra = Object.keys(meta).length
-      ? JSON.stringify(meta, null, 2)
-      : '';
+    const extra = Object.keys(meta).length ? JSON.stringify(meta, null, 2) : '';
 
-    return `${timestamp} [${level}] ${message}${
-      extra ? `\n${extra}` : ''
-    }`;
-  }),
+    return `${timestamp} [${level}] ${message}${extra ? `\n${extra}` : ''}`;
+  })
 );
 
 const productionFormat = winston.format.combine(
   // JSON facilita integração com ferramentas de monitoramento.
   winston.format.timestamp(),
-  winston.format.json(),
+  winston.format.json()
 );
 
 const logger = winston.createLogger({
   level: isProduction ? 'info' : 'debug',
 
-  format: isProduction
-    ? productionFormat
-    : developmentFormat,
+  format: isProduction ? productionFormat : developmentFormat,
 
   transports: [
     // Exibe logs no terminal.

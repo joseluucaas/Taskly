@@ -1,22 +1,16 @@
 import { Router } from 'express';
 
-import { TaskController } from '../controllers/task.controller.js';
+import { controllers } from '../container.js';
 import { authMiddleware } from '../middlewares/auth.middleware.js';
 import { validate } from '../middlewares/validate.middleware.js';
 import { validateQuery } from '../middlewares/validateQuery.middleware.js';
-import {
-  createTaskSchema,
-  updateTaskSchema,
-} from '../schemas/task.schema.js';
+import { createTaskSchema, updateTaskSchema } from '../schemas/task.schema.js';
 import { listTasksQuerySchema } from '../schemas/taskQuery.schema.js';
 
-
 const router = Router();
-const taskController = new TaskController();
-
+const taskController = controllers.tasks;
 
 router.use(authMiddleware);
-
 
 /**
  * @openapi
@@ -27,13 +21,9 @@ router.use(authMiddleware);
  *     security:
  *       - bearerAuth: []
  */
-router.post(
-  '/',
-  validate(createTaskSchema),
-  (req, res, next) =>
-    taskController.create(req, res, next),
+router.post('/', validate(createTaskSchema), (req, res, next) =>
+  taskController.create(req, res, next)
 );
-
 
 /**
  * @openapi
@@ -70,13 +60,9 @@ router.post(
  *         name: order
  *         schema: { type: string, enum: [asc, desc], default: desc }
  */
-router.get(
-  '/',
-  validateQuery(listTasksQuerySchema),
-  (req, res, next) =>
-    taskController.findAll(req, res, next),
+router.get('/', validateQuery(listTasksQuerySchema), (req, res, next) =>
+  taskController.findAll(req, res, next)
 );
-
 
 /**
  * @openapi
@@ -87,12 +73,7 @@ router.get(
  *     security:
  *       - bearerAuth: []
  */
-router.get(
-  '/:id',
-  (req, res, next) =>
-    taskController.findOne(req, res, next),
-);
-
+router.get('/:id', (req, res, next) => taskController.findOne(req, res, next));
 
 /**
  * @openapi
@@ -103,13 +84,9 @@ router.get(
  *     security:
  *       - bearerAuth: []
  */
-router.put(
-  '/:id',
-  validate(updateTaskSchema),
-  (req, res, next) =>
-    taskController.update(req, res, next),
+router.put('/:id', validate(updateTaskSchema), (req, res, next) =>
+  taskController.update(req, res, next)
 );
-
 
 /**
  * @openapi
@@ -119,13 +96,10 @@ router.put(
  *     tags: [Tasks]
  *     security:
  *       - bearerAuth: []
- *       
+ *
  */
-router.delete(
-  '/:id',
-  (req, res, next) =>
-    taskController.delete(req, res, next),
+router.delete('/:id', (req, res, next) =>
+  taskController.delete(req, res, next)
 );
-
 
 export default router;

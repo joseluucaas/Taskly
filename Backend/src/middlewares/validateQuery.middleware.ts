@@ -3,13 +3,8 @@ import { ZodType } from 'zod';
 
 import { AppError } from '../errors/AppError.js';
 
-
 export function validateQuery(schema: ZodType) {
-  return (
-    req: Request,
-    _res: Response,
-    next: NextFunction,
-  ) => {
+  return (req: Request, _res: Response, next: NextFunction) => {
     const result = schema.safeParse(req.query);
 
     if (!result.success) {
@@ -23,8 +18,8 @@ export function validateQuery(schema: ZodType) {
           'Parâmetros de consulta inválidos',
           400,
           'VALIDATION_ERROR',
-          errors,
-        ),
+          errors
+        )
       );
     }
 

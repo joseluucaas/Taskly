@@ -1,14 +1,12 @@
 import { Router } from 'express';
 
-import { TagController } from '../controllers/tag.controller.js';
+import { controllers } from '../container.js';
 import { authMiddleware } from '../middlewares/auth.middleware.js';
 import { validate } from '../middlewares/validate.middleware.js';
 import { createTagSchema, updateTagSchema } from '../schemas/tag.schema.js';
 
-
 const router = Router();
-const tagController = new TagController();
-
+const tagController = controllers.tags;
 
 router.use(authMiddleware);
 
@@ -26,9 +24,12 @@ router.use(authMiddleware);
  *     security:
  *       - bearerAuth: []
  */
-router.route('/')
+router
+  .route('/')
   .get((req, res, next) => tagController.findAll(req, res, next))
-  .post(validate(createTagSchema), (req, res, next) => tagController.create(req, res, next));
+  .post(validate(createTagSchema), (req, res, next) =>
+    tagController.create(req, res, next)
+  );
 
 /**
  * @openapi
@@ -49,10 +50,12 @@ router.route('/')
  *     security:
  *       - bearerAuth: []
  */
-router.route('/:id')
+router
+  .route('/:id')
   .get((req, res, next) => tagController.findOne(req, res, next))
-  .put(validate(updateTagSchema), (req, res, next) => tagController.update(req, res, next))
+  .put(validate(updateTagSchema), (req, res, next) =>
+    tagController.update(req, res, next)
+  )
   .delete((req, res, next) => tagController.delete(req, res, next));
-
 
 export default router;

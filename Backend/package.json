@@ -1,7 +1,7 @@
 {
   "name": "taskly",
   "version": "1.0.0",
-  "description": "Aplicação full-stack de gerenciamento de tarefas com autenticação JWT, TypeScript, Express e PostgreSQL.",
+  "description": "Backend da plataforma Taskly para gerenciamento de tarefas, com autenticação JWT, refresh tokens, dashboard, categorias, etiquetas, comentários, notificações, filtros, paginação e documentação Swagger. Desenvolvido com Node.js, TypeScript, Express, Prisma e PostgreSQL.",
   "main": "dist/server.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",

@@ -5,7 +5,6 @@ import { AppError } from '../errors/AppError.js';
 import logger from '../config/logger.js';
 import { ListTasksQuery } from '../schemas/taskQuery.schema.js';
 
-
 type TaskData = {
   title: string;
   description?: string;
@@ -23,11 +22,10 @@ type UpdateTaskData = {
   tagIds?: string[];
 };
 
-
 export class TaskService {
   private async ensureCategoryBelongsToUser(
     categoryId: string | null | undefined,
-    userId: string,
+    userId: string
   ) {
     if (!categoryId) {
       return;
@@ -43,7 +41,10 @@ export class TaskService {
     }
   }
 
-  private async ensureTagsBelongToUser(tagIds: string[] | undefined, userId: string) {
+  private async ensureTagsBelongToUser(
+    tagIds: string[] | undefined,
+    userId: string
+  ) {
     if (!tagIds || tagIds.length === 0) {
       return;
     }
@@ -68,7 +69,9 @@ export class TaskService {
         description: data.description,
         dueDate: data.dueDate,
         categoryId: data.categoryId,
-        tags: data.tagIds ? { connect: data.tagIds.map((id) => ({ id })) } : undefined,
+        tags: data.tagIds
+          ? { connect: data.tagIds.map((id) => ({ id })) }
+          : undefined,
         userId,
       },
     });
@@ -81,11 +84,7 @@ export class TaskService {
     return task;
   }
 
-
-  async findAllByUser(
-    userId: string,
-    query: ListTasksQuery,
-  ) {
+  async findAllByUser(userId: string, query: ListTasksQuery) {
     const {
       page,
       limit,
@@ -125,8 +124,8 @@ export class TaskService {
                   23,
                   59,
                   59,
-                  999,
-                ),
+                  999
+                )
               ),
             }
           : {}),
@@ -174,7 +173,6 @@ export class TaskService {
     };
   }
 
-
   async findByIdAndUser(id: string, userId: string) {
     return prisma.task.findFirst({
       where: { id, userId },
@@ -182,12 +180,7 @@ export class TaskService {
     });
   }
 
-
-  async update(
-    id: string,
-    userId: string,
-    data: UpdateTaskData,
-  ) {
+  async update(id: string, userId: string, data: UpdateTaskData) {
     const existingTask = await this.findByIdAndUser(id, userId);
 
     if (!existingTask) {
@@ -217,7 +210,6 @@ export class TaskService {
 
     return updatedTask;
   }
-
 
   async delete(id: string, userId: string) {
     const existingTask = await this.findByIdAndUser(id, userId);

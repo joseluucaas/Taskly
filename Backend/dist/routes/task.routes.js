@@ -1,10 +1,12 @@
 import { Router } from 'express';
-import { TaskController } from '../controllers/task.controller.js';
+import { controllers } from '../container.js';
 import { authMiddleware } from '../middlewares/auth.middleware.js';
 import { validate } from '../middlewares/validate.middleware.js';
+import { validateQuery } from '../middlewares/validateQuery.middleware.js';
 import { createTaskSchema, updateTaskSchema } from '../schemas/task.schema.js';
+import { listTasksQuerySchema } from '../schemas/taskQuery.schema.js';
 const router = Router();
-const taskController = new TaskController();
+const taskController = controllers.tasks;
 router.use(authMiddleware);
 /**
  * @openapi
@@ -14,48 +16,44 @@ router.use(authMiddleware);
  *     tags: [Tasks]
  *     security:
  *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/CreateTaskInput'
- *     responses:
- *       201:
- *         description: Tarefa criada com sucesso
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Task'
- *       401:
- *         description: Token inválido ou ausente
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.post('/', validate(createTaskSchema), (req, res) => taskController.create(req, res));
+router.post('/', validate(createTaskSchema), (req, res, next) => taskController.create(req, res, next));
 /**
  * @openapi
  * /tasks:
  *   get:
- *     summary: Listar tarefas do usuário autenticado
+ *     summary: Listar tarefas do usuário autenticado, com busca por título ou descrição
  *     tags: [Tasks]
  *     security:
  *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Lista de tarefas retornada com sucesso
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Task'
- *       401:
- *         description: Token inválido ou ausente
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer, minimum: 1, default: 1 }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, minimum: 1, maximum: 100, default: 10 }
+ *       - in: query
+ *         name: completed
+ *         schema: { type: boolean }
+ *       - in: query
+ *         name: search
+ *         description: Busca parcial, sem diferenciar maiúsculas de minúsculas, no título e na descrição
+ *         schema: { type: string }
+ *       - in: query
+ *         name: dueDateFrom
+ *         schema: { type: string, format: date }
+ *       - in: query
+ *         name: dueDateTo
+ *         schema: { type: string, format: date }
+ *       - in: query
+ *         name: sort
+ *         schema: { type: string, enum: [createdAt, updatedAt, dueDate, title, completed], default: createdAt }
+ *       - in: query
+ *         name: order
+ *         schema: { type: string, enum: [asc, desc], default: desc }
  */
-router.get('/', (req, res) => taskController.findAll(req, res));
+router.get('/', validateQuery(listTasksQuerySchema), (req, res, next) => taskController.findAll(req, res, next));
 /**
  * @openapi
  * /tasks/{id}:
@@ -64,24 +62,8 @@ router.get('/', (req, res) => taskController.findAll(req, res));
  *     tags: [Tasks]
  *     security:
  *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: ID da tarefa
- *     responses:
- *       200:
- *         description: Tarefa encontrada
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Task'
- *       404:
- *         description: Tarefa não encontrada
  */
-router.get('/:id', (req, res) => taskController.findOne(req, res));
+router.get('/:id', (req, res, next) => taskController.findOne(req, res, next));
 /**
  * @openapi
  * /tasks/{id}:
@@ -90,30 +72,8 @@ router.get('/:id', (req, res) => taskController.findOne(req, res));
  *     tags: [Tasks]
  *     security:
  *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: ID da tarefa
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/UpdateTaskInput'
- *     responses:
- *       200:
- *         description: Tarefa atualizada com sucesso
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Task'
- *       404:
- *         description: Tarefa não encontrada
  */
-router.put('/:id', validate(updateTaskSchema), (req, res) => taskController.update(req, res));
+router.put('/:id', validate(updateTaskSchema), (req, res, next) => taskController.update(req, res, next));
 /**
  * @openapi
  * /tasks/{id}:
@@ -122,19 +82,8 @@ router.put('/:id', validate(updateTaskSchema), (req, res) => taskController.upda
  *     tags: [Tasks]
  *     security:
  *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: ID da tarefa
- *     responses:
- *       204:
- *         description: Tarefa excluída com sucesso
- *       404:
- *         description: Tarefa não encontrada
+ *
  */
-router.delete('/:id', (req, res) => taskController.delete(req, res));
+router.delete('/:id', (req, res, next) => taskController.delete(req, res, next));
 export default router;
 //# sourceMappingURL=task.routes.js.map

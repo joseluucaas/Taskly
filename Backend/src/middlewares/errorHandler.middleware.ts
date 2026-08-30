@@ -6,18 +6,16 @@ import logger from '../config/logger.js';
 
 import { errorResponse } from '../utils/apiResponse.js';
 
-
 export function errorHandler(
   err: unknown,
   req: Request,
   res: Response,
-  _next: NextFunction,
+  _next: NextFunction
 ) {
   let statusCode = 500;
   let message = 'Erro interno do servidor';
   let code = 'INTERNAL_ERROR';
   let details: unknown = null;
-
 
   // Erros personalizados da aplicação
   if (err instanceof AppError) {
@@ -27,19 +25,15 @@ export function errorHandler(
     details = err.details ?? null;
   }
 
-
   // Erros conhecidos do Prisma
   if (err instanceof Prisma.PrismaClientKnownRequestError) {
-
     switch (err.code) {
-
       // Registro duplicado
       case 'P2002':
         statusCode = 409;
         message = 'Registro já cadastrado';
         code = 'DUPLICATE_RECORD';
         break;
-
 
       // Registro não encontrado
       case 'P2025':
@@ -50,7 +44,6 @@ export function errorHandler(
     }
   }
 
-
   logger.error(message, {
     statusCode,
     code,
@@ -59,12 +52,5 @@ export function errorHandler(
     error: err instanceof Error ? err.stack : err,
   });
 
-
-  return res.status(statusCode).json(
-    errorResponse(
-      code,
-      message,
-      details,
-    ),
-  );
+  return res.status(statusCode).json(errorResponse(code, message, details));
 }

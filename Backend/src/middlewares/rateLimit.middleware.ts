@@ -1,7 +1,6 @@
 import rateLimit from 'express-rate-limit';
 
-const isTestEnvironment =
-  process.env.NODE_ENV === 'test';
+const isTestEnvironment = process.env.NODE_ENV === 'test';
 
 export const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -12,8 +11,7 @@ export const loginLimiter = rateLimit({
   max: isTestEnvironment ? 1000 : 5,
 
   message: {
-    message:
-      'Muitas tentativas de login. Tente novamente mais tarde.',
+    message: 'Muitas tentativas de login. Tente novamente mais tarde.',
   },
 
   standardHeaders: true,

@@ -2,7 +2,6 @@ import { prisma } from '../config/prisma.js';
 import { AppError } from '../errors/AppError.js';
 import type { CreateTagInput, UpdateTagInput } from '../schemas/tag.schema.js';
 
-
 export class TagService {
   async create(userId: string, data: CreateTagInput) {
     return prisma.tag.create({ data: { ...data, userId } });

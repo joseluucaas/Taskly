@@ -1,11 +1,14 @@
 import { Router } from 'express';
-import { CommentController } from '../controllers/comment.controller.js';
+import { controllers } from '../container.js';
 import { authMiddleware } from '../middlewares/auth.middleware.js';
 import { validate } from '../middlewares/validate.middleware.js';
-import { createCommentSchema, updateCommentSchema } from '../schemas/comment.schema.js';
+import {
+  createCommentSchema,
+  updateCommentSchema,
+} from '../schemas/comment.schema.js';
 
 const router = Router();
-const commentController = new CommentController();
+const commentController = controllers.comments;
 router.use(authMiddleware);
 
 /**
@@ -20,10 +23,16 @@ router.use(authMiddleware);
  *     tags: [Comentários]
  *     security: [{ bearerAuth: [] }]
  */
-router.route('/tasks/:taskId/comments')
+router
+  .route('/tasks/:taskId/comments')
   .get((req, res, next) => commentController.findAll(req, res, next))
-  .post(validate(createCommentSchema), (req, res, next) => commentController.create(req, res, next));
-router.route('/tasks/:taskId/comments/:id')
-  .put(validate(updateCommentSchema), (req, res, next) => commentController.update(req, res, next))
+  .post(validate(createCommentSchema), (req, res, next) =>
+    commentController.create(req, res, next)
+  );
+router
+  .route('/tasks/:taskId/comments/:id')
+  .put(validate(updateCommentSchema), (req, res, next) =>
+    commentController.update(req, res, next)
+  )
   .delete((req, res, next) => commentController.delete(req, res, next));
 export default router;

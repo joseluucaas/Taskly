@@ -99,11 +99,11 @@ async function main() {
   Após finalizar:
   - fecha a conexão com o banco através do Prisma.
 */
-main()
-  .catch((error) => {
-    console.error('Erro ao executar seed:', error);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+try {
+  await main();
+} catch (error) {
+  console.error('Erro ao executar seed:', error);
+  process.exit(1);
+} finally {
+  await prisma.$disconnect();
+}

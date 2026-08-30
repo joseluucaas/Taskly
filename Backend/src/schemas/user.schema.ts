@@ -16,7 +16,9 @@ export const updatePreferencesSchema = z.object({
 export const changePasswordSchema = z
   .object({
     currentPassword: z.string().min(6, 'Informe a senha atual'),
-    newPassword: z.string().min(6, 'A nova senha deve ter pelo menos 6 caracteres'),
+    newPassword: z
+      .string()
+      .min(6, 'A nova senha deve ter pelo menos 6 caracteres'),
   })
   .refine((data) => data.currentPassword !== data.newPassword, {
     message: 'A nova senha deve ser diferente da senha atual',

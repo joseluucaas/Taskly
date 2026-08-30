@@ -68,7 +68,13 @@ export const JsonNull = runtime.objectEnumValues.instances.JsonNull;
 export const AnyNull = runtime.objectEnumValues.instances.AnyNull;
 export const ModelName = {
     User: 'User',
-    Task: 'Task'
+    UserPreference: 'UserPreference',
+    Notification: 'Notification',
+    Task: 'Task',
+    Comment: 'Comment',
+    Category: 'Category',
+    Tag: 'Tag',
+    RefreshToken: 'RefreshToken'
 };
 /**
  * Enums
@@ -87,15 +93,65 @@ export const UserScalarFieldEnum = {
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
 };
+export const UserPreferenceScalarFieldEnum = {
+    id: 'id',
+    language: 'language',
+    theme: 'theme',
+    soundEnabled: 'soundEnabled',
+    notificationsEnabled: 'notificationsEnabled',
+    dueDateReminders: 'dueDateReminders',
+    userId: 'userId',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+};
+export const NotificationScalarFieldEnum = {
+    id: 'id',
+    title: 'title',
+    message: 'message',
+    readAt: 'readAt',
+    userId: 'userId',
+    createdAt: 'createdAt'
+};
 export const TaskScalarFieldEnum = {
     id: 'id',
     title: 'title',
     description: 'description',
     completed: 'completed',
     dueDate: 'dueDate',
+    categoryId: 'categoryId',
     userId: 'userId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
+};
+export const CommentScalarFieldEnum = {
+    id: 'id',
+    content: 'content',
+    taskId: 'taskId',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+};
+export const CategoryScalarFieldEnum = {
+    id: 'id',
+    name: 'name',
+    color: 'color',
+    userId: 'userId',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+};
+export const TagScalarFieldEnum = {
+    id: 'id',
+    name: 'name',
+    color: 'color',
+    userId: 'userId',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+};
+export const RefreshTokenScalarFieldEnum = {
+    id: 'id',
+    token: 'token',
+    userId: 'userId',
+    expiresAt: 'expiresAt',
+    createdAt: 'createdAt'
 };
 export const SortOrder = {
     asc: 'asc',

@@ -1,28 +1,18 @@
 import { Router } from 'express';
 
-import { AuthController } from '../controllers/auth.controller.js';
+import { controllers } from '../container.js';
 
 import { validate } from '../middlewares/validate.middleware.js';
 
-import {
-  registerSchema,
-  loginSchema,
-} from '../schemas/auth.schema.js';
+import { registerSchema, loginSchema } from '../schemas/auth.schema.js';
 
-import {
-  refreshTokenSchema,
-} from '../schemas/refreshToken.schema.js';
+import { refreshTokenSchema } from '../schemas/refreshToken.schema.js';
 
 import loginLimiter from '../middlewares/rateLimit.middleware.js';
 
-
-
 const router = Router();
 
-const authController = new AuthController();
-
-
-
+const authController = controllers.auth;
 
 /**
  * @openapi
@@ -31,20 +21,9 @@ const authController = new AuthController();
  *     summary: Registrar um novo usuário
  *     tags: [Auth]
  */
-router.post(
-  '/register',
-  validate(registerSchema),
-  (req, res, next) =>
-    authController.register(
-      req,
-      res,
-      next,
-    ),
+router.post('/register', validate(registerSchema), (req, res, next) =>
+  authController.register(req, res, next)
 );
-
-
-
-
 
 /**
  * @openapi
@@ -53,22 +32,9 @@ router.post(
  *     summary: Autenticar usuário
  *     tags: [Auth]
  */
-router.post(
-  '/login',
-  loginLimiter,
-  validate(loginSchema),
-  (req, res, next) =>
-    authController.login(
-      req,
-      res,
-      next,
-    ),
+router.post('/login', loginLimiter, validate(loginSchema), (req, res, next) =>
+  authController.login(req, res, next)
 );
-
-
-
-
-
 
 /**
  * @openapi
@@ -77,21 +43,9 @@ router.post(
  *     summary: Renovar access token usando refresh token
  *     tags: [Auth]
  */
-router.post(
-  '/refresh',
-  validate(refreshTokenSchema),
-  (req, res, next) =>
-    authController.refresh(
-      req,
-      res,
-      next,
-    ),
+router.post('/refresh', validate(refreshTokenSchema), (req, res, next) =>
+  authController.refresh(req, res, next)
 );
-
-
-
-
-
 
 /**
  * @openapi
@@ -111,19 +65,8 @@ router.post(
  *       401:
  *         description: Refresh token inválido
  */
-router.post(
-  '/logout',
-  validate(refreshTokenSchema),
-  (req, res, next) =>
-    authController.logout(
-      req,
-      res,
-      next,
-    ),
+router.post('/logout', validate(refreshTokenSchema), (req, res, next) =>
+  authController.logout(req, res, next)
 );
-
-
-
-
 
 export default router;

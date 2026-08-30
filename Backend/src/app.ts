@@ -38,12 +38,11 @@ app.use(helmet());
 app.use(
   cors({
     origin: allowedOrigins?.length ? allowedOrigins : true,
-  }),
+  })
 );
 
 // Permite receber JSON no body das requisições.
 app.use(express.json({ limit: '100kb' }));
-
 
 // ─────────────────────────────────────────────
 // Swagger / OpenAPI
@@ -62,7 +61,6 @@ if (process.env.NODE_ENV !== 'production') {
   });
 }
 
-
 // ─────────────────────────────────────────────
 // Health Check
 // ─────────────────────────────────────────────
@@ -73,7 +71,6 @@ app.get('/health', (_req, res) => {
     status: 'ok',
   });
 });
-
 
 // ─────────────────────────────────────────────
 // Rotas da aplicação
@@ -95,7 +92,6 @@ app.use('/tasks', taskRoutes);
 
 app.use('/users', userRoutes);
 
-
 // ─────────────────────────────────────────────
 // Middleware global de erros
 // ─────────────────────────────────────────────
@@ -105,6 +101,5 @@ app.use('/users', userRoutes);
 // Ele captura erros lançados pelas rotas,
 // controllers e services.
 app.use(errorHandler);
-
 
 export default app;

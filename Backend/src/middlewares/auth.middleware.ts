@@ -4,23 +4,19 @@ import jwt from 'jsonwebtoken';
 import logger from '../config/logger.js';
 import { AppError } from '../errors/AppError.js';
 
-
 interface JwtPayload {
   sub?: string;
 }
 
-
 export function authMiddleware(
   req: Request,
   _res: Response,
-  next: NextFunction,
+  next: NextFunction
 ) {
   const authHeader = req.headers.authorization;
 
   if (!authHeader) {
-    return next(
-      new AppError('Token não fornecido', 401, 'MISSING_TOKEN'),
-    );
+    return next(new AppError('Token não fornecido', 401, 'MISSING_TOKEN'));
   }
 
   const [scheme, token] = authHeader.split(' ');
@@ -31,11 +27,7 @@ export function authMiddleware(
     });
 
     return next(
-      new AppError(
-        'Formato de token inválido',
-        401,
-        'INVALID_TOKEN_FORMAT',
-      ),
+      new AppError('Formato de token inválido', 401, 'INVALID_TOKEN_FORMAT')
     );
   }
 
@@ -48,8 +40,8 @@ export function authMiddleware(
       new AppError(
         'Configuração interna inválida',
         500,
-        'JWT_CONFIGURATION_ERROR',
-      ),
+        'JWT_CONFIGURATION_ERROR'
+      )
     );
   }
 
@@ -79,8 +71,8 @@ export function authMiddleware(
       new AppError(
         'Token inválido ou expirado',
         401,
-        'INVALID_OR_EXPIRED_TOKEN',
-      ),
+        'INVALID_OR_EXPIRED_TOKEN'
+      )
     );
   }
 }
