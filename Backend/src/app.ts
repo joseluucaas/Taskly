@@ -16,6 +16,10 @@ import swaggerSpec from './config/swagger.js';
 
 const app = express();
 const frontendUrl = process.env.FRONTEND_URL;
+const allowedOrigins = frontendUrl
+  ?.split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
 
 if (process.env.NODE_ENV === 'production' && !frontendUrl) {
   throw new Error('FRONTEND_URL deve ser configurada em produção');
@@ -32,7 +36,7 @@ app.use(helmet());
 // Em produção, deve usar uma origem específica.
 app.use(
   cors({
-    origin: frontendUrl || true,
+    origin: allowedOrigins?.length ? allowedOrigins : true,
   }),
 );
 

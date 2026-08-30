@@ -26,7 +26,7 @@ services:
       PORT: 8080
       DATABASE_URL: postgresql://${POSTGRES_USER:-taskly}:${POSTGRES_PASSWORD:?Defina POSTGRES_PASSWORD no arquivo .env}@postgres:5432/${POSTGRES_DB:-taskly}?schema=public
       JWT_SECRET: ${JWT_SECRET:?Defina JWT_SECRET no arquivo .env}
-      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:5173}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:5173,http://127.0.0.1:5173}
     ports:
       - "8080:8080"
     depends_on:

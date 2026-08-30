@@ -34,8 +34,14 @@ RUN apt-get update \
 
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
+# O engine nativo do Prisma não é copiado pelo TypeScript e precisa acompanhar
+# o cliente compilado para consultas ao PostgreSQL em Linux.
+COPY --from=build /app/src/generated/prisma/*.so.node ./dist/generated/prisma/
 COPY --from=build /app/prisma ./prisma
 COPY --from=build /app/prisma.config.ts ./prisma.config.ts
+
+# Em produção, Winston grava logs sem precisar executar a API como root.
+RUN mkdir /app/logs && chown node:node /app/logs
 
 # As migrations são aplicadas antes da API aceitar requisições.
 USER node
