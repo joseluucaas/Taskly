@@ -1,20 +1,19 @@
-# 📝 Todo List Full-Stack
+# 📝 Taskly
 
 ![Status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow)
 ![Node.js](https://img.shields.io/badge/Node.js-339933?logo=node.js&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
-![Express](https://img.shields.io/badge/Express_5-000000?logo=express&logoColor=white)
+![Express](https://img.shields.io/badge/Express-000000?logo=express&logoColor=white)
 ![Prisma](https://img.shields.io/badge/Prisma-2D3748?logo=prisma&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)
 ![JWT](https://img.shields.io/badge/JWT-black?logo=JSON%20web%20tokens)
 ![Jest](https://img.shields.io/badge/Jest-C21325?logo=jest&logoColor=white)
-<!-- Descomente as duas linhas abaixo quando o front-end estiver em construção -->
-<!-- ![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB) -->
+![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)
 <!-- ![Tailwind](https://img.shields.io/badge/TailwindCSS-38B2AC?logo=tailwind-css&logoColor=white) -->
 ![License](https://img.shields.io/badge/license-MIT-informational)
 
-Aplicação de gerenciamento de tarefas com autenticação de usuários, construída como projeto de estudo aprofundado em back-end, com foco em **Clean Code**, **SOLID** e **Programação Orientada a Objetos**.
+Taskly e uma aplicação de gerenciamento de tarefas com autenticação de usuários, construída como projeto de estudo aprofundado em back-end, com foco em **Clean Code**, **SOLID** e **Programação Orientada a Objetos**.
 
 > 🚧 Projeto em desenvolvimento ativo. Este README é atualizado conforme novas partes são construídas.
 
@@ -38,9 +37,9 @@ Aplicação de gerenciamento de tarefas com autenticação de usuários, constru
 
 ## 📖 Sobre o projeto
 
-Uma lista de tarefas (to-do list) onde cada usuário se cadastra, faz login e gerencia suas próprias tarefas com título, descrição, prazo e status de conclusão.
+Uma lista de tarefas (Taskly) onde cada usuário se cadastra, faz login e gerencia suas próprias tarefas com título, descrição, prazo e status de conclusão.
 
-O objetivo principal deste projeto **não é só a funcionalidade em si**, mas o processo de construí-la seguindo boas práticas de arquitetura de back-end: separação de responsabilidades (routes → controllers → services → repository), tipagem forte com TypeScript, autenticação segura com hash de senha e JWT, e modelagem de dados relacional.
+O objetivo principal deste projeto **não é só a funcionalidade em si**, mas o processo de construí-la seguindo boas práticas de arquitetura de back-end, separação de responsabilidades (routes → controllers → services → repository), tipagem forte com TypeScript, autenticação segura com hash de senha e JWT, e modelagem de dados relacional.
 
 ---
 
@@ -48,18 +47,19 @@ O objetivo principal deste projeto **não é só a funcionalidade em si**, mas o
 
 **Back-end**
 - [Node.js](https://nodejs.org/) — ambiente de execução
-- [Express 5](https://expressjs.com/) — framework do servidor HTTP
+- [Express](https://expressjs.com/) — framework do servidor HTTP
 - [TypeScript](https://www.typescriptlang.org/) (ESM/`nodenext`) — tipagem estática
-- [Prisma 6](https://www.prisma.io/) — ORM (mapeamento objeto-relacional)
+- [Prisma](https://www.prisma.io/) — ORM (mapeamento objeto-relacional)
 - [PostgreSQL](https://www.postgresql.org/) — banco de dados relacional
 - [Docker](https://www.docker.com/) — containerização do banco em ambiente local
 - [bcrypt](https://www.npmjs.com/package/bcrypt) — hash de senhas
 - [jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken) — autenticação via JWT
 - [Zod](https://zod.dev/) — validação de dados de entrada
+- [Swagger / OpenAPI](https://swagger.io/) — interface interativa para documentar e testar a API
 - [Winston](https://github.com/winstonjs/winston) — logs estruturados
 - [Jest](https://jestjs.io/) + [Supertest](https://www.npmjs.com/package/supertest) — testes automatizados
 
-**Front-end** *(em construção)*
+**Front-end** 
 - [React](https://react.dev/)
 - [Tailwind CSS](https://tailwindcss.com/)
 
@@ -91,7 +91,7 @@ flowchart TB
     Repository --> DB
 ```
 
-**Por que essa separação importa:** cada camada só conhece a camada logo abaixo dela. O `Controller` não sabe como o banco funciona; o `Service` não sabe se a requisição veio de uma rota HTTP ou de um teste automatizado. Isso torna o código mais fácil de testar e de modificar sem quebrar outras partes.
+**Por que essa separação importa?** cada camada só conhece a camada logo abaixo dela. O `Controller` não sabe como o banco funciona, o `Service` não sabe se a requisição veio de uma rota HTTP ou de um teste automatizado, isso torna o código mais fácil de testar e de modificar sem quebrar outras partes.
 
 ---
 
@@ -120,7 +120,7 @@ erDiagram
     }
 ```
 
-Um `User` pode ter várias `Task`s (relação um-para-muitos). Cada tarefa pertence a exatamente um usuário, garantido pela chave estrangeira `userId`. Todas as consultas de tarefas são filtradas por `userId` na camada de serviço, garantindo que um usuário nunca acesse ou modifique tarefas de outro.
+Um `User` pode ter várias `Task`s (relação um-para-muitos) cada tarefa pertence a exatamente um usuário, garantido pela chave estrangeira `userId`, todas as consultas de tarefas são filtradas por `userId` na camada de serviço, garantindo que um usuário nunca acesse ou modifique tarefas de outro.
 
 ---
 
@@ -134,14 +134,14 @@ Um `User` pode ter várias `Task`s (relação um-para-muitos). Cada tarefa perte
 
 ```bash
 # 1. Clone o repositório
-git clone https://github.com/joseluucaas/todo-list-fullstack.git
-cd todo-list-fullstack
+git clone https://github.com/joseluucaas/taskly.git
+cd taskly
 
 # 2. Suba o banco de dados PostgreSQL
 docker compose up -d
 
 # 3. Configure as variáveis de ambiente do back-end
-cd Backend
+cd backend
 cp .env.example .env
 # edite o .env com suas credenciais, se necessário
 
@@ -184,9 +184,30 @@ Todos os endpoints protegidos exigem o header `Authorization: Bearer <token>`.
 
 ---
 
+### Documentação (Swagger / OpenAPI)
+
+A API possui documentação interativa utilizando Swagger/OpenAPI, permitindo visualizar, testar e explorar os endpoints diretamente pelo navegador.
+
+A documentação está disponível em:
+
+- Swagger UI: http://localhost:3000/api-docs
+- OpenAPI JSON: http://localhost:3000/openapi.json
+
+Recursos documentados:
+
+- Endpoints de autenticação (`/auth`);
+- Rotas de tarefas (`/tasks`);
+- Autenticação via JWT Bearer Token;
+- Estrutura de requisições e respostas;
+- Códigos HTTP retornados pela API.
+
+A integração foi realizada utilizando `swagger-jsdoc` e `swagger-ui-express`.
+
+---
+
 ## 🔒 Segurança
 
-- **Hash de senhas com bcrypt** (salt rounds: 10) a senha em texto puro nunca é armazenada
+- **Hash de senhas com bcrypt** (salt rounds : 10) a senha em texto puro nunca é armazenada
 - **Mensagens de erro genéricas no login** a API responde a mesma mensagem tanto para email inexistente quanto para senha incorreta, evitando enumeração de usuários
 - **Restrição de unicidade de email** a nível de banco de dados (`@unique` no schema)
 - **Tokens JWT assinados** com segredo forte, armazenado em variável de ambiente (nunca no código-fonte)
@@ -201,7 +222,7 @@ Todos os endpoints protegidos exigem o header `Authorization: Bearer <token>`.
 ## 📂 Estrutura de pastas
 
 ```
-todo-list-fullstack/
+Taskly/
 ├── Backend/
 │   ├── prisma/
 │   │   ├── schema.prisma       # modelagem do banco (User, Task)
@@ -253,7 +274,11 @@ todo-list-fullstack/
   - [X] Validação de entrada com Zod em todas as rotas
 - [X] **Testes automatizados**
   - [X] Testes de autenticação
-  - [X] Testes de CRUD de tarefas
+  - [X] Testes de CRUD de tarefas 
+- [X] **Documentação da API**
+  - [X] Swagger/OpenAPI configurado
+  - [X] Documentação dos endpoints de autenticação e tarefas
+  - [X] Testes das rotas através do Swagger UI
 - [ ] **Front-end**
   - [ ] Setup React + Tailwind
   - [ ] Telas de login/cadastro
@@ -272,7 +297,7 @@ O projeto segue estritamente `routes → middlewares → controllers → service
 
 ### Commits
 
-Este projeto segue a convenção [Conventional Commits](https://www.conventionalcommits.org/pt-br/v1.0.0/), facilitando a leitura do histórico e a identificação do tipo de cada mudança:
+Este projeto segue a convenção [Conventional Commits](https://www.conventionalcommits.org/pt-br/v1.0.0/) facilitando a leitura do histórico e a identificação do tipo de cada mudança.
 
 | Prefixo | Uso |
 |---------|-----|
