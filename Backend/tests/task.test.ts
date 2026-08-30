@@ -78,7 +78,7 @@ describe('Rotas de tarefas', () => {
     });
   });
 
-  it('filtra tarefas por conclusão, título e período de vencimento', async () => {
+  it('filtra tarefas por conclusão, título ou descrição e período de vencimento', async () => {
     const { user, token } = await createUserWithToken(
       'carla@teste.com',
       'Carla',
@@ -87,7 +87,8 @@ describe('Rotas de tarefas', () => {
     await prisma.task.createMany({
       data: [
         {
-          title: 'Preparar apresentação',
+          title: 'Preparar slides',
+          description: 'Revisar a apresentação para a reunião',
           completed: false,
           dueDate: new Date('2026-08-20T12:00:00.000Z'),
           userId: user.id,
@@ -109,7 +110,7 @@ describe('Rotas de tarefas', () => {
 
     expect(response.status).toBe(200);
     expect(response.body.data).toHaveLength(1);
-    expect(response.body.data[0].title).toBe('Preparar apresentação');
+    expect(response.body.data[0].title).toBe('Preparar slides');
   });
 
   it('ordena tarefas pelo campo permitido', async () => {

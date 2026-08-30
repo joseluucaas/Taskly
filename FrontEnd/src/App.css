@@ -57,6 +57,30 @@
     monospace;
   letter-spacing: -1px;
 }
+.brand > .brand-mark {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  font:
+    700 28px "DM Mono",
+    monospace;
+  letter-spacing: 0;
+}
+.brand > .brand-mark > span {
+  display: block;
+  transform: scaleX(1.24);
+}
+.task-description-preview {
+  color: var(--muted);
+  display: block;
+  font-size: 10px;
+  line-height: 1.45;
+  margin-top: 4px;
+  max-width: 420px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .sidebar-nav {
   margin-top: 55px;
   display: grid;
@@ -303,6 +327,7 @@ h2 {
 .dashboard-grid {
   display: grid;
   grid-template-columns: minmax(0, 1.55fr) minmax(260px, 0.85fr);
+  align-items: start;
   gap: 16px;
   margin-top: 31px;
 }
@@ -531,10 +556,14 @@ h2 {
   background: var(--text);
   color: var(--bg);
   font:
-    500 22px "DM Mono",
+    700 31px "DM Mono",
     monospace;
   margin: -12px auto 5px;
   transform: translateY(-32px);
+}
+.auth-brand span {
+  display: block;
+  transform: scaleX(1.24);
 }
 .auth-kicker {
   font:
@@ -664,9 +693,18 @@ h2 {
   text-align: center;
 }
 .welcome-page > .brand-mark {
-  width: 38px;
-  height: 38px;
+  width: 46px;
+  height: 46px;
+  border-radius: 6px;
+  font:
+    700 31px "DM Mono",
+    monospace;
+  letter-spacing: 0;
   margin-bottom: 23px;
+}
+.welcome-page > .brand-mark > span {
+  display: block;
+  transform: scaleX(1.24);
 }
 .welcome-page h1 {
   font-size: clamp(31px, 6vw, 60px);

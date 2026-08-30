@@ -14,9 +14,7 @@
 ![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white)
 ![License](https://img.shields.io/badge/license-MIT-informational)
 
-O **Taskly** é uma aplicação full-stack de gerenciamento de tarefas. O projeto aplica arquitetura de APIs REST, TypeScript, autenticação, segurança, banco de dados relacional e boas práticas de engenharia de software.
-
-O back-end está concluído localmente e pronto para deploy. O front-end está em desenvolvimento, consumindo a API local já disponível.
+O **Taskly** é uma aplicação full-stack de gerenciamento de tarefas, o projeto aplica arquitetura de APIs REST, TypeScript, autenticação, segurança, banco de dados relacional e boas práticas de engenharia de software.
 
 ---
 
@@ -57,7 +55,7 @@ Além das funcionalidades, a API possui autenticação JWT com refresh token, au
 ### 📝 Tarefas e organização
 
 - CRUD de tarefas com descrição, prazo e status;
-- Paginação, busca, filtros por status/período e ordenação;
+- Paginação, busca por título e descrição, filtros por status/período e ordenação;
 - Categorias com cor e vínculo opcional;
 - Etiquetas com relação muitos-para-muitos;
 - Comentários em tarefas;
@@ -87,17 +85,15 @@ Além das funcionalidades, a API possui autenticação JWT com refresh token, au
 - [Zod](https://zod.dev/), [Swagger/OpenAPI](https://swagger.io/), Winston, Helmet, CORS e express-rate-limit — qualidade e segurança;
 - [Jest](https://jestjs.io/) + [Supertest](https://www.npmjs.com/package/supertest) — testes automatizados.
 
-**Front-end — em desenvolvimento**
+**Front-end — interface integrada à API**
 
 - [React](https://react.dev/) — construção da interface;
 - [TypeScript](https://www.typescriptlang.org/) — tipagem estática;
 - [Vite](https://vite.dev/) — ambiente de desenvolvimento e build;
-- [React Router](https://reactrouter.com/) — roteamento;
-- [Tailwind CSS](https://tailwindcss.com/) — estilização responsiva;
-- [TanStack Query](https://tanstack.com/query/latest) e [Axios](https://axios-http.com/) — consumo e cache da API;
+- CSS com variáveis de tema — estilização responsiva e temas claro/escuro;
+- [Axios](https://axios-http.com/) — consumo da API e renovação de sessão;
 - [React Hook Form](https://react-hook-form.com/) + Zod — formulários e validação;
 - [Lucide](https://lucide.dev/) e [Framer Motion](https://motion.dev/) — ícones e animações;
-- [Vitest](https://vitest.dev/) + React Testing Library — testes de interface.
 
 ---
 
@@ -278,7 +274,7 @@ Rotas protegidas exigem `Authorization: Bearer <accessToken>`.
 | Auth | POST | `/auth/login` | Retorna access e refresh token |
 | Auth | POST | `/auth/refresh` | Renova o access token |
 | Auth | POST | `/auth/logout` | Invalida o refresh token |
-| Tarefas | POST/GET | `/tasks` | Cria ou lista tarefas |
+| Tarefas | POST/GET | `/tasks` | Cria ou lista tarefas; `search` busca no título e na descrição |
 | Tarefas | GET/PUT/DELETE | `/tasks/:id` | Gerencia uma tarefa |
 | Dashboard | GET | `/dashboard` | Retorna métricas e próximas tarefas |
 | Categorias | GET/POST | `/categories` | Lista ou cria categorias |
@@ -435,9 +431,10 @@ Taskly/
 - [x] **Dashboard inicial**
   - [x] Métricas, listagem e conclusão de tarefas pela API
   - [x] Animação de boas-vindas após a autenticação
-- [ ] **Gerenciamento completo de tarefas**
-  - [ ] CRUD, filtros, paginação e ordenação
-  - [ ] Categorias, etiquetas, comentários e notificações
+- [x] **Gerenciamento de tarefas**
+  - [x] CRUD, busca por título e descrição e alteração de status
+  - [x] Categorias, etiquetas, comentários e notificações conectados à API
+  - [ ] Filtros avançados, paginação e ordenação na interface
 - [ ] **Qualidade**
   - [x] Estados de vazio e tratamento inicial de erros
   - [ ] Acessibilidade completa e estados de carregamento avançados
@@ -447,7 +444,7 @@ Taskly/
 
 - [ ] Static Site no Render
 - [ ] Variável de ambiente da API e fallback de SPA
-- [ ] Integração com o back-end e validação de CORS
+- [x] Integração local com o back-end e validação de CORS
 
 ---
 

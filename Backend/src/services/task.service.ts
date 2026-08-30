@@ -104,10 +104,11 @@ export class TaskService {
     }
 
     if (search) {
-      where.title = {
-        contains: search,
-        mode: 'insensitive',
-      };
+      // A mesma busca cobre o resumo e os detalhes da tarefa.
+      where.OR = [
+        { title: { contains: search, mode: 'insensitive' } },
+        { description: { contains: search, mode: 'insensitive' } },
+      ];
     }
 
     if (dueDateFrom || dueDateTo) {

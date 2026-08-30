@@ -39,7 +39,7 @@ router.post(
  * @openapi
  * /tasks:
  *   get:
- *     summary: Listar tarefas do usuário autenticado
+ *     summary: Listar tarefas do usuário autenticado, com busca por título ou descrição
  *     tags: [Tasks]
  *     security:
  *       - bearerAuth: []
@@ -55,6 +55,7 @@ router.post(
  *         schema: { type: boolean }
  *       - in: query
  *         name: search
+ *         description: Busca parcial, sem diferenciar maiúsculas de minúsculas, no título e na descrição
  *         schema: { type: string }
  *       - in: query
  *         name: dueDateFrom
