@@ -70,37 +70,69 @@ Além das funcionalidades, a API possui autenticação JWT com refresh token, au
 - Swagger/OpenAPI e health check.
 - 20 testes de integração em oito suítes.
 
----
-
 ## 🛠 Stack utilizada
 
-**Back-end**
+### Back-end
 
-- [Node.js](https://nodejs.org/) : ambiente de execução;
-- [Express](https://expressjs.com/) : framework do servidor HTTP.
-- [TypeScript](https://www.typescriptlang.org/) : com ESM/`nodenext` — tipagem estática.
-- [Prisma](https://www.prisma.io/) : ORM para comunicação com o banco.
-- [PostgreSQL](https://www.postgresql.org/) : banco de dados relacional.
-- [Docker](https://www.docker.com/) : execução local do front-end, back-end e PostgreSQL.
-- [bcrypt](https://www.npmjs.com/package/bcrypt) e [jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken) : autenticação.
-- [Zod](https://zod.dev/), [Swagger/OpenAPI](https://swagger.io/), Winston, Helmet, CORS e express-rate-limit : qualidade e segurança.
-- [Jest](https://jestjs.io/) + [Supertest](https://www.npmjs.com/package/supertest) : testes automatizados.
+**Núcleo**
+- [Node.js](https://nodejs.org/) — ambiente de execução
+- [Express](https://expressjs.com/) — framework do servidor HTTP
+- [TypeScript](https://www.typescriptlang.org/) — tipagem estática, com ESM/`nodenext`
+- [Prisma](https://www.prisma.io/) — ORM de comunicação com o banco
+- [PostgreSQL](https://www.postgresql.org/) — banco de dados relacional
+- [Docker](https://www.docker.com/) — execução local de front-end, back-end e banco
 
-**Front-end — interface integrada à API**
+**Autenticação**
+- [bcrypt](https://www.npmjs.com/package/bcrypt) — hash de senhas
+- [jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken) — geração e verificação de tokens JWT
 
-- [React](https://react.dev/) : construção da interface.
-- [TypeScript](https://www.typescriptlang.org/) : tipagem estática.
-- [Vite](https://vite.dev/) : ambiente de desenvolvimento e build.
-- CSS com variáveis de tema : estilização responsiva e temas claro/escuro.
-- [Axios](https://axios-http.com/) : consumo da API e renovação de sessão.
-- [React Hook Form](https://react-hook-form.com/) + [Zod](https://zod.dev/) formulários e validação.
-- [Lucide](https://lucide.dev/) e [Framer Motion](https://motion.dev/) : ícones e animações.
+**Qualidade e segurança**
+- [Zod](https://zod.dev/) — validação de schemas
+- [Swagger/OpenAPI](https://swagger.io/) — documentação interativa da API
+- [Winston](https://github.com/winstonjs/winston) — logging estruturado
+- [Helmet](https://helmetjs.github.io/) — headers de segurança HTTP
+- [CORS](https://www.npmjs.com/package/cors) — controle de origens permitidas
+- [express-rate-limit](https://www.npmjs.com/package/express-rate-limit) — limitação de requisições
+
+**Testes**
+- [Jest](https://jestjs.io/) — framework de testes
+- [Supertest](https://www.npmjs.com/package/supertest) — testes de integração HTTP
+
+### Front-end
+
+**Núcleo**
+- [React](https://react.dev/) — construção da interface
+- [TypeScript](https://www.typescriptlang.org/) — tipagem estática
+- [Vite](https://vite.dev/) — ambiente de desenvolvimento e build
+
+**Formulários e dados**
+- [Axios](https://axios-http.com/) — consumo da API e renovação de sessão
+- [React Hook Form](https://react-hook-form.com/) — gerenciamento de formulários
+- [Zod](https://zod.dev/) — validação de formulários
+
+**Interface**
+- CSS com variáveis de tema — estilização responsiva, temas claro/escuro
+- [Lucide](https://lucide.dev/) — ícones
+- [Framer Motion](https://motion.dev/) — animações
 
 ---
 
 ## 🧩 Princípios de engenharia
 
-O Taskly aplica padrões de engenharia de forma pragmática, priorizando legibilidade, testes e manutenção. O projeto não se apresenta como uma implementação formal de Clean Architecture a organização descrita abaixo corresponde ao código existente.
+O Taskly aplica padrões de engenharia de forma pragmática, priorizando legibilidade, testes e manutenção.
+
+A arquitetura principal do back-end é em camadas, com influência do padrão MVC. O projeto não segue MVC de forma rígida, pois utiliza uma camada de services para concentrar regras de negócio e o Prisma como camada de persistência.
+
+**Arquitetura em camadas com elementos de MVC**
+
+- **Model:** os models `User`, `Task`, `Category`, `Tag`, `Comment`, `Notification`, `RefreshToken` e `UserPreference` são definidos no Prisma e representam os dados da aplicação.
+- **View:** no contexto da API REST, as respostas JSON são entregues ao cliente; no front-end, a interface é composta por componentes React.
+- **Controller:** controllers recebem a requisição HTTP, chamam os services necessários e retornam a resposta padronizada.
+- **Services:** concentram as regras de negócio e evitam que controllers ou rotas acumulem responsabilidades.
+- **Routes e middlewares:** definem endpoints e tratam autenticação, validação, rate limit e erros antes da chegada ao controller.
+- **Prisma:** realiza a comunicação entre a aplicação e o PostgreSQL.
+
+Fluxo principal: `Routes → Middlewares → Controllers → Services → Prisma → PostgreSQL`.
 
 **Clean Code e qualidade**
 
