@@ -1,6 +1,6 @@
 import request from 'supertest';
 
-import app from '../src/app.js';
+import app from '../../src/app.js';
 
 
 describe('Middleware de autenticação', () => {

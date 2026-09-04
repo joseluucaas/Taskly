@@ -1,8 +1,8 @@
 import bcrypt from 'bcrypt';
 import request from 'supertest';
 
-import app from '../src/app.js';
-import { prisma } from '../src/config/prisma.js';
+import app from '../../src/app.js';
+import { prisma } from '../../src/config/prisma.js';
 
 
 describe('Rotas de tarefas', () => {
